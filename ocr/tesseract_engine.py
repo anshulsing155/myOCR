@@ -1,6 +1,17 @@
+import os
 import numpy as np
 import pytesseract
-from config import OCR_LANG
+from config import TESSERACT_LANG
+
+# Point pytesseract at the conda-installed binary if it isn't already on PATH
+_CONDA_TESS = r"C:\Users\hp\miniforge3\Library\bin\tesseract.exe"
+if os.path.exists(_CONDA_TESS):
+    pytesseract.pytesseract.tesseract_cmd = _CONDA_TESS
+
+# Tell Tesseract where its language data lives
+_CONDA_TESSDATA = r"C:\Users\hp\miniforge3\share\tessdata"
+if os.path.isdir(_CONDA_TESSDATA) and not os.environ.get("TESSDATA_PREFIX"):
+    os.environ["TESSDATA_PREFIX"] = _CONDA_TESSDATA
 
 
 def run_tesseract(image: np.ndarray) -> list[dict]:
@@ -10,7 +21,7 @@ def run_tesseract(image: np.ndarray) -> list[dict]:
     """
     data = pytesseract.image_to_data(
         image,
-        lang=OCR_LANG,
+        lang=TESSERACT_LANG,
         output_type=pytesseract.Output.DICT,
     )
     results = []

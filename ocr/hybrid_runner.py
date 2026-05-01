@@ -22,7 +22,10 @@ def run_ocr(image: np.ndarray, mode: str = OCR_MODE) -> list[dict]:
     # auto
     results = run_paddle(image)
     if _avg_confidence(results) < CONFIDENCE_THRESHOLD:
-        results = run_tesseract(image)
+        try:
+            results = run_tesseract(image)
+        except Exception:
+            pass  # keep Paddle results if Tesseract is unavailable
     return results
 
 
@@ -35,7 +38,10 @@ def _avg_confidence(results: list[dict]) -> float:
 def _merge(image: np.ndarray) -> list[dict]:
     """Run both engines; return whichever has higher average confidence."""
     paddle_results = run_paddle(image)
-    tess_results = run_tesseract(image)
+    try:
+        tess_results = run_tesseract(image)
+    except Exception:
+        return paddle_results
     if _avg_confidence(paddle_results) >= _avg_confidence(tess_results):
         return paddle_results
     return tess_results

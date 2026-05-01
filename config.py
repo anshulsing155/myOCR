@@ -13,10 +13,11 @@ ADAPTIVE_C = 2
 MEDIAN_BLUR_KSIZE = 3
 
 # --- OCR ---
-OCR_LANG = "en"
-OCR_MODE = "auto"   # "auto" | "complex" | "tesseract"
-PADDLE_USE_ANGLE_CLS = True
-PADDLE_USE_GPU = False
+OCR_LANG = "en"          # PaddleOCR language code
+TESSERACT_LANG = "eng"   # Tesseract language code (eng = English)
+OCR_MODE = "auto"        # "auto" | "complex" | "tesseract"
+PADDLE_USE_ANGLE_CLS = True   # use_doc_orientation_classify in v3
+PADDLE_DEVICE = "cpu"         # "cpu" | "gpu" | "gpu:0"
 
 # --- Table detection ---
 H_KERNEL_WIDTH = 40

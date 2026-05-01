@@ -35,33 +35,45 @@ def load_input(path: str) -> list:
     return [img]
 
 
+def _is_fallback_layout(layout, image) -> bool:
+    blocks = list(layout)
+    if len(blocks) != 1 or blocks[0].type != "Text":
+        return False
+    h, w = image.shape[:2]
+    x1, y1, x2, y2 = blocks[0].block.coordinates
+    return x2 >= w * 0.9 and y2 >= h * 0.9
+
+
 def process_page(image, page_num: int, mode: str, debug: bool) -> dict:
-    processed = preprocess(image)
-    layout = detect_layout(image)  # layout detection works better on original colour image
+    layout = detect_layout(image)
 
     if debug:
         debug_img = draw_layout_debug(image, layout)
         cv2.imwrite(os.path.join(OUTPUT_DIR, f"debug_page_{page_num}.png"), debug_img)
 
     page_result = {"page": page_num, "text_blocks": [], "tables": []}
+    h, w = image.shape[:2]
+
+    if _is_fallback_layout(layout, image):
+        raw_rows = extract_table(image)
+        if raw_rows:
+            page_result["tables"].append({"bbox": [0, 0, w, h], "rows": build_table_rows(raw_rows)})
+        ocr_results = run_ocr(image, mode=mode)
+        text = " ".join(clean_text(r["text"]) for r in ocr_results)
+        if text:
+            page_result["text_blocks"].append({"type": "Text", "bbox": [0, 0, w, h], "text": text})
+        return page_result
 
     for block in layout:
-        region = crop_region(processed, block.block)
-
+        region = crop_region(image, block.block)   # original color, not preprocessed
         if block.type == "Table":
-            raw_rows = extract_table(crop_region(image, block.block))
-            rows = build_table_rows(raw_rows)
-            page_result["tables"].append({"bbox": list(block.block.coordinates), "rows": rows})
-
+            raw_rows = extract_table(region)
+            page_result["tables"].append({"bbox": list(block.block.coordinates), "rows": build_table_rows(raw_rows)})
         else:
             ocr_results = run_ocr(region, mode=mode)
             text = " ".join(clean_text(r["text"]) for r in ocr_results)
             if text:
-                page_result["text_blocks"].append({
-                    "type": block.type,
-                    "bbox": list(block.block.coordinates),
-                    "text": text,
-                })
+                page_result["text_blocks"].append({"type": block.type, "bbox": list(block.block.coordinates), "text": text})
 
     return page_result
 

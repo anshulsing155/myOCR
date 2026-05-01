@@ -24,8 +24,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 import config  # noqa: E402  (creates input/output dirs)
 from layout.layout_detector import detect_layout
 from ocr.hybrid_runner import run_ocr
+from ocr.paddle_engine import run_paddle
 from postprocessing.cleaner import build_table_rows, clean_text
-from preprocessing.preprocess import preprocess
+from postprocessing.multipage import merge_multipage_tables
+from postprocessing.spatial_table import reconstruct_table, split_page_ocr
 from table.table_extractor import extract_table
 from utils.helpers import (
     crop_region,
@@ -126,10 +128,22 @@ def load_uploaded_file(uploaded_file) -> list[np.ndarray]:
     return images
 
 
-def process_page(image: np.ndarray, page_num: int, mode: str, show_debug: bool) -> dict:
-    processed = preprocess(image)
-    layout = detect_layout(image)
+def _avg_conf(results: list[dict]) -> float:
+    return sum(r["confidence"] for r in results) / len(results) if results else 0.0
 
+
+def _is_fallback_layout(layout, image: np.ndarray) -> bool:
+    """True when LayoutParser is unavailable and returned a single full-page block."""
+    blocks = list(layout)
+    if len(blocks) != 1 or blocks[0].type != "Text":
+        return False
+    h, w = image.shape[:2]
+    x1, y1, x2, y2 = blocks[0].block.coordinates
+    return x2 >= w * 0.9 and y2 >= h * 0.9
+
+
+def process_page(image: np.ndarray, page_num: int, mode: str, show_debug: bool) -> dict:
+    layout = detect_layout(image)
     debug_img = draw_layout_debug(image, layout) if show_debug else None
 
     page_result = {
@@ -140,32 +154,87 @@ def process_page(image: np.ndarray, page_num: int, mode: str, show_debug: bool) 
         "_original_img": image,
     }
 
-    for block in layout:
-        region = crop_region(processed, block.block)
-
-        if block.type == "Table":
-            raw_rows = extract_table(crop_region(image, block.block))
-            rows = build_table_rows(raw_rows)
-            page_result["tables"].append({
-                "bbox": list(block.block.coordinates),
-                "rows": rows,
-            })
-        else:
-            ocr_results = run_ocr(region, mode=mode)
-            text = " ".join(clean_text(r["text"]) for r in ocr_results)
-            avg_conf = (
-                sum(r["confidence"] for r in ocr_results) / len(ocr_results)
-                if ocr_results else 0.0
-            )
-            if text:
-                page_result["text_blocks"].append({
-                    "type": block.type,
-                    "bbox": list(block.block.coordinates),
-                    "text": text,
-                    "confidence": round(avg_conf, 3),
-                })
+    if _is_fallback_layout(layout, image):
+        # LayoutParser not available — run full-page OCR + grid-based table detection
+        _process_fullpage(image, mode, page_result)
+    else:
+        for block in layout:
+            _process_block(image, block, mode, page_result)
 
     return page_result
+
+
+def _process_block(image: np.ndarray, block, mode: str, page_result: dict) -> None:
+    region = crop_region(image, block.block)   # always pass original color to OCR
+    if block.type == "Table":
+        raw_rows = extract_table(region)
+        rows = build_table_rows(raw_rows)
+        page_result["tables"].append({
+            "bbox": list(block.block.coordinates),
+            "rows": rows,
+        })
+    else:
+        ocr_results = run_ocr(region, mode=mode)
+        text = " ".join(clean_text(r["text"]) for r in ocr_results)
+        if text:
+            page_result["text_blocks"].append({
+                "type": block.type,
+                "bbox": list(block.block.coordinates),
+                "text": text,
+                "confidence": round(_avg_conf(ocr_results), 3),
+            })
+
+
+def _process_fullpage(image: np.ndarray, mode: str, page_result: dict) -> None:
+    """
+    Full-page OCR path (no LayoutParser).
+
+    Uses PaddleOCR bounding boxes to spatially reconstruct table structure
+    instead of relying on OpenCV grid-line detection (which fails on
+    borderless / low-contrast tables).
+    """
+    h, w = image.shape[:2]
+
+    # Get per-line OCR results with bounding boxes
+    ocr_results = run_paddle(image)
+    if not ocr_results and mode == "tesseract":
+        from ocr.tesseract_engine import run_tesseract
+        ocr_results = run_tesseract(image)
+
+    if not ocr_results:
+        return
+
+    # Split: header items (above table) vs table items (from column-header row down)
+    header_items, table_items = split_page_ocr(ocr_results)
+
+    # ── header / non-table text ──
+    if header_items:
+        header_text = " ".join(clean_text(r["text"]) for r in header_items)
+        avg = _avg_conf(header_items)
+        if header_text.strip():
+            page_result["text_blocks"].append({
+                "type": "Text",
+                "bbox": [0, 0, w, h],
+                "text": header_text,
+                "confidence": round(avg, 3),
+            })
+
+    # ── table ──
+    if table_items:
+        raw_rows = reconstruct_table(table_items)
+        if raw_rows:
+            rows = build_table_rows(raw_rows)
+            page_result["tables"].append({"bbox": [0, 0, w, h], "rows": rows})
+    elif not header_items:
+        # Entire page is just text (no table found at all)
+        all_text = " ".join(clean_text(r["text"]) for r in ocr_results)
+        if all_text.strip():
+            page_result["text_blocks"].append({
+                "type": "Text",
+                "bbox": [0, 0, w, h],
+                "text": all_text,
+                "confidence": round(_avg_conf(ocr_results), 3),
+            })
 
 
 def result_to_json_export(pages: list[dict]) -> dict:
@@ -276,6 +345,10 @@ if uploaded_file:
             page_result = process_page(image, i + 1, ocr_mode, show_debug)
             pages.append(page_result)
 
+        # Merge tables that span multiple pages
+        if n_pages > 1:
+            pages = merge_multipage_tables(pages)
+
         progress_bar.progress(1.0, text="Done!")
         status_area.success(f"✅ Finished — {n_pages} page(s) processed.")
 
@@ -326,7 +399,7 @@ if "pages" in st.session_state:
             with left:
                 st.markdown("**Document Preview**")
                 display_img = page["_debug_img"] if show_debug and page["_debug_img"] is not None else page["_original_img"]
-                st.image(bgr_to_pil(display_img), use_container_width=True)
+                st.image(bgr_to_pil(display_img), width="stretch")
 
                 if show_debug:
                     st.caption("🟢 Text  🔴 Title  🔵 Table  🟠 Figure  🟣 List")
@@ -373,7 +446,7 @@ if "pages" in st.session_state:
                         )
                         if rows:
                             df = pd.DataFrame(rows)
-                            st.dataframe(df, use_container_width=True)
+                            st.dataframe(df, width="stretch")
                         else:
                             st.warning("Table detected but no cells extracted.")
                         st.caption(f"bbox: {[round(v) for v in tbl['bbox']]}")
