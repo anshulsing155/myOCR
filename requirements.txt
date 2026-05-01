@@ -1,0 +1,16 @@
+# UI
+streamlit>=1.35.0
+pandas>=2.0.0
+
+# Core
+paddlepaddle>=2.5.0
+paddleocr>=2.7.0
+pytesseract>=0.3.10
+PyMuPDF>=1.23.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Layout detection (optional — comment out if Detectron2 is too heavy)
+layoutparser[layoutmodels]>=0.3.4
+# detectron2 must be installed separately — see INSTALL.md
