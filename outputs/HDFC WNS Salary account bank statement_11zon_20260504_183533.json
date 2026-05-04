@@ -1,0 +1,2372 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 2,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 3,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 4,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 5,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 6,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 7,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 8,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 9,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 10,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 11,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 12,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 13,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 14,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 15,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 16,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 17,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 18,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 19,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 20,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 21,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 22,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 23,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 24,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 25,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 26,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 27,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 28,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 29,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 30,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 31,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 32,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 33,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 34,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 35,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 36,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 37,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 38,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 39,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 40,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 41,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 42,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 43,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 44,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 45,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 46,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 47,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 48,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 49,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 50,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 51,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 52,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 53,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 54,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 55,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 56,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 57,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 58,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 59,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 60,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 61,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 62,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 63,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 64,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 65,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 66,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 67,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 68,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 69,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 70,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 71,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 72,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 73,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 74,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 75,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 76,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 77,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 78,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 79,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 80,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 81,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 82,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 83,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 84,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "bank_statement",
+    "doc_confidence": 1.0,
+    "bank_name": "HDFC BANK LIMITED",
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extraction_engine": "gemini",
+    "extracted": {
+      "bank_name": "HDFC BANK LIMITED",
+      "account_number": "00005280269986",
+      "account_holder": "MR. ARJUN TYAGI",
+      "ifsc_code": "HDFC0009671",
+      "branch": "BETA PLAZA, GREATER NOIDA",
+      "statement_from": "01/10/2025",
+      "statement_to": "02/04/2026",
+      "customer_id": "13916401",
+      "pan": "BWHPT4999K",
+      "transactions": [
+        {
+          "date": "01/10/2025",
+          "narration": "UPI-ARJUN TYAGI-950462522@PTIDFC-UTIB00 04527-52745701403-NA",
+          "chq_ref": "0000527457014033",
+          "debit": "0.00",
+          "credit": "45000.00",
+          "balance": "145080.51"
+        },
+        {
+          "date": "02/10/2025",
+          "narration": "UPI-MAMTA-990081515@PTISBI-SBIN001475-5 2759945083-NA",
+          "chq_ref": "000052759945087",
+          "debit": "0.00",
+          "credit": "320.00",
+          "balance": "145400.51"
+        },
+        {
+          "date": "02/10/2025",
+          "narration": "UPI-JAIN ASLI SHIKANJI-PAYTMGR102FUSV66 @PAYTM-YESB0PMUPI-527574827159-NA",
+          "chq_ref": "0000527574827159",
+          "debit": "0.00",
+          "credit": "210.00",
+          "balance": "145610.51"
+        },
+        {
+          "date": "02/10/2025",
+          "narration": "UPI-JAIN ASLI SHIKANJI-PAYTMGR102FUSV66 @PAYTM-YESB0PMUPI-527574917022-NA",
+          "chq_ref": "0000527574917022",
+          "debit": "0.00",
+          "credit": "120.00",
+          "balance": "145730.51"
+        },
+        {
+          "date": "02/10/2025",
+          "narration": "UPI-SWIGGY-UPIISWIGGY@ICICI-ICICIDC0009-5 27576085320-SENT USING PAYTM U",
+          "chq_ref": "0000527576085320",
+          "debit": "0.00",
+          "credit": "207.00",
+          "balance": "144863.51"
+        },
+        {
+          "date": "03/10/2025",
+          "narration": "UPI-MRS AARTI DEVI-Q269537646@YBL-YESB0 YBLUPI-527688593990-SENT USING PAYTM U",
+          "chq_ref": "0000527688593990",
+          "debit": "0.00",
+          "credit": "20.00",
+          "balance": "144843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-000018586480",
+          "chq_ref": "000018586480",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "142843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-00009DRD83RT",
+          "chq_ref": "000003185845170",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "140843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-00006UFOON2S",
+          "chq_ref": "00000318545740",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "138843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-00006VOXBYI",
+          "chq_ref": "00000318552990",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "136843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-0000MHWNSKL",
+          "chq_ref": "00000318587924",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "134843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- INDIAN CLEARING CORP-0000DGEVZISZ",
+          "chq_ref": "000003185908654",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "132843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "ACH D- GROWW INVEST TECH PR-DRDXWD3SJD05",
+          "chq_ref": "00000318605919",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "130843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "UPI-BINDU TYAGI-9958822713@PTIDFC-HDFC00 52779166860-NA",
+          "chq_ref": "000052779166860",
+          "debit": "0.00",
+          "credit": "100000.00",
+          "balance": "230843.51"
+        },
+        {
+          "date": "04/10/2025",
+          "narration": "NEFT CR-PUNB0100100-NIRDOSH KUMAR TYAGI-",
+          "chq_ref": "PUNB01001008458",
+          "debit": "0.00",
+          "credit": "40000.00",
+          "balance": "270843.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "ARJUN TYAGI-PUNB0N2925109438776052",
+          "chq_ref": "776052",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "270843.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "ACH D- HDFC BANK LTD-83776053",
+          "chq_ref": "000008377594278",
+          "debit": "9230.00",
+          "credit": "0.00",
+          "balance": "261613.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "EMI 152807884 CHQ 5152807884116 10251528 07884",
+          "chq_ref": "00000000000000",
+          "debit": "16951.00",
+          "credit": "0.00",
+          "balance": "244662.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-AMRESH KUMAR TYAGI-981057929@PTIDFC-HDFC0009671-527805294171-NA",
+          "chq_ref": "0000527805294171",
+          "debit": "0.00",
+          "credit": "8500.00",
+          "balance": "253162.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-KISHAN PAL SO DEVI-C-9728406634@AXL-PUNB0408800-64789711171-PAYMENT FROM PH ONE",
+          "chq_ref": "000064787111171",
+          "debit": "0.00",
+          "credit": "80.00",
+          "balance": "253242.51"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATOFD.PAYU@HDFCHAN K-HDFC0MERUPI-52780610846-UPIINTENT",
+          "chq_ref": "000052780610846",
+          "debit": "264.65",
+          "credit": "0.00",
+          "balance": "252977.86"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-527812248781-SENT USING PAYTM U",
+          "chq_ref": "0000527812248781",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "252957.86"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-MRS AARTI DEVI-Q269537646@YBL-YESB0 YBLUPI-527812732667-SENT USING PAYTM U",
+          "chq_ref": "0000527812732667",
+          "debit": "0.00",
+          "credit": "170.00",
+          "balance": "252787.86"
+        },
+        {
+          "date": "05/10/2025",
+          "narration": "UPI-NYKAA ERETAIL PRIVAT-NYKAA.PAYU@HDFC BANK-HDFC0MERUPI-527813164121-UPIINTENT",
+          "chq_ref": "0000527813164121",
+          "debit": "280.00",
+          "credit": "0.00",
+          "balance": "252507.86"
+        },
+        {
+          "date": "06/10/2025",
+          "narration": "NEFT CR-SBIN00007HU-ITOTAX REFUND 2025-2 6 BWHPT4999K,ARJUN TYAGI,SBIN00252010064 4848653",
+          "chq_ref": "SBIN00252010644",
+          "debit": "0.00",
+          "credit": "12760.00",
+          "balance": "265267.86"
+        },
+        {
+          "date": "06/10/2025",
+          "narration": "UPI-PUNA SECTOR FI-PAYTM.S1G@PN@PTY-Y ESB0MCHUPI-527919242089-SENT USING PAYTM U",
+          "chq_ref": "0000527919242089",
+          "debit": "220.00",
+          "credit": "0.00",
+          "balance": "265047.86"
+        },
+        {
+          "date": "06/10/2025",
+          "narration": "UPI-PANKAJ DEVID SO VIRE-PAYTMQR6M20Y6P@P TYS-YESB0PMUPI-527919456956-SENT USING PAYTM U",
+          "chq_ref": "0000527919456956",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "264847.86"
+        },
+        {
+          "date": "06/10/2025",
+          "narration": "UPI-PINKI RAJPUT-BHARATPE-90071010179@FB",
+          "chq_ref": "0000527919464376",
+          "debit": "0.00",
+          "credit": "40.00",
+          "balance": "264807.86"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-MR AMIT KUMAR-Q963126857@YBL-YESB0Y BLUPI-528026668389-SENT USING PAYTM U",
+          "chq_ref": "0000528026668389",
+          "debit": "0.00",
+          "credit": "148.00",
+          "balance": "264659.86"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-MRS AARTI DEVI-Q269537646@YBL-YESB0 YBLUPI-528026658258-SENT USING PAYTM U",
+          "chq_ref": "0000528026658258",
+          "debit": "0.00",
+          "credit": "10.00",
+          "balance": "264669.86"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTOONLINE@YBL-YESB0YBLUPI-52 8028212950-SENT USING PAYTM U",
+          "chq_ref": "0000528028212950",
+          "debit": "639.89",
+          "credit": "0.00",
+          "balance": "264009.97"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-VIKASH KUMAR CHAUDHA-PAYTM.S14L47F@P TY-YESB0MCHUPI-528032539100-SENT USING P AYTM U",
+          "chq_ref": "0000528032539100",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "263959.97"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "CHQ PAID-INWARD TRAN-HOUSING DEV FINANCE",
+          "chq_ref": "000000000000012",
+          "debit": "100196.00",
+          "credit": "0.00",
+          "balance": "163763.97"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "CHQ PAID-INWARD TRAN-HOUSING DEV FINANCE",
+          "chq_ref": "000000000000011",
+          "debit": "140000.00",
+          "credit": "0.00",
+          "balance": "23763.97"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-K444 KFC G NOIDA IT-PAYTM.D12385640 406@PTY-YESB0MCHUPI-528035857255-SENT US ING PAYTM U",
+          "chq_ref": "0000528035857255",
+          "debit": "93.45",
+          "credit": "0.00",
+          "balance": "23670.52"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-UPCHAAYOS-CHAAYOS956618.R@JRXAIRTEL-A BP0000011-528036086489-CHAAYOSCHAAYOS",
+          "chq_ref": "0000528036086489",
+          "debit": "364.00",
+          "credit": "0.00",
+          "balance": "23306.52"
+        },
+        {
+          "date": "07/10/2025",
+          "narration": "UPI-PARUL SINGH-Q949969011@YBL-YESB0YBLU PI-52803606186-SENT USING PAYTM U",
+          "chq_ref": "000052803606186",
+          "debit": "0.00",
+          "credit": "147.00",
+          "balance": "23159.52"
+        },
+        {
+          "date": "08/10/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATO-ORDER@PTYBL-YE SB0PMUPI-528146375151-ZOMATO PAYMENT",
+          "chq_ref": "0000528146375151",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "23109.52"
+        },
+        {
+          "date": "08/10/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC0MERUP I-528147523413-SENT USING PAYTM U",
+          "chq_ref": "0000528147523413",
+          "debit": "1543.80",
+          "credit": "0.00",
+          "balance": "21565.72"
+        },
+        {
+          "date": "08/10/2025",
+          "narration": "UPI-YERMA P-PRAKHARVERMA211093-1@OKAXIS-",
+          "chq_ref": "0000564793064603",
+          "debit": "0.00",
+          "credit": "750.00",
+          "balance": "22315.72"
+        },
+        {
+          "date": "08/10/2025",
+          "narration": "HSBC0100005-564793064602-UPI",
+          "chq_ref": "HSBC0100005",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "22315.72"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-HALDIRAM MARKETING N-PAYTM-69736641@ PTYS-YESB0PMUPI-528148237281-TRUE",
+          "chq_ref": "0000528148237281",
+          "debit": "116.20",
+          "credit": "0.00",
+          "balance": "22199.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-HALDIRAM MARKETING N-PAYTM-69736641@ PTYS-YESB0PMUPI-52818525996-TRUE",
+          "chq_ref": "000052818525996",
+          "debit": "95.00",
+          "credit": "0.00",
+          "balance": "22104.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-SATYAM ARTS-PAYTMQR6K4UPA@PTYS-YESB0 PMUPI-528253267772-SENT USING PAYTM U",
+          "chq_ref": "0000528253267772",
+          "debit": "500.00",
+          "credit": "0.00",
+          "balance": "21604.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-SATYAM SAXENA-SATYAMARTS@YBL-BARB0DB KHAN-528257344356-SENT USING PAYTM U",
+          "chq_ref": "0000528257344356",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "21404.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-LITE STATIONERY AND-PAYTMQR6HXOEP@P TYS-YESB0PMUPI-528258666451-SENT USING PAYTM U",
+          "chq_ref": "0000528258666451",
+          "debit": "10.00",
+          "credit": "0.00",
+          "balance": "21394.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-KHALID-Q967354982@YBL-YESB0YBLUPI-52 8262300326-SENT USING PAYTM U",
+          "chq_ref": "0000528262300326",
+          "debit": "0.00",
+          "credit": "60.00",
+          "balance": "21334.52"
+        },
+        {
+          "date": "09/10/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-528262316098-SENT USING PAYTM U",
+          "chq_ref": "0000528262316098",
+          "debit": "220.00",
+          "credit": "0.00",
+          "balance": "21114.52"
+        },
+        {
+          "date": "10/10/2025",
+          "narration": "UPI-FRUGGY LTD-FRUGGYUPI@AXR-UTIB0000100 -528367478990-PAY FOR INTENT",
+          "chq_ref": "0000528367478990",
+          "debit": "576.00",
+          "credit": "0.00",
+          "balance": "20538.52"
+        },
+        {
+          "date": "10/10/2025",
+          "narration": "UPI-DHARMENDRA SINGH-PAYTMQR6MH4X@PTYS- YESB0PMUPI-528371675608-SENT USING PAYT M U",
+          "chq_ref": "0000528371675608",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "20338.52"
+        },
+        {
+          "date": "10/10/2025",
+          "narration": "UPI-BHARATIYA ENTERPRISES-Q709010990@YBL- YESB0YBLUPI-528371831726-SENT USING PAYT M U",
+          "chq_ref": "0000528371831726",
+          "debit": "0.00",
+          "credit": "50.00",
+          "balance": "20288.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-PARVINA-8287726202@PTAXIS-SBIN0066468 -0.528479578320-NA",
+          "chq_ref": "0000528479578320",
+          "debit": "0.00",
+          "credit": "100.00",
+          "balance": "20188.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-AJAY-PAYTM.S1L5Z5W@PTY-YESB0MCHUPI-5 28480781350-SENT USING PAYTM U",
+          "chq_ref": "0000528480781350",
+          "debit": "0.00",
+          "credit": "10.00",
+          "balance": "20088.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-POOJA-9718512653@PTIDFC-SBIN0066468-5 28480778853-NA",
+          "chq_ref": "0000528480778853",
+          "debit": "0.00",
+          "credit": "10.00",
+          "balance": "20078.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-RAVI SO ROHTASH-9871801524@PTIDFC-HDF C0003663-528481634077-NA",
+          "chq_ref": "0000528481634077",
+          "debit": "0.00",
+          "credit": "250.00",
+          "balance": "19788.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-PRADEEP-PAYTMQR6HZZ1G@PTYS-YESB0PMUPI -528481925111-SENT USING PAYTM U",
+          "chq_ref": "0000528481925111",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "19738.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-INDA-PAYTMQR6HZZ1G@PTYS-YESB0PMUPI-5 28481926873-SENT USING PAYTM U",
+          "chq_ref": "0000528481926873",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "19538.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-SWIGGY-UPIISWIGGY@ICICI-ICICIDC0009-5 28483638035-SENT USING PAYTM U",
+          "chq_ref": "0000528483638035",
+          "debit": "274.00",
+          "credit": "0.00",
+          "balance": "19264.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-SPOTIFY INDIA LLP-SPOTIFYINDIALLP.BD N@ICICI-ICICIDC0009-528473462371-MANDAT EREQUEST",
+          "chq_ref": "0000528473462371",
+          "debit": "119.00",
+          "credit": "0.00",
+          "balance": "19145.52"
+        },
+        {
+          "date": "11/10/2025",
+          "narration": "UPI-VERMA P-PRAKHARVERMA211093-1@OKAXIS- HSBC0100005-5690599528757-SENT USING PAYT M U",
+          "chq_ref": "00005690599528757",
+          "debit": "0.00",
+          "credit": "1500.00",
+          "balance": "17645.52"
+        },
+        {
+          "date": "12/10/2025",
+          "narration": "UPI-NECTOR ESB0MCHUPI-528595619996-SENT USING PAYTM U",
+          "chq_ref": "0000528595619996",
+          "debit": "206.00",
+          "credit": "0.00",
+          "balance": "17439.52"
+        },
+        {
+          "date": "12/10/2025",
+          "narration": "UPI-KADAK SINGH DA DHARA-PAYTM.S1HUF6P@P TY-YESB0MCHUPI-528597126751-SENT USING P AYTM U",
+          "chq_ref": "0000528597126751",
+          "debit": "653.00",
+          "credit": "0.00",
+          "balance": "16786.52"
+        },
+        {
+          "date": "12/10/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y",
+          "chq_ref": "0000528597167856",
+          "debit": "95.00",
+          "credit": "0.00",
+          "balance": "16691.52"
+        },
+        {
+          "date": "12/10/2025",
+          "narration": "ESB0PMUPI-528597167856-SENT USING PAYTM U",
+          "chq_ref": "",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "16691.52"
+        },
+        {
+          "date": "12/10/2025",
+          "narration": "UPI-MIGSUN ULTIMO ALLOTT-MIGSUNULT.I@IDF CBANK-IDFB00021256-528599223674-SENT USIN G PAYTM U",
+          "chq_ref": "0000528599223674",
+          "debit": "251.00",
+          "credit": "0.00",
+          "balance": "16440.52"
+        },
+        {
+          "date": "13/10/2025",
+          "narration": "UPI-MUDGAL PHARMACY-PAYTMQR2D419AQF@PA YTM-YESB0PMUPI-528602853253-NA",
+          "chq_ref": "0000528602853253",
+          "debit": "45.00",
+          "credit": "0.00",
+          "balance": "16395.52"
+        },
+        {
+          "date": "13/10/2025",
+          "narration": "UPI-SANTOSH KUMAR-PAYTMQR6Q80DHA@PTYS-YES B0PMUPI-528611273111-SENT USING PAYTM U",
+          "chq_ref": "0000528611273111",
+          "debit": "70.00",
+          "credit": "0.00",
+          "balance": "16325.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-DELHI METRO-PAYTM-8736701@PTYBL-YESB 0PMUPI-528714265783-SENT USING PAYTM U",
+          "chq_ref": "0000528714265783",
+          "debit": "32.00",
+          "credit": "0.00",
+          "balance": "16293.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-DELHI METRO-PAYTM-8736701@PTYBL-YESB 0PMUPI-528720125470-SENT USING PAYTM U",
+          "chq_ref": "0000528720125470",
+          "debit": "43.00",
+          "credit": "0.00",
+          "balance": "16250.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-DELHI METRO-PAYTM-8736701@PTYBL-YESB 0PMUPI-52872013873-SENT USING PAYTM U",
+          "chq_ref": "000052872013873",
+          "debit": "500.00",
+          "credit": "0.00",
+          "balance": "15750.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-SURENDRA AHIRWAR-PAYTMQR281005050101 YD7XNJD170@PAYTM-YESB0PMUPI-528722603 609-NA",
+          "chq_ref": "0000528722603609",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "15700.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-RUPUGI SO SHRIPAL-630887273@JBL-HBA R0B0PUGI-528723448924-SENT USING PAYTM U",
+          "chq_ref": "0000528723448924",
+          "debit": "70.00",
+          "credit": "0.00",
+          "balance": "15630.52"
+        },
+        {
+          "date": "14/10/2025",
+          "narration": "UPI-YERMA P-PRAKHARVERMA211093-1@OKAXIS- HSBC0100005-528724323263-SENT USING PAYT M U",
+          "chq_ref": "0000528724323263",
+          "debit": "0.00",
+          "credit": "850.00",
+          "balance": "14780.52"
+        },
+        {
+          "date": "15/10/2025",
+          "narration": "UPI-ZEPTO MARKETPLACE PR-ZEPTOMARKETPLAC E-52852564",
+          "chq_ref": "000052852564",
+          "debit": "114.00",
+          "credit": "0.00",
+          "balance": "14666.52"
+        },
+        {
+          "date": "15/10/2025",
+          "narration": "UPI-ZEPTO MARKETPLACE PR-ZEPTOMARKETPLAC E-52852564.R@HDFCBANK-HDFC0MERUPI-528832539586-SENT USING PAYTM U",
+          "chq_ref": "0000528832539586",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "14616.52"
+        },
+        {
+          "date": "16/10/2025",
+          "narration": "UPI-HASANTI-PAYTM.S10PLJ8@PTY-YESB0MCHUP I-528941955449-SENT USING PAYTM U",
+          "chq_ref": "0000528941955449",
+          "debit": "110.00",
+          "credit": "0.00",
+          "balance": "14506.52"
+        },
+        {
+          "date": "16/10/2025",
+          "narration": "UPI-SURENDRA KUMAR-Q374809423@YBL-YESB0 YBLUPI-528942156392-SENT USING PAYTM U",
+          "chq_ref": "0000528942156392",
+          "debit": "100.00",
+          "credit": "0.00",
+          "balance": "14406.52"
+        },
+        {
+          "date": "16/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTOONLINE@YBL-YESB0YBLUPI-52 8945161685-SENT USING PAYTM U",
+          "chq_ref": "0000528945161685",
+          "debit": "229.00",
+          "credit": "0.00",
+          "balance": "14177.52"
+        },
+        {
+          "date": "16/10/2025",
+          "narration": "UPI-MUKESH-PAYTM.S1Q775G@PTY-YESB0MCHUPI -528946813429-SENT USING PAYTM U",
+          "chq_ref": "0000528946813429",
+          "debit": "40.00",
+          "credit": "0.00",
+          "balance": "14137.52"
+        },
+        {
+          "date": "16/10/2025",
+          "narration": "UPI-SANGEETA JOSHI-PAYTM.S1PFL1G@PTY-YES B0MCHUPI-528946816752-SENT USING PAYTM U",
+          "chq_ref": "0000528946816752",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "14087.52"
+        },
+        {
+          "date": "17/10/2025",
+          "narration": "ACH C- SIVN LTD-1078924",
+          "chq_ref": "000062903196171",
+          "debit": "0.00",
+          "credit": "15.50",
+          "balance": "14103.02"
+        },
+        {
+          "date": "17/10/2025",
+          "narration": "UPI-SURESH-PAYTMQR6M3ZPDD@PTYS-YESB0PMUP I-529056384989-SENT USING PAYTM U",
+          "chq_ref": "0000529056384989",
+          "debit": "80.00",
+          "credit": "0.00",
+          "balance": "14023.02"
+        },
+        {
+          "date": "17/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTO NOW.ESBZ@HDFCBANK-HDFC 0MERUPI-529057129971-SENT USING PAYTM U",
+          "chq_ref": "0000529057129971",
+          "debit": "249.00",
+          "credit": "0.00",
+          "balance": "13774.02"
+        },
+        {
+          "date": "18/10/2025",
+          "narration": "UPI-SANGEETA JOSHI-PAYTM.S1PFL1G@PTY-YES B0MCHUPI-529170983463-SENT USING PAYTM U",
+          "chq_ref": "0000529170983463",
+          "debit": "120.00",
+          "credit": "0.00",
+          "balance": "13654.02"
+        },
+        {
+          "date": "18/10/2025",
+          "narration": "UPI-SANGEETA JOSHI-PAYTM.S1PFL1G@PTY-YES B0MCHUPI-529171006440-SENT USING PAYTM U",
+          "chq_ref": "0000529171006440",
+          "debit": "60.00",
+          "credit": "0.00",
+          "balance": "13594.02"
+        },
+        {
+          "date": "18/10/2025",
+          "narration": "UPI-MUKESH-PAYTM.S1Q775G@PTY-YESB0MCHUPI -529171016588-SENT USING PAYTM U",
+          "chq_ref": "0000529171016588",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "13574.02"
+        },
+        {
+          "date": "18/10/2025",
+          "narration": "UPI-AMIT-BHARATPE94007K289166204@YESBAN",
+          "chq_ref": "0000529171974580",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "13524.02"
+        },
+        {
+          "date": "18/10/2025",
+          "narration": "KLTD-YESB0YBLUPI-529171077745-SENT USING PAYTM U",
+          "chq_ref": "0000529171077745",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "13524.02"
+        },
+        {
+          "date": "19/10/2025",
+          "narration": "UPI-MUKESH-PAYTM.S1Q775G@PTY-YESB0MCHUPI -529171085946-SENT USING PAYTM U",
+          "chq_ref": "0000529171085946",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "13504.02"
+        },
+        {
+          "date": "19/10/2025",
+          "narration": "LIMITED-ZOMATOONLINE.R@JRXAIRTEL-AIRP0000011-529279417544-ZOMA TOONLINEORDER",
+          "chq_ref": "0000529279417544",
+          "debit": "553.00",
+          "credit": "0.00",
+          "balance": "12951.02"
+        },
+        {
+          "date": "19/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTOONLINE@YBL-YESB0YBLUPI-52 9506276158-SENT USING PAYTM U",
+          "chq_ref": "0000529506276158",
+          "debit": "172.00",
+          "credit": "0.00",
+          "balance": "12779.02"
+        },
+        {
+          "date": "19/10/2025",
+          "narration": "UPI-BLINKIT-BLINKIT.BZP@HDFCBANK-HDFC0ME RUPI-529533453450-PAYVIARAZORPAY",
+          "chq_ref": "0000529533453450",
+          "debit": "257.00",
+          "credit": "0.00",
+          "balance": "12522.02"
+        },
+        {
+          "date": "20/10/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-529539165985-SENT USING PAYTM U",
+          "chq_ref": "0000529539165985",
+          "debit": "120.00",
+          "credit": "0.00",
+          "balance": "12401.02"
+        },
+        {
+          "date": "20/10/2025",
+          "narration": "UPI-SWIGGY-SWIGGY@ICICI-ICICIDC0009-529540230308@PTYES-SBIN00 4324-529539520594-NA",
+          "chq_ref": "0000529539520594",
+          "debit": "300.00",
+          "credit": "0.00",
+          "balance": "12101.02"
+        },
+        {
+          "date": "20/10/2025",
+          "narration": "UPI-SEEMA-SEEMA-8533069928-2@AXL-SBIN00 15105-529539300369-SENT USING PAYTM U",
+          "chq_ref": "0000529539300369",
+          "debit": "100.00",
+          "credit": "0.00",
+          "balance": "12001.02"
+        },
+        {
+          "date": "20/10/2025",
+          "narration": "UPI-ZEPTO MARKETPLACE PR-ZEPTOMARKETPLAC E-529539634653",
+          "chq_ref": "0000529539634653",
+          "debit": "158.00",
+          "credit": "0.00",
+          "balance": "11843.02"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-HDFC BANK LTD-93596347",
+          "chq_ref": "00000935963472",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "11843.02"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-HDFC BANK LTD-93596347.R@HDFCBANK-HDFC0MERUPI-112964567286-BLINKIT PAYMENT",
+          "chq_ref": "0000112964567286",
+          "debit": "1103.05",
+          "credit": "0.00",
+          "balance": "10739.97"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-HINDU TYAGI-9958822713@PTIDFC-HDFC00 09671-529401477553-NA",
+          "chq_ref": "0000529401477553",
+          "debit": "0.00",
+          "credit": "2000.00",
+          "balance": "12739.97"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTONOW.ESBZ@HDFCBANK-HDFC 0MERUPI-529401509251-SENT USING PAYTM U",
+          "chq_ref": "0000529401509251",
+          "debit": "398.00",
+          "credit": "0.00",
+          "balance": "12341.97"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-SWIGGY LTD-SWIGGYUPI@AXB-UTIB0000100 -52940367580-PAY FOR INTENT",
+          "chq_ref": "000052940367580",
+          "debit": "1343.00",
+          "credit": "0.00",
+          "balance": "10998.97"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-APOLLO PHARMACY-PAYTM.D195817844 @PTY-YESB0MCHUPI-529408517336-SENT USI NG PAYTM U",
+          "chq_ref": "0000529408517336",
+          "debit": "849.10",
+          "credit": "0.00",
+          "balance": "10150.87"
+        },
+        {
+          "date": "21/10/2025",
+          "narration": "UPI-SWIGGY LTD-SWIGGYUPI@AXB-UTIB0000100 -529408904438-PAY FOR INTENT",
+          "chq_ref": "0000529408904438",
+          "debit": "226.00",
+          "credit": "0.00",
+          "balance": "9924.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-K S SUPER STORE-GPAY-11231399471@OK AXIS-UTIB0000553-52950111885-SENT USI NG PAYTM U",
+          "chq_ref": "000052950111885",
+          "debit": "30.00",
+          "credit": "0.00",
+          "balance": "9894.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ARORA STORE-GPAY-11254134162@OKHIZAX IS-UTIB0000553-5295015093948-SENT USING P AYTM U",
+          "chq_ref": "00005295015093948",
+          "debit": "135.00",
+          "credit": "0.00",
+          "balance": "9759.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-VIKANI KUMAR-9389164354@PTIDFC-KKBK 0000677-529516170466-NA",
+          "chq_ref": "0000529516170466",
+          "debit": "80.00",
+          "credit": "0.00",
+          "balance": "9679.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ANUBHAV JAIN SO P-Q688794324@YBL- YESB0YBLUPI-529516548080-SENT USING PAYT M U",
+          "chq_ref": "0000529516548080",
+          "debit": "220.00",
+          "credit": "0.00",
+          "balance": "9459.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ANUBHAV JAIN SO P-Q872433727@YBL- YESB0YBLUPI-529516566047-SENT USING PAYT M U",
+          "chq_ref": "0000529516566047",
+          "debit": "150.00",
+          "credit": "0.00",
+          "balance": "9309.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ANUBHAV JAIN SO P-Q872433727@YBL- YESB0YBLUPI-529516588563-SENT USING PAYT M U",
+          "chq_ref": "0000529516588563",
+          "debit": "30.00",
+          "credit": "0.00",
+          "balance": "9279.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ANUBHAV JAIN SO P-Q872433727@YBL- YESB0YBLUPI-529516626738-SENT USING PAYT M U",
+          "chq_ref": "0000529516626738",
+          "debit": "100.00",
+          "credit": "0.00",
+          "balance": "9179.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-ANUBHAV JAIN SO P-Q872433727@YBL- YESB0YBLUPI-529516815044-SENT USING PAYT M U",
+          "chq_ref": "0000529516815044",
+          "debit": "60.00",
+          "credit": "0.00",
+          "balance": "9119.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "YESB0YBLUPI-529516815044-SENT USING PAYT M U",
+          "chq_ref": "",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "9119.87"
+        },
+        {
+          "date": "22/10/2025",
+          "narration": "UPI-JAIN BAKERS-PAYTMQR6HRSLS@PTYS-YESB0 PMUPI-529516924985-SENT USING PAYTM U",
+          "chq_ref": "0000529516924985",
+          "debit": "140.00",
+          "credit": "0.00",
+          "balance": "8979.87"
+        },
+        {
+          "date": "23/10/2025",
+          "narration": "UPI-FRESHLEE RETAIL PRIV-PAYTM.D05004518 @PTA-UTIB0000022-529628437773-SENT USING PAYTM U",
+          "chq_ref": "0000529628437773",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "8779.87"
+        },
+        {
+          "date": "24/10/2025",
+          "narration": "UPI-MY PIYIGITAL CAFE PRI-PAYTM-3230053@ PTYBL-YESB0PMUPI-529735131479-SENT USIN G PAYTM U",
+          "chq_ref": "0000529735131479",
+          "debit": "40.00",
+          "credit": "0.00",
+          "balance": "8739.87"
+        },
+        {
+          "date": "24/10/2025",
+          "narration": "UPI-ADITI SHREE-9910267962@PTIDFC-HDFC00 02005-529737673584-NA",
+          "chq_ref": "0000529737673584",
+          "debit": "0.00",
+          "credit": "1130.00",
+          "balance": "9869.87"
+        },
+        {
+          "date": "25/10/2025",
+          "narration": "UPI-KARIMS MUGHAL DARBAR-PAYTM.D1628724 786@PTY-YESB0MCHUPI-529849577321-SENT US ING PAYTM U",
+          "chq_ref": "0000529849577321",
+          "debit": "635.00",
+          "credit": "0.00",
+          "balance": "9234.87"
+        },
+        {
+          "date": "25/10/2025",
+          "narration": "UPI-KARIMS MUGHAL DARBAR-PAYTM.D87724786 @PTA-UTIB0000022-529849815549-SENT USING PAYTM U",
+          "chq_ref": "0000529849815549",
+          "debit": "147.00",
+          "credit": "0.00",
+          "balance": "9087.87"
+        },
+        {
+          "date": "25/10/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-529851033372-SENT USING PAYTM U",
+          "chq_ref": "0000529851033372",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "9067.87"
+        },
+        {
+          "date": "27/10/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC0MERUP I-5300621044-SENT USING PAYTM U",
+          "chq_ref": "00005300621044",
+          "debit": "208.76",
+          "credit": "0.00",
+          "balance": "8859.11"
+        },
+        {
+          "date": "27/10/2025",
+          "narration": "UPI-LENSKART-LENSKARTONLINE@AXL-UTIB00X A0B0PMUPI-530068116408-PAYMENT FOR 826543",
+          "chq_ref": "0000530068116408",
+          "debit": "10.00",
+          "credit": "0.00",
+          "balance": "8849.11"
+        },
+        {
+          "date": "27/10/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATOFD.PAYU@HDFCHAN K-HDFC0MERUPI-530068699232-UPIINTENT",
+          "chq_ref": "0000530068699232",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "8649.11"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-HIRA SWEETS AND",
+          "chq_ref": "0000530291798675",
+          "debit": "253.00",
+          "credit": "0.00",
+          "balance": "6455.29"
+        },
+        {
+          "date": "28/10/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATOFD.PAYU@HDFCHAN K-HDFC0MERUPI-530177656001-UPIINTENT",
+          "chq_ref": "0000530177656001",
+          "debit": "566.15",
+          "credit": "0.00",
+          "balance": "7716.78"
+        },
+        {
+          "date": "28/10/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC0MERUP I-530178595276-SENT USING PAYTM U",
+          "chq_ref": "0000530178595276",
+          "debit": "875.74",
+          "credit": "0.00",
+          "balance": "6841.04"
+        },
+        {
+          "date": "28/10/2025",
+          "narration": "UPI-SIDDHI MAHESHCHAND G-981933025@YESB RED-KKHK0000962-566702859027-PRAKHARS BI RTHDAY",
+          "chq_ref": "0000566702859027",
+          "debit": "0.00",
+          "credit": "1500.00",
+          "balance": "8341.04"
+        },
+        {
+          "date": "28/10/2025",
+          "narration": "UPI-RUSH CHAND-OMBK.AAFW610242522@HDFC BANK-HDFC0MERUPI-530181142495-GENERATING DYNAMIC",
+          "chq_ref": "0000530181142495",
+          "debit": "340.00",
+          "credit": "0.00",
+          "balance": "8001.04"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-SHAILENDR YADAV-SHAILENDR.YADAV@PTYE S-AIRP0000011-530285307920-NA",
+          "chq_ref": "0000530285307920",
+          "debit": "370.00",
+          "credit": "0.00",
+          "balance": "7631.04"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-PARAS CINEMA-CHAAYOSVEGACITYMALL.631 09820@HDFCBANK-HDFC0MERUPI-530285652854- SENT USING PAYTM U",
+          "chq_ref": "0000530285652854",
+          "debit": "209.00",
+          "credit": "0.00",
+          "balance": "7422.04"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-MY PIYIGITAL CAFE PRI-PAYTM-3230053@ PTYBL-YESB0PMUPI-530286078852-SENT USIN G PAYTM U",
+          "chq_ref": "0000530286078852",
+          "debit": "10.00",
+          "credit": "0.00",
+          "balance": "7362.04"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-MY PIYIGITAL CAFE PRI-PAYTM-3230053@ PTYBL-YESB0PMUPI-530288023099-SENT USIN G PAYTM U",
+          "chq_ref": "0000530288023099",
+          "debit": "72.00",
+          "credit": "0.00",
+          "balance": "7290.04"
+        },
+        {
+          "date": "29/10/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC0MERUP I-53029245045-SENT USING PAYTM U",
+          "chq_ref": "000053029245045",
+          "debit": "581.75",
+          "credit": "0.00",
+          "balance": "6708.29"
+        },
+        {
+          "date": "30/10/2025",
+          "narration": "CONF-OMBK.AACM725040 QETQSGE@OMBK-PPMW0881822-530319950662-SE NT USING PAYTM U",
+          "chq_ref": "0000530319950662",
+          "debit": "100.00",
+          "credit": "0.00",
+          "balance": "6355.29"
+        },
+        {
+          "date": "30/10/2025",
+          "narration": "UPI-GRAND VENUE MALL-PAYTMQR1EDN6T7GW@ PAYTM-YESB0PMUPI-530300458621-NA",
+          "chq_ref": "0000530300458621",
+          "debit": "30.00",
+          "credit": "0.00",
+          "balance": "6325.29"
+        },
+        {
+          "date": "30/10/2025",
+          "narration": "UPI-TATA SKY DTH RECHARG-PAYDTH5848@PTYB L-YESB0PMUPI-53031958645-SENT USING PA YTM U",
+          "chq_ref": "000053031958645",
+          "debit": "500.00",
+          "credit": "0.00",
+          "balance": "5825.29"
+        },
+        {
+          "date": "30/10/2025",
+          "narration": "UPI-NECTOR NOSH-PAYTM.D058425696@PTY-Y ESB0MCHUPI-5303113899-SENT USING PAYTM U",
+          "chq_ref": "00005303113899",
+          "debit": "1132.00",
+          "credit": "0.00",
+          "balance": "4693.29"
+        },
+        {
+          "date": "30/10/2025",
+          "narration": "UPI-SANJAY AGARWAL-OMBK.AAED370396PYWR9Y J11G@OMBK-PPMW0881822-5303985363-SENT US ING PAYTM U",
+          "chq_ref": "00005303985363",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "4673.29"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-KAYAM SINGH-BHARATPE-90071010179@FB BPE-FDRL0001382-530407721662-PAY TO B HARATPE ME",
+          "chq_ref": "0000530407721662",
+          "debit": "370.00",
+          "credit": "0.00",
+          "balance": "4303.29"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-PAYTM-PAYTM.S10PFL1G@PTY-YESB0PMUPI- 530409089995-SENT USING PAYTM U",
+          "chq_ref": "0000530409089995",
+          "debit": "46.00",
+          "credit": "0.00",
+          "balance": "4257.29"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATO-ORDER@PTYBL-YE SB0PMUPI-530409607737-ZOMATO PAYMENT",
+          "chq_ref": "0000530409607737",
+          "debit": "300.00",
+          "credit": "0.00",
+          "balance": "3957.29"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-SACHIN SINGH-PAYTMQR6M780S@PTYS-YESB 0PMUPI-530411982830-SENT USING PAYTM U",
+          "chq_ref": "0000530411982830",
+          "debit": "354.00",
+          "credit": "0.00",
+          "balance": "3603.29"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-SONAM-PAYTM93066462@YBL- YESB0YBLUPI-53041365209-SENT USING PAYTM U",
+          "chq_ref": "000053041365209",
+          "debit": "137.00",
+          "credit": "0.00",
+          "balance": "3217.84"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-PRINCE PAN CORNER-PAYTMQR6M26X@PTYS- YESB0PMUPI-530414915876-SENT USING PAYTM U",
+          "chq_ref": "0000530414915876",
+          "debit": "120.00",
+          "credit": "0.00",
+          "balance": "3097.84"
+        },
+        {
+          "date": "31/10/2025",
+          "narration": "UPI-ZEPTO-ZEPTOONLINE@YBL-HDFCOMERUP I-530416747222-SENT USING PAYTM U",
+          "chq_ref": "0000530416747222",
+          "debit": "177.00",
+          "credit": "0.00",
+          "balance": "2920.84"
+        },
+        {
+          "date": "01/11/2025",
+          "narration": "UPI-ARJUN TYAGI-950462522@PTIDFC-UTIB00 04527-530516526651-NA",
+          "chq_ref": "0000530516526651",
+          "debit": "0.00",
+          "credit": "30000.00",
+          "balance": "32920.84"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-MITTAL GROCERY SUPER-GPAY-1125259469 7@OKHIZAXIS-UTIB0000553-530632747101-SEN T USING PAYTM U",
+          "chq_ref": "0000530632747101",
+          "debit": "30.00",
+          "credit": "0.00",
+          "balance": "32890.84"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATO-ORDER@PTYBL-YE SB0PMUPI-530634611407-ZOMATO PAYMENT",
+          "chq_ref": "0000530634611407",
+          "debit": "148.61",
+          "credit": "0.00",
+          "balance": "32742.23"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-SHIV KUMAR-PAYTMQR6M0K@PTYS-Y ESB0PMUPI-530636333095-VERIFIED PAYTM M ER",
+          "chq_ref": "0000530636333095",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "32692.23"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-PINKI RAJPUT-BHARATPE-90071010179@FB BPE-FDRL0001382-530636349852-PAY TO BHAR ATPE ME",
+          "chq_ref": "0000530636349852",
+          "debit": "450.00",
+          "credit": "0.00",
+          "balance": "32242.23"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-PAYTM-PAYTM.S10PFL1G@PTY-YESB0PMCHUP I-530637099442-SENT USING PAYTM U",
+          "chq_ref": "0000530637099442",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "32192.23"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-BURGER KING-BURGERKING.2@IDFC-ICICIDC00091-530641047050-SENT USING PAYT M U",
+          "chq_ref": "0000530641047050",
+          "debit": "466.16",
+          "credit": "0.00",
+          "balance": "31726.07"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-YERMA P-PRAKHARVERMA211093-1@OKAXIS- HSBC0100005-530654115710-UPI",
+          "chq_ref": "0000530654115710",
+          "debit": "0.00",
+          "credit": "1000.00",
+          "balance": "32726.07"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-BIPAK BISHWAKARMA-Q275417079@YBL-YESB0YBLUPI-530641767162-SENT USING PAYTM U",
+          "chq_ref": "0000530641767162",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "32676.07"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-BIPAK BISHWAKARMA-Q275417079@YBL-YESB0YBLUPI-530641744938-SENT USING PAYTM U",
+          "chq_ref": "0000530641744938",
+          "debit": "25.00",
+          "credit": "0.00",
+          "balance": "32651.07"
+        },
+        {
+          "date": "02/11/2025",
+          "narration": "UPI-SUNITA-Q37926285@YBL-YESB0YBLUPI-53 0641768634-SENT USING PAYTM U",
+          "chq_ref": "0000530641768634",
+          "debit": "127.00",
+          "credit": "0.00",
+          "balance": "32524.07"
+        },
+        {
+          "date": "03/11/2025",
+          "narration": "UPI-M S M MADAN SWEETS-BIKKP0EPI55438 @ICICI-ICICIDC00004-530749155442-SENT USI NG PAYTM U",
+          "chq_ref": "0000530749155442",
+          "debit": "120.00",
+          "credit": "0.00",
+          "balance": "32404.07"
+        },
+        {
+          "date": "03/11/2025",
+          "narration": "UPI-SANTOSH KUMAR-PAYTMQR6Q80DHA@PTYS-YES B0PMUPI-530754640946-SENT USING PAYTM U",
+          "chq_ref": "0000530754640946",
+          "debit": "10.00",
+          "credit": "0.00",
+          "balance": "32394.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-AMRESH KUMAR TYAGI-981057929@PTIDFC -HDFC0009671-530838907448-NA",
+          "chq_ref": "0000530838907448",
+          "debit": "0.00",
+          "credit": "8500.00",
+          "balance": "40894.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-RAVINDAR-9752197395@YBL-KKBK0000181- 530839430320-SENT USING PAYTM U",
+          "chq_ref": "0000530839430320",
+          "debit": "105.00",
+          "credit": "0.00",
+          "balance": "40789.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-DIPESH KUMAR-PAYTMQR6Q1VC@PTYS-YESB0 PMUPI-53086914835-SENT USING PAYTM U",
+          "chq_ref": "000053086914835",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "40769.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-RAM RATHI-Q909709813@PTYS-YESB0PMUPI- 5308691069721-SENT USING PAYTM U",
+          "chq_ref": "00005308691069721",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "40569.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-RAM RATHI-Q909709813@PTYS-YESB0PMUPI- 530869125426-SENT USING PAYTM U",
+          "chq_ref": "0000530869125426",
+          "debit": "65.00",
+          "credit": "0.00",
+          "balance": "40494.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-KANAHHEELAL-7409492479@AXL-BKID000772 8-530869182913-SENT USING PAYTM U",
+          "chq_ref": "0000530869182913",
+          "debit": "75.00",
+          "credit": "0.00",
+          "balance": "40419.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-SANTOSH KUMAR-PAYTMQR6Q80ENFU@PTYS-YES B0PMUPI-530866736759-SENT USING PAYTM U",
+          "chq_ref": "0000530866736759",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "40399.07"
+        },
+        {
+          "date": "04/11/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-530866911995-SENT USING PAYTM U",
+          "chq_ref": "0000530866911995",
+          "debit": "40.00",
+          "credit": "0.00",
+          "balance": "40359.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-MIGSUN ULTIMO ALLOTT-MIGSUNULT.I@IDF CBANK-IDFB00021256-53087251636-AMRESH TY AGI SUN2",
+          "chq_ref": "000053087251636",
+          "debit": "251.00",
+          "credit": "0.00",
+          "balance": "40108.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-VERMA P-PRAKHARVERMA211093-1@OKAXIS- HSBC0100005-530949300605-UPI",
+          "chq_ref": "0000530949300605",
+          "debit": "0.00",
+          "credit": "4000.00",
+          "balance": "44108.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "EMI 152807884 CHQ 5152807884117 11251528 07884",
+          "chq_ref": "00000000000000",
+          "debit": "16951.00",
+          "credit": "0.00",
+          "balance": "27157.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-MUDGAL PHARMACY-PAYTMQR6F2YGY@PTYS-Y ESB0PMUPI-530970414119-SENT USING PAYTM U",
+          "chq_ref": "0000530970414119",
+          "debit": "140.00",
+          "credit": "0.00",
+          "balance": "27017.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "ACH D- HDFC BANK LTD-439809706",
+          "chq_ref": "000008844703309",
+          "debit": "9230.00",
+          "credit": "0.00",
+          "balance": "17787.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-DELHI METRO-PAYTM-8736701@PTYBL-YESB 0PMUPI-530970896612-SENT USING PAYTM U",
+          "chq_ref": "0000530970896612",
+          "debit": "43.00",
+          "credit": "0.00",
+          "balance": "17744.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-SHIVA SHARMA-95101081963@PTAXIS-CSRB 0000033-530970945155-SENT USING PAYTM U",
+          "chq_ref": "0000530970945155",
+          "debit": "386.00",
+          "credit": "0.00",
+          "balance": "17358.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-LALABAI KUMAR-PAYTMQR6S6X@PTYS-Y ESB0PMUPI-530972388885-NA",
+          "chq_ref": "0000530972388885",
+          "debit": "660.00",
+          "credit": "0.00",
+          "balance": "16698.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-BHAVESH MANDAL-9206293637@YBL-YESB0Y BLUPI-530972414132-SENT USING PAYTM U",
+          "chq_ref": "0000530972414132",
+          "debit": "300.00",
+          "credit": "0.00",
+          "balance": "16398.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-SAAXSH SINGH-Q749428724@YBL- YESB0YBLUPI-530972581028-SENT USING PAYTM U",
+          "chq_ref": "0000530972581028",
+          "debit": "2600.00",
+          "credit": "0.00",
+          "balance": "13588.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-SANJAY YADAV-PAYTMQR6J7I4L@PTYS-YESB 0PMUPI-530972690387-SENT USING PAYTM U",
+          "chq_ref": "0000530972690387",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "13838.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-RAHUL-PAYTMQR6J7SGL@PTYS-YESB0PMUPI -530972923692-SENT USING PAYTM U",
+          "chq_ref": "0000530972923692",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "13788.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-AMIT GULATI-PAYTMQR5ZHPM@PTYS-YESB0 PMUPI-530973151687-SENT USING PAYTM U",
+          "chq_ref": "0000530973151687",
+          "debit": "1250.00",
+          "credit": "0.00",
+          "balance": "12538.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-PREM CHAND-OMBK.AAFW610242522@HDFC BANK-HDFC0MERUPI-530974087759-SENT USING P AYTM U",
+          "chq_ref": "0000530974087759",
+          "debit": "150.00",
+          "credit": "0.00",
+          "balance": "12388.07"
+        },
+        {
+          "date": "05/11/2025",
+          "narration": "UPI-PAYTM TRAVEL-TRAVELPAYTM@HDFCBANK-H DFC0MERUPI-530974110848-SENT USING PAYTM U",
+          "chq_ref": "0000530974110848",
+          "debit": "32.00",
+          "credit": "0.00",
+          "balance": "12356.07"
+        },
+        {
+          "date": "06/11/2025",
+          "narration": "UPI-FLIPKART PAYMENTS-FLIPKART.PAYU@HDFC BANK-HDFC0MERUPI-53108241606-UPIINTENT",
+          "chq_ref": "000053108241606",
+          "debit": "246.00",
+          "credit": "0.00",
+          "balance": "11030.62"
+        },
+        {
+          "date": "06/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-PINELABS.103844 68@HDFCBANK-HDFC0MERUPI-531090622650-PAY",
+          "chq_ref": "0000531090622650",
+          "debit": "1801.00",
+          "credit": "0.00",
+          "balance": "9229.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-FRESHLEE RETAIL OMAX-PAYTM-62165087@ PTYS-YESB0PMUPI-531196940135-SENT USING PAYTM U",
+          "chq_ref": "0000531196940135",
+          "debit": "1469.00",
+          "credit": "0.00",
+          "balance": "7760.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-AKSHAY KUMAR-PAYTMQR6J0ZUF@PTYS-YESB 0PMUPI-531197121085-SENT USING PAYTM U",
+          "chq_ref": "0000531197121085",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "7740.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-BLUE DART EXPRESS L1-BLUEDARTEXPRESS 758072.R@JRXAIRTEL-AIRP0000011-53119734 2357-PAYMENTTOBLUEDARTE",
+          "chq_ref": "0000531197342357",
+          "debit": "1548.00",
+          "credit": "0.00",
+          "balance": "6192.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-ZEPTONOW.ZEPTONOW.ESBZ@HDFCBANK-HDFC 0MERUPI-531090539200-SENT USING PAYTM U",
+          "chq_ref": "0000531090539200",
+          "debit": "222.00",
+          "credit": "0.00",
+          "balance": "5940.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-SWIGGY LTD-SWIGGYUPI@AXB-UTIB0000100 -531101895442-PAY FOR INTENT",
+          "chq_ref": "0000531101895442",
+          "debit": "587.00",
+          "credit": "0.00",
+          "balance": "5371.62"
+        },
+        {
+          "date": "07/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-PINELABS.103844 68@HDFCBANK-HDFC0MERUPI-53102074140-PAY",
+          "chq_ref": "000053102074140",
+          "debit": "1422.00",
+          "credit": "0.00",
+          "balance": "3951.62"
+        },
+        {
+          "date": "08/11/2025",
+          "narration": "UPI-MANU-9490482377@YBL-JDIH0000639-531211657501-SENT USING PAYTM U",
+          "chq_ref": "0000531211657501",
+          "debit": "150.00",
+          "credit": "0.00",
+          "balance": "3801.62"
+        },
+        {
+          "date": "08/11/2025",
+          "narration": "UPI-RADIUS SYNERGIES INT.R_760624@HDFCBANK-HDFC0MERUPI-531213151841-SENT USING PAYTM U",
+          "chq_ref": "0000531213151841",
+          "debit": "517.70",
+          "credit": "0.00",
+          "balance": "3283.92"
+        },
+        {
+          "date": "08/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-PINELABS.103844 68@HDFCBANK-HDFC0MERUPI-1019926553672-PAY",
+          "chq_ref": "00001019926553672",
+          "debit": "0.00",
+          "credit": "1399.00",
+          "balance": "4682.92"
+        },
+        {
+          "date": "09/11/2025",
+          "narration": "68@HDFCBANK-HDFC000001-1019926553672-REF UND",
+          "chq_ref": "",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "4682.92"
+        },
+        {
+          "date": "09/11/2025",
+          "narration": "UPI-ZEPTO MARKETPLACE PR-ZEPTOMARKETPLAC E-LACEPRIV@KOTAK-KKBK0000958-531321817731- SENT USING PAYTM U",
+          "chq_ref": "0000531321817731",
+          "debit": "182.00",
+          "credit": "0.00",
+          "balance": "4500.92"
+        },
+        {
+          "date": "09/11/2025",
+          "narration": "UPI-AIRTEL-PAYTMAIRP0000011-53132703051- SENT USING PAYTM U",
+          "chq_ref": "000053132703051",
+          "debit": "799.00",
+          "credit": "0.00",
+          "balance": "3701.92"
+        },
+        {
+          "date": "10/11/2025",
+          "narration": "UPI-SWIGGY-UPIISWIGGY@ICICI-ICICIDC0009-5 31431010126-SENT USING PAYTM U",
+          "chq_ref": "0000531431010126",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "3501.92"
+        },
+        {
+          "date": "10/11/2025",
+          "narration": "UPI-ZEPTO-ZEPTOONLINE@YBL-YESB0YBLUPI-53 1433942671-SENT USING PAYTM U",
+          "chq_ref": "0000531433942671",
+          "debit": "236.00",
+          "credit": "0.00",
+          "balance": "3259.92"
+        },
+        {
+          "date": "10/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-MYNTRAONLINE.G PAY@OKAXIS-UTIB0000553-531436188389-P AYMENT FOR MYNTRA",
+          "chq_ref": "0000531436188389",
+          "debit": "925.00",
+          "credit": "0.00",
+          "balance": "2334.92"
+        },
+        {
+          "date": "10/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-MYNTRAONLINE.G PAY@OKAXIS-UTIB0000553-531436345106-P AYMENT FOR MYNTRA",
+          "chq_ref": "0000531436345106",
+          "debit": "68.00",
+          "credit": "0.00",
+          "balance": "2266.92"
+        },
+        {
+          "date": "10/11/2025",
+          "narration": "UPI-BIPAK BISHWAKARMA-Q275417079@YBL-YESB0YBLUPI-531439064246-SENT USING PAYTM U",
+          "chq_ref": "0000531439064246",
+          "debit": "25.00",
+          "credit": "0.00",
+          "balance": "2241.92"
+        },
+        {
+          "date": "11/11/2025",
+          "narration": "UPI-PRADEEP-PAYTMQR6HZZ1G@PTYS-YESB0PMU PI-53143956931-SENT USING PAYTM U",
+          "chq_ref": "000053143956931",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "2221.92"
+        },
+        {
+          "date": "11/11/2025",
+          "narration": "UPI-PRADEEP-PAYTMQR6HZZ1G@PTYS-YESB0PMU PI-53143915029-SENT USING PAYTM U",
+          "chq_ref": "000053143915029",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "2201.92"
+        },
+        {
+          "date": "11/11/2025",
+          "narration": "ACH C- CENTRAL BK.2INT.360-103844",
+          "chq_ref": "0000101994397556",
+          "debit": "7.76",
+          "credit": "0.00",
+          "balance": "2194.16"
+        },
+        {
+          "date": "11/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-PINELABS.103844 68@HDFCBANK-HDFC000001-101994397556-REF",
+          "chq_ref": "0000101994397556",
+          "debit": "0.00",
+          "credit": "7.60",
+          "balance": "2201.76"
+        },
+        {
+          "date": "11/11/2025",
+          "narration": "UPI-SPOTIFY INDIA LLP-SPOTIFYINDIALLP.BD N@ICICI-ICICIDC0009-531553777894-MANDAT EREQUEST",
+          "chq_ref": "0000531553777894",
+          "debit": "119.00",
+          "credit": "0.00",
+          "balance": "3868.68"
+        },
+        {
+          "date": "12/11/2025",
+          "narration": "S1@ICICI-ICICIDC00099-531566090756-MANDAT EREQUEST",
+          "chq_ref": "",
+          "debit": "0.00",
+          "credit": "0.00",
+          "balance": "3868.68"
+        },
+        {
+          "date": "12/11/2025",
+          "narration": "UPI-SURESH-PAYTMQR6S3JDQ@PTYS-YESB0PMUPI -1-531660907567-SENT USING PAYTM U",
+          "chq_ref": "0000531660907567",
+          "debit": "130.00",
+          "credit": "0.00",
+          "balance": "3738.68"
+        },
+        {
+          "date": "12/11/2025",
+          "narration": "UPI-SWIGGY-UPIISWIGGY@ICICI-ICICIDC0009-5 31661868461-SENT USING PAYTM U",
+          "chq_ref": "0000531661868461",
+          "debit": "235.00",
+          "credit": "0.00",
+          "balance": "3503.68"
+        },
+        {
+          "date": "12/11/2025",
+          "narration": "UPI-SANTOSH KUMAR-PAYTMQR6S6XFU@PTYS-YESB 0PMUPI-531665343137-SENT USING PAYTM U",
+          "chq_ref": "0000531665343137",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "3483.68"
+        },
+        {
+          "date": "13/11/2025",
+          "narration": "UPI-MUNA GENERAL STORE -PAYTM.S1TE@P TY-YESB0MCHUPI-531771718600-SENT USING P AYTM U",
+          "chq_ref": "0000531771718600",
+          "debit": "80.00",
+          "credit": "0.00",
+          "balance": "3403.68"
+        },
+        {
+          "date": "13/11/2025",
+          "narration": "UPI-ZEPTONOW.ZEPTONOW.ESBZ@HDFCBANK-HDFC 0MERUPI-531772166945-SENT USING PAYTM U",
+          "chq_ref": "0000531772166945",
+          "debit": "242.00",
+          "credit": "0.00",
+          "balance": "3161.68"
+        },
+        {
+          "date": "13/11/2025",
+          "narration": "UPI-SANTOSH KUMAR-PAYTMQR6S6X@PTYS-YES B0PMUPI-531772539826-SENT USING PAYTM U",
+          "chq_ref": "0000531772539826",
+          "debit": "100.00",
+          "credit": "0.00",
+          "balance": "3061.68"
+        },
+        {
+          "date": "13/11/2025",
+          "narration": "UPI-AIRTEL-PAYAIRTEL267@PTYBL-YESB0PMUPI- 531777299472-SENT USING PAYTM U",
+          "chq_ref": "0000531777299472",
+          "debit": "49.00",
+          "credit": "0.00",
+          "balance": "3012.68"
+        },
+        {
+          "date": "14/11/2025",
+          "narration": "UPI-AIRTEL-PAYAIRTEL267@PTYBL-YESB0PMUPI- 531878605145-SENT USING PAYTM U",
+          "chq_ref": "0000531878605145",
+          "debit": "49.00",
+          "credit": "0.00",
+          "balance": "2963.68"
+        },
+        {
+          "date": "14/11/2025",
+          "narration": "UPI-INDRWATI DEVI-Q922332355@PTYBL-YESB0Y BLUPI-531882131818-SENT USING PAYTM U",
+          "chq_ref": "0000531882131818",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "2943.68"
+        },
+        {
+          "date": "14/11/2025",
+          "narration": "UPI-SWEET AND MEAT-PAYTMQR9M0K@PTYS-Y ESB0PMUPI-531888101174-NA",
+          "chq_ref": "0000531888101174",
+          "debit": "340.00",
+          "credit": "0.00",
+          "balance": "2603.68"
+        },
+        {
+          "date": "14/11/2025",
+          "narration": "UPI-SPECIAL SOUPY MOMO-SHIPMOPAD.0222119 0408108-YBM3812760@PTY-YESB0MCHUPI-53189532095-SENT USING PAYTM U",
+          "chq_ref": "000053189532095",
+          "debit": "30.00",
+          "credit": "0.00",
+          "balance": "2573.68"
+        },
+        {
+          "date": "16/11/2025",
+          "narration": "UPI-ZOMATO LIMITED-ZOMATO-ORDER@PTYBL-YE SB0PMUPI-53209947464-ZOMATO PAYMENT",
+          "chq_ref": "000053209947464",
+          "debit": "50.00",
+          "credit": "0.00",
+          "balance": "2523.68"
+        },
+        {
+          "date": "16/11/2025",
+          "narration": "UPI-UPCHAAYOS-CHAAYOS956618.R@JRXAIRTEL-A IRP0000011-532091077179-CHAAYOSCHAAYOS",
+          "chq_ref": "0000532091077179",
+          "debit": "343.00",
+          "credit": "0.00",
+          "balance": "2180.68"
+        },
+        {
+          "date": "16/11/2025",
+          "narration": "UPI-MYNTRA DESIGNS PRIVA-MYNTRAONLINE.G PAY@OKAXIS-UTIB0000553-532011966769-P AYMENT FOR MYNTRA",
+          "chq_ref": "0000532011966769",
+          "debit": "1410.16",
+          "credit": "0.00",
+          "balance": "770.52"
+        },
+        {
+          "date": "17/11/2025",
+          "narration": "UPI-UPRET-20251116-5321690177",
+          "chq_ref": "00005321690177",
+          "debit": "0.00",
+          "credit": "343.00",
+          "balance": "1113.52"
+        },
+        {
+          "date": "17/11/2025",
+          "narration": "UPI-BISHWAKARMA-Q275417079@YBL-YES B0YBLUPI-532123169017-SENT USING PAYTM U",
+          "chq_ref": "0000532123169017",
+          "debit": "25.00",
+          "credit": "0.00",
+          "balance": "1088.52"
+        },
+        {
+          "date": "17/11/2025",
+          "narration": "UPI-PRADEEP-PAYTMQR6HZZ1G@PTYS-YESB0PMU PI-532178662-SENT USING PAYTM U",
+          "chq_ref": "0000532178662",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "1068.52"
+        },
+        {
+          "date": "17/11/2025",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQR6M968X@PTYS-Y ESB0PMUPI-532123241728-SENT USING PAYTM U",
+          "chq_ref": "0000532123241728",
+          "debit": "10.00",
+          "credit": "0.00",
+          "balance": "1058.52"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "UPI-MRS MANU-532212394493-GROWW INVEST TECH PR-I CIC-XXXXXXXXXXXXX2-GROWW",
+          "chq_ref": "0000532212394493",
+          "debit": "0.00",
+          "credit": "14695.95",
+          "balance": "15754.47"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "UPI-EXPRESSBEES-PAYPHEXPRESSBEESUPI@YESBA NK-YESB0PMUPI-532228663667-SENT USING P AYTM U",
+          "chq_ref": "0000532228663667",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "15734.47"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "NEFT CR-CITI0000902-M HENNES MAURITZ RETAIL PVT LTD-ARJUN TYAGI-CITN92001118 373122",
+          "chq_ref": "CITN9200111856",
+          "debit": "0.00",
+          "credit": "1500.00",
+          "balance": "17234.47"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC0MERUP I-53221650137-SENT USING PAYTM U",
+          "chq_ref": "000053221650137",
+          "debit": "1613.38",
+          "credit": "0.00",
+          "balance": "13684.09"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "UPI-ZOMATO-PAYZOMATO@HDFCBANK-HDFC00000 1-101997584436-ORDER REFUND",
+          "chq_ref": "0000101997584436",
+          "debit": "0.00",
+          "credit": "1613.38",
+          "balance": "15297.47"
+        },
+        {
+          "date": "18/11/2025",
+          "narration": "UPI-MITTAL GROCERY SUPER-GPAY-1125259469 7@OKHIZAXIS-UTIB0000553-532231884182-SEN",
+          "chq_ref": "0000532231884182",
+          "debit": "118.00",
+          "credit": "0.00",
+          "balance": "15179.47"
+        }
+      ],
+      "transaction_count": 229,
+      "gemini_model": "gemini-2.5-flash",
+      "pages_processed": 20,
+      "response_time_sec": 154.04
+    }
+  }
+}

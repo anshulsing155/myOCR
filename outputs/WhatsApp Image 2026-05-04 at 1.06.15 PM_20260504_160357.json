@@ -1,0 +1,81 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "ocr",
+      "text_blocks": [
+        {
+          "type": "Text",
+          "bbox": [
+            0,
+            0,
+            1200,
+            1600
+          ],
+          "text": "Cond Tour Applicants  J Pre | Pre > Ny [ Rusted dats",
+          "confidence": 0.441
+        }
+      ],
+      "tables": [],
+      "language": {
+        "detected_languages": [
+          "en"
+        ],
+        "primary_language": "en",
+        "multilingual": false,
+        "translation_applied": false
+      },
+      "doc_type": "other",
+      "doc_confidence": 0.0,
+      "extracted": {
+        "text_items": [
+          "Cond",
+          "Tour",
+          "Applicants",
+          "—",
+          "J",
+          "Pre",
+          "|",
+          "Pre",
+          ">",
+          "Ny",
+          "[",
+          "Rusted",
+          "dats"
+        ]
+      }
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "other",
+    "doc_confidence": 0.0,
+    "bank_name": null,
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extracted": {
+      "doc_type": "other",
+      "text_items": [
+        "Cond",
+        "Tour",
+        "Applicants",
+        "—",
+        "J",
+        "Pre",
+        "|",
+        "Pre",
+        ">",
+        "Ny",
+        "[",
+        "Rusted",
+        "dats"
+      ]
+    }
+  }
+}

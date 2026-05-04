@@ -1,0 +1,344 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "digital",
+      "text_blocks": [
+        {
+          "type": "Text",
+          "bbox": [
+            28.32,
+            30.007311283712966,
+            566.5344620270881,
+            39.603033475713005
+          ],
+          "text": "Acknowledgement Number:204897970300724 Date of filing : 30-Jul-2024*",
+          "confidence": 1.0
+        },
+        {
+          "type": "Text",
+          "bbox": [
+            28.7997861096,
+            759.2586771126511,
+            566.1055812237166,
+            767.1271693100911
+          ],
+          "text": "*If the return is verified after 30 days of transmission of return data electronically, then date of verification will be considered as date of",
+          "confidence": 1.0
+        },
+        {
+          "type": "Text",
+          "bbox": [
+            97.79302867007999,
+            768.6624848608111,
+            497.2261679177392,
+            776.5309770582511
+          ],
+          "text": "filing the return (Notification No.05 of 2022 dated 29-07-2022 issued by the DGIT (Systems), CBDT).”",
+          "confidence": 1.0
+        }
+      ],
+      "tables": [
+        {
+          "bbox": [
+            0,
+            0,
+            595,
+            842
+          ],
+          "rows": [
+            {
+              "col_0": "INDIAN INCOME TAX RETURN ACKNOWLEDGEMENT\n[Where the data of the Return of Income in Form ITR-1(SAHAJ), ITR-2, ITR-3, ITR-4(SUGAM), ITR-5, ITR-6, ITR-7\nfiled and verified]\n(Please see Rule 12 of the Income-tax Rules, 1962)",
+              "col_1": "",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": "Assessment\nYear\n2024-25"
+            },
+            {
+              "col_0": "PAN",
+              "col_1": "",
+              "col_2": "BDQPS5372H",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "Name",
+              "col_1": "",
+              "col_2": "ABHISHEK KUMAR SINGH",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "Address",
+              "col_1": "",
+              "col_2": "PLOT NO-125, CHOTPUR COLONY, Noida H.O, Gautam Buddha Nagar , GAUTAM BUDDHA NAGAR , 31-Uttar\nPradesh, 91- INDIA, 201301",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "Status",
+              "col_1": "",
+              "col_2": "Individual",
+              "col_3": "Form Number",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "ITR-4",
+              "col_7": ""
+            },
+            {
+              "col_0": "Filed u/s",
+              "col_1": "",
+              "col_2": "139(1)-On or before due date",
+              "col_3": "e-Filing Acknowledgement Number",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "204897970300724",
+              "col_7": ""
+            },
+            {
+              "col_0": "sliateD\nxaT\ndna\nemocnI\nelbaxaT",
+              "col_1": "Current Year business loss, if any",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "1",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Total Income",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "2",
+              "col_5": "6,96,740",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Book Profit under MAT, where applicable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "3",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Adjusted Total Income under AMT, where applicable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "4",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Net tax payable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "5",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Interest and Fee Payable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "6",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Total tax, interest and Fee payable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "7",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Taxes Paid",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "8",
+              "col_5": "16,496",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "(+) Tax Payable /(-) Refundable (7-8)",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "9",
+              "col_5": "(-) 16,500",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "liateD\nxaT\ndna\nemocnI\ndeterccA",
+              "col_1": "Accreted Income as per section 115TD",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "10",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Additional Tax payable u/s 115TD",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "11",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Interest payable u/s 115TE",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "12",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Additional Tax and interest payable",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "13",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "Tax and interest paid",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "14",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "",
+              "col_1": "(+) Tax Payable /(-) Refundable (13-14)",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "15",
+              "col_5": "0",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "Income Tax Return electronically transmitted on 30-Jul-2024 00:33:47 from IP address 152.58.92.40 and\nverified by ABHISHEK KUMAR SINGH having PAN BDQPS5372H on 05-Aug-2024\nusing paper ITR-Verification Form /Electronic Verification Code TGY99JUJ3I generated through Aadhaar\nOTP mode",
+              "col_1": "",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "System Generated\nBarcode/QR Code\nBDQPS5372H042048979703007246a2bc874d0ec0afc798bc10eb7ef171ff610b533",
+              "col_1": "",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            },
+            {
+              "col_0": "DO NOT SEND THIS ACKNOWLEDGEMENT TO CPC, BENGALURU",
+              "col_1": "",
+              "col_2": "",
+              "col_3": "",
+              "col_4": "",
+              "col_5": "",
+              "col_6": "",
+              "col_7": ""
+            }
+          ]
+        }
+      ],
+      "language": {
+        "detected_languages": [
+          "en"
+        ],
+        "primary_language": "en",
+        "multilingual": false,
+        "translation_applied": false
+      },
+      "doc_type": "itr",
+      "doc_confidence": 0.574,
+      "extracted": {
+        "assessment_year": "2024-25",
+        "pan_number": "BDQPS5372H",
+        "acknowledgement_number": "204897970300724",
+        "filing_date": "30-Jul-2024",
+        "form_number": "ITR-4",
+        "name": "ABHISHEK KUMAR SINGH",
+        "total_income": "696740",
+        "net_tax_payable": "0",
+        "taxes_paid": "16496",
+        "refund_amount": "16500"
+      }
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "itr",
+    "doc_confidence": 0.574,
+    "bank_name": null,
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extracted": {
+      "doc_type": "itr",
+      "assessment_year": "2024-25",
+      "pan_number": "BDQPS5372H",
+      "acknowledgement_number": "204897970300724",
+      "filing_date": "30-Jul-2024",
+      "form_number": "ITR-4",
+      "name": "ABHISHEK KUMAR SINGH",
+      "total_income": "696740",
+      "net_tax_payable": "0",
+      "taxes_paid": "16496",
+      "refund_amount": "16500"
+    }
+  }
+}

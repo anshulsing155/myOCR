@@ -1,0 +1,69 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "ocr",
+      "text_blocks": [
+        {
+          "type": "Text",
+          "bbox": [
+            0,
+            0,
+            768,
+            495
+          ],
+          "text": "THE UNION OF INDIA MAHARASHTRA STATE MOTOR DRIVING LICENCE DL No MH12 20010149313 DO/ 14-05-2001 arula Valid Till 13-05-2021 (NT) DLD 29-06-2016 FORM 7 RULE 16 (2) AUTHORISATION TO DRIVE FOLLOWNG CLASS OF VEHICLES THROUGHOUT INDIA COV DOI MCWG 14-05-2001 LMV 14-05-2001 DOB 05-05-1979 BG Name NIVRUTTI BODAKE S/DW of KRUSHNA Add AP: MAZGAON, TAL: BHOR. DIST PUNE. PIN Signature & ID of Signature/Thumb sSuing AuthorityMH12 2016502 Impression of Holder",
+          "confidence": 0.959
+        }
+      ],
+      "tables": [],
+      "language": {
+        "detected_languages": [
+          "en"
+        ],
+        "primary_language": "en",
+        "multilingual": false,
+        "translation_applied": false
+      },
+      "doc_type": "driving_license",
+      "doc_confidence": 0.196,
+      "extracted": {
+        "dl_number": "MH12 20010149313",
+        "issuing_state": "Maharashtra",
+        "date_of_birth": "05/05/1979",
+        "name": "NIVRUTTI BODAKE",
+        "vehicle_classes": [
+          "NT",
+          "MCWG",
+          "LMV"
+        ]
+      }
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "driving_license",
+    "doc_confidence": 0.196,
+    "bank_name": null,
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extracted": {
+      "doc_type": "driving_license",
+      "dl_number": "MH12 20010149313",
+      "issuing_state": "Maharashtra",
+      "date_of_birth": "05/05/1979",
+      "name": "NIVRUTTI BODAKE",
+      "vehicle_classes": [
+        "NT",
+        "MCWG",
+        "LMV"
+      ]
+    }
+  }
+}

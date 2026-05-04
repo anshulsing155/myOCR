@@ -1,23 +1,86 @@
+import logging
+
 import cv2
 import numpy as np
 from config import OCR_LANG, PADDLE_USE_ANGLE_CLS, PADDLE_DEVICE
 
+logger = logging.getLogger(__name__)
+
 _ocr = None
+_init_failed = False   # set once on first failure; prevents repeated crash attempts
+
+# Cache of per-language PaddleOCR instances (lang_code → instance)
+_lang_ocr: dict[str, object] = {}
+_lang_init_failed: set[str] = set()
 
 
 def _get_ocr():
-    global _ocr
+    global _ocr, _init_failed
+    if _init_failed:
+        return None
     if _ocr is None:
-        from paddleocr import PaddleOCR
-        # use_doc_unwarping=False: we already deskew; unwarping model requires 3-ch and
-        # would crash on any grayscale crop passed from our preprocessing pipeline.
-        _ocr = PaddleOCR(
-            lang=OCR_LANG,
-            use_doc_orientation_classify=PADDLE_USE_ANGLE_CLS,
-            use_doc_unwarping=False,
-            device=PADDLE_DEVICE,
-        )
+        try:
+            from paddleocr import PaddleOCR
+            _ocr = PaddleOCR(
+                lang=OCR_LANG,
+                use_doc_orientation_classify=PADDLE_USE_ANGLE_CLS,
+                use_doc_unwarping=False,
+                device=PADDLE_DEVICE,
+            )
+        except Exception as exc:
+            logger.warning("PaddleOCR failed to initialize: %s", exc)
+            _init_failed = True
+            return None
     return _ocr
+
+
+# Paddle lang codes that have dedicated recognition models
+_SUPPORTED_LANGS = {
+    "hi",  # Hindi (Devanagari)
+    "mr",  # Marathi — uses same Devanagari model via 'hi'
+    "bn",  # Bengali
+    "ta",  # Tamil
+    "te",  # Telugu
+    "kn",  # Kannada
+    "ml",  # Malayalam
+    "gu",  # Gujarati
+    "pa",  # Punjabi (Gurmukhi)
+    "ur",  # Urdu (Arabic script)
+}
+
+# Some fast_langdetect codes need remapping to PaddleOCR lang param
+_PADDLE_LANG_MAP = {
+    "mr": "hi",  # Marathi uses same Devanagari model as Hindi
+    "sa": "hi",  # Sanskrit
+    "ne": "hi",  # Nepali
+    "as": "bn",  # Assamese uses Bengali model
+    "or": "en",  # Odia — PaddleOCR doesn't have a dedicated model, fallback to English
+}
+
+
+def _get_lang_ocr(lang: str):
+    """Get or create a PaddleOCR instance for the given language."""
+    paddle_lang = _PADDLE_LANG_MAP.get(lang, lang)
+    if paddle_lang not in _SUPPORTED_LANGS:
+        return None
+    if paddle_lang in _lang_init_failed:
+        return None
+    if paddle_lang not in _lang_ocr:
+        try:
+            from paddleocr import PaddleOCR
+            instance = PaddleOCR(
+                lang=paddle_lang,
+                use_doc_orientation_classify=False,
+                use_doc_unwarping=False,
+                device=PADDLE_DEVICE,
+            )
+            _lang_ocr[paddle_lang] = instance
+            logger.info("Initialized PaddleOCR for lang=%s", paddle_lang)
+        except Exception as exc:
+            logger.warning("PaddleOCR lang=%s failed to init: %s", paddle_lang, exc)
+            _lang_init_failed.add(paddle_lang)
+            return None
+    return _lang_ocr[paddle_lang]
 
 
 def _ensure_bgr(image: np.ndarray) -> np.ndarray:
@@ -33,11 +96,266 @@ def run_paddle(image: np.ndarray) -> list[dict]:
     """
     Returns list of dicts:
       { "text": str, "confidence": float, "bbox": [[x,y], ...] }
-    Compatible with PaddleOCR v2 and v3.
+    Returns [] (no exception) when PaddleOCR is unavailable.
     """
     ocr = _get_ocr()
-    raw = ocr.predict(_ensure_bgr(image))  # use predict() directly; ocr() is deprecated in v3
-    return _parse_result(raw)
+    if ocr is None:
+        return []
+    try:
+        raw = ocr.predict(_ensure_bgr(image))
+        return _parse_result(raw)
+    except Exception as exc:
+        logger.warning("PaddleOCR predict failed: %s", exc)
+        return []
+
+
+def run_paddle_lang(image: np.ndarray, lang: str) -> list[dict]:
+    """
+    Run PaddleOCR with a specific regional language model.
+    Used for images where the dominant script is Indian (non-Latin).
+
+    Falls back to run_paddle() (English model) if the regional model
+    is unavailable or fails.
+    """
+    ocr = _get_lang_ocr(lang)
+    if ocr is None:
+        logger.debug("No regional model for lang=%s, using English model", lang)
+        return run_paddle(image)
+    try:
+        raw = ocr.predict(_ensure_bgr(image))
+        results = _parse_result(raw)
+        if results:
+            return results
+    except Exception as exc:
+        logger.warning("PaddleOCR lang=%s predict failed: %s", lang, exc)
+    return run_paddle(image)
+
+
+_CONSONANTS = frozenset("bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ")
+
+
+def _has_consonant_run(text: str, min_run: int = 5) -> bool:
+    """Return True if text has ≥min_run consecutive consonants — impossible in real English."""
+    run = 0
+    for c in text:
+        if c in _CONSONANTS:
+            run += 1
+            if run >= min_run:
+                return True
+        else:
+            run = 0
+    return False
+
+
+def _ocr_noise_ratio(results: list[dict]) -> float:
+    """
+    Estimate the fraction of results that look like garbled non-Latin OCR.
+    English OCR on Devanagari/Tamil/etc. produces sequences like
+    "SHRGTRCTR", "af 3en", "HRT" — high consonant density, low vowel ratio,
+    short fragments, lots of OCR noise characters.
+    Returns 0.0 (clean) … 1.0 (all garbage).
+    """
+    if not results:
+        return 0.0
+    noise_count = 0
+    for r in results:
+        text = r.get("text", "").strip()
+        if not text or len(text) < 2:
+            continue
+        alpha = [c for c in text if c.isalpha() and c.isascii()]
+        if not alpha:
+            continue
+        vowels = sum(1 for c in alpha if c.lower() in "aeiou")
+        consonants = len(alpha) - vowels
+        vowel_ratio = vowels / len(alpha)
+        conf = r.get("confidence", 1.0)
+        # Garbled Devanagari: very few vowels, many consonants, low confidence
+        if vowel_ratio < 0.1 and consonants >= 4 and conf < 0.85:
+            noise_count += 1
+    return noise_count / len(results)
+
+
+def _detect_script_from_image(image: np.ndarray) -> str | None:
+    """
+    Lightweight image-level script detection using pixel distribution.
+    Indian scripts have characteristic connected-component densities.
+    Returns a PaddleOCR lang code ('hi', 'ta', etc.) or None if Latin.
+
+    Strategy: run a tiny Tesseract OSD (orientation+script detection)
+    if available, otherwise fall back to None (use noise-ratio heuristic).
+    """
+    try:
+        import pytesseract
+        osd = pytesseract.image_to_osd(image, output_type=pytesseract.Output.DICT)
+        script = osd.get("script", "").lower()
+        _OSD_MAP = {
+            "devanagari": "hi",
+            "bengali":    "bn",
+            "tamil":      "ta",
+            "telugu":     "te",
+            "kannada":    "kn",
+            "malayalam":  "ml",
+            "gujarati":   "gu",
+            "gurmukhi":   "pa",
+        }
+        return _OSD_MAP.get(script)
+    except Exception:
+        return None
+
+
+def _merge_ocr_results(
+    english: list[dict],
+    regional: list[dict],
+    iou_threshold: float = 0.3,
+) -> list[dict]:
+    """
+    Merge English and Regional OCR results for bilingual documents (e.g. Aadhaar).
+
+    Strategy:
+    - For each regional result, if it overlaps significantly with an English
+      result that has LOW confidence (< 0.75), replace with regional result.
+    - English-only results (no overlap with regional) are kept as-is.
+    - Regional results with no overlap added as new items.
+
+    This preserves English text (account numbers, names in Latin) while
+    replacing garbled Devanagari with proper Hindi OCR.
+    """
+    def _bbox_xyxy(bbox) -> tuple[float, float, float, float] | None:
+        if not bbox:
+            return None
+        try:
+            if isinstance(bbox[0], (list, tuple)):
+                xs = [p[0] for p in bbox]
+                ys = [p[1] for p in bbox]
+                return min(xs), min(ys), max(xs), max(ys)
+            if len(bbox) == 4:
+                x1, y1, x2, y2 = bbox
+                if x2 > x1 and y2 > y1:
+                    return x1, y1, x2, y2
+        except Exception:
+            pass
+        return None
+
+    def _iou(a, b) -> float:
+        ax1, ay1, ax2, ay2 = a
+        bx1, by1, bx2, by2 = b
+        ix1, iy1 = max(ax1, bx1), max(ay1, by1)
+        ix2, iy2 = min(ax2, bx2), min(ay2, by2)
+        if ix2 <= ix1 or iy2 <= iy1:
+            return 0.0
+        inter = (ix2 - ix1) * (iy2 - iy1)
+        area_a = (ax2 - ax1) * (ay2 - ay1)
+        area_b = (bx2 - bx1) * (by2 - by1)
+        union = area_a + area_b - inter
+        return inter / union if union > 0 else 0.0
+
+    merged = list(english)
+    english_boxes = [_bbox_xyxy(r.get("bbox")) for r in english]
+    used_regional: set[int] = set()
+
+    for i, eng in enumerate(merged):
+        ea = english_boxes[i]
+        if ea is None:
+            continue
+        if eng.get("confidence", 1.0) >= 0.75:
+            continue  # English result is good, keep it
+        # Find best-overlapping regional result
+        best_j, best_iou = -1, iou_threshold
+        for j, reg in enumerate(regional):
+            if j in used_regional:
+                continue
+            ra = _bbox_xyxy(reg.get("bbox"))
+            if ra is None:
+                continue
+            score = _iou(ea, ra)
+            if score > best_iou:
+                best_iou, best_j = score, j
+        if best_j >= 0:
+            merged[i] = regional[best_j]
+            used_regional.add(best_j)
+
+    # Append regional results that had no English overlap (new lines)
+    for j, reg in enumerate(regional):
+        if j not in used_regional:
+            merged.append(reg)
+
+    return merged
+
+
+def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
+    """
+    Smart multilingual OCR for Indian documents.
+
+    Detection strategy (in order):
+      1. Tesseract OSD script detection (image-level, most reliable)
+      2. English OCR noise ratio heuristic (garbled Devanagari → high noise)
+      3. Unicode script chars in OCR output (visible Indian chars)
+
+    For bilingual documents (Aadhaar, PAN, etc.) that mix Hindi + English,
+    we merge both OCR passes: English results for Latin text, regional results
+    for Indian-script text.
+
+    Returns (merged_ocr_results, detected_lang_code_or_None).
+    """
+    from postprocessing.language_processor import detect_script, detect_language
+
+    # First pass: English model
+    english_results = run_paddle(image)
+    if not english_results:
+        return [], None
+
+    # ── Script detection (image-level first) ──────────────────────────────────
+    detected_lang = _detect_script_from_image(image)
+
+    if detected_lang is None:
+        # Heuristic 1: noise ratio (vowel-poor words with low confidence)
+        noise = _ocr_noise_ratio(english_results)
+        if noise >= 0.15:
+            detected_lang = "hi"
+            logger.debug("Noise ratio %.2f → assuming Indian script", noise)
+
+    if detected_lang is None:
+        # Heuristic 2: long consonant run (e.g. "SHRGTRCTR") — impossible in English
+        combined_text = " ".join(r.get("text", "") for r in english_results)
+        if _has_consonant_run(combined_text, min_run=5):
+            detected_lang = "hi"
+            logger.debug("Long consonant run detected → assuming Indian script")
+
+    if detected_lang is None:
+        # Heuristic 3: Unicode Indian-script chars visible in text
+        combined = " ".join(r.get("text", "") for r in english_results)
+        script, paddle_code = detect_script(combined)
+        if script:
+            lang, lang_conf = detect_language(combined)
+            detected_lang = lang if lang_conf >= 0.3 else paddle_code
+
+    if detected_lang is None:
+        return english_results, None
+
+    # ── Regional OCR pass ─────────────────────────────────────────────────────
+    regional_results = run_paddle_lang(image, detected_lang)
+    if not regional_results:
+        return english_results, detected_lang
+
+    # ── Merge: keep English text, replace garbled parts with regional ─────────
+    # Check if regional OCR also found any visible Indian-script chars
+    regional_text = " ".join(r.get("text", "") for r in regional_results)
+    _, regional_paddle = detect_script(regional_text)
+
+    if regional_paddle:
+        # Truly bilingual output from regional model — do full merge
+        merged = _merge_ocr_results(english_results, regional_results)
+        # Re-detect language from merged regional text
+        lang, lang_conf = detect_language(regional_text)
+        if lang_conf >= 0.3:
+            detected_lang = lang
+        return merged, detected_lang
+    else:
+        # Regional model gave only Latin/digits (couldn't read script either)
+        # Prefer whichever has higher average confidence
+        avg_en = sum(r["confidence"] for r in english_results) / len(english_results)
+        avg_re = sum(r["confidence"] for r in regional_results) / len(regional_results)
+        return (regional_results if avg_re > avg_en else english_results), detected_lang
 
 
 def _parse_result(raw) -> list[dict]:
@@ -46,7 +364,6 @@ def _parse_result(raw) -> list[dict]:
     if not raw:
         return results
 
-    # v2 format: [[  [bbox, (text, conf)], ... ]]
     first = raw[0]
     if first is None:
         return results
@@ -69,13 +386,11 @@ def _parse_result(raw) -> list[dict]:
     for item in raw:
         if item is None:
             continue
-        # dict-like (some v3 builds return plain dicts)
         if isinstance(item, dict):
             _extract_v3_dict(item, results)
-        # attribute-based OCRResult
         elif hasattr(item, "rec_texts"):
-            polys = getattr(item, "dt_polys", []) or []
-            texts = getattr(item, "rec_texts", []) or []
+            polys  = getattr(item, "dt_polys",   []) or []
+            texts  = getattr(item, "rec_texts",  []) or []
             scores = getattr(item, "rec_scores", []) or []
             for text, conf, bbox in zip(texts, scores, polys):
                 bbox_list = bbox.tolist() if hasattr(bbox, "tolist") else list(bbox)
@@ -84,7 +399,6 @@ def _parse_result(raw) -> list[dict]:
                     "confidence": round(float(conf), 4),
                     "bbox": bbox_list,
                 })
-        # fallback: try iterating sub-items
         else:
             try:
                 for sub in item:
@@ -102,9 +416,9 @@ def _parse_result(raw) -> list[dict]:
 
 
 def _extract_v3_dict(item: dict, results: list) -> None:
-    texts = item.get("rec_texts") or item.get("text", [])
+    texts  = item.get("rec_texts") or item.get("text", [])
     scores = item.get("rec_scores") or item.get("confidence", [])
-    polys = item.get("dt_polys") or item.get("bbox", [])
+    polys  = item.get("dt_polys") or item.get("bbox", [])
     if isinstance(texts, str):
         results.append({
             "text": texts,

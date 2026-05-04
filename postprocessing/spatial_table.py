@@ -280,20 +280,39 @@ def reconstruct_table(ocr_results: list[dict],
     return merge_continuation_rows(raw)
 
 
-def split_page_ocr(ocr_results: list[dict]) -> tuple[list[dict], list[dict]]:
+def split_page_ocr(
+    ocr_results: list[dict],
+    force_table: bool = False,
+) -> tuple[list[dict], list[dict]]:
     """
     Split OCR items into (header_items, table_items).
     header_items = everything above the column-header row.
     table_items  = column-header row + data rows.
-    Returns (all, []) when no table header is detected.
+
+    force_table=True  — skip column-header detection; treat entire page as table
+                        (used for bank-statement continuation pages 2+).
+    Returns (all, []) when no table header is detected and force_table is False.
     """
     if not ocr_results:
         return ocr_results, []
 
     rows = group_into_rows(ocr_results)
+
+    if force_table:
+        # Bank statement continuation: no column header on pages 2+.
+        # Return all items as table; parser filters out letterhead rows.
+        return [], ocr_results
+
     start = find_table_header_row(rows)
 
     if start is None:
+        # Fallback: if most rows start with a date pattern it's a continuation page
+        date_rows = sum(
+            1 for row in rows
+            if row and _DATE_START_RE.match(row[0].get("text", "").strip())
+        )
+        if len(rows) > 3 and date_rows / len(rows) >= 0.3:
+            return [], ocr_results   # treat whole page as table
         return ocr_results, []
 
     header_items = [item for row in rows[:start] for item in row]

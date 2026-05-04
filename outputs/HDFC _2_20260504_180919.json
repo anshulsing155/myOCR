@@ -1,0 +1,273 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    },
+    {
+      "page": 2,
+      "extraction_method": "gemini",
+      "text_blocks": [],
+      "tables": []
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "bank_statement",
+    "doc_confidence": 1.0,
+    "bank_name": "HDFC BANK",
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extraction_engine": "gemini",
+    "extracted": {
+      "bank_name": "HDFC BANK",
+      "account_number": "50100060090671",
+      "account_holder": "MR. ARUN TYAGI",
+      "ifsc_code": "HDFC0000671",
+      "branch": "BETA PLAZA, GREATER NOIDA",
+      "statement_from": "01/10/2023",
+      "statement_to": "02/04/2026",
+      "customer_id": "13914640",
+      "pan": "BWHPT4999K",
+      "closing_balance": "261613.51",
+      "transactions": [
+        {
+          "date": "01/10/2023",
+          "narration": "UPI-ARJUN TYAGI-95004632522@PTIDFC-UTIB00 04527-52745701403-NA",
+          "chq_ref": "000052745701403",
+          "debit": "0.00",
+          "credit": "45000.00",
+          "balance": "145080.51"
+        },
+        {
+          "date": "02/10/2023",
+          "narration": "UPI-MA99001519@PTISBI-SBIN001475-5 27599450387-NA",
+          "chq_ref": "0000527599450387",
+          "debit": "320.00",
+          "credit": "0.00",
+          "balance": "145400.51"
+        },
+        {
+          "date": "02/10/2023",
+          "narration": "UPI-JAIN ASLI SHIKANJI-PAYTMGR01F2U5UV66 @PAYTM-YESB0P1MUPI-527574827159-NA",
+          "chq_ref": "0000527574827159",
+          "debit": "210.00",
+          "credit": "0.00",
+          "balance": "145190.51"
+        },
+        {
+          "date": "02/10/2023",
+          "narration": "UPI-JAIN ASLI SHIKANJI-PAYTMGR01F2U5UV66 @PAYTM-YESB0P1MUPI-527574917022-NA",
+          "chq_ref": "0000527574917022",
+          "debit": "120.00",
+          "credit": "0.00",
+          "balance": "145070.51"
+        },
+        {
+          "date": "02/10/2023",
+          "narration": "UPI-SWIGGY-UPIISWIGGY@ICICI-ICIC0000609-5 27576085320-SENT USING PAYTM U",
+          "chq_ref": "0000527576085320",
+          "debit": "207.00",
+          "credit": "0.00",
+          "balance": "144863.51"
+        },
+        {
+          "date": "03/10/2023",
+          "narration": "UPI-MRS AARTI DEVI-Q2Q9537646@YBL-YESB0 YBLUPI-527688595990-SENT USING PAYTM U",
+          "chq_ref": "0000527688595990",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "144843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-0000781M7RJZ",
+          "chq_ref": "00000318584860",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "142843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-00009DRD83RT",
+          "chq_ref": "00000318584170",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "140843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-00006LUF00N2S",
+          "chq_ref": "000003185845740",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "138843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-00006VOX3YBJ",
+          "chq_ref": "00000318582990",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "136843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-00006MHW5KSL",
+          "chq_ref": "00000318587924",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "134843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- INDIAN CLEARING CORP-0000DGEV21SZ",
+          "chq_ref": "000003185908654",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "132843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "ACH D- GROWW INVEST TECH PR-DRDXWD3D5D05",
+          "chq_ref": "000003186059919",
+          "debit": "2000.00",
+          "credit": "0.00",
+          "balance": "130843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "UPI-BINDU TYAGI-995822713@PTIHDFC-HDFC00 09271-52779186660-NA",
+          "chq_ref": "000052779186660",
+          "debit": "0.00",
+          "credit": "100000.00",
+          "balance": "230843.51"
+        },
+        {
+          "date": "04/10/2023",
+          "narration": "NEFT CR-PUNB001100-NIRDOSH KUMAR TYAGI-",
+          "chq_ref": "PUNB029251008458",
+          "debit": "0.00",
+          "credit": "40000.00",
+          "balance": "270843.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "ARUN TYAGI-PUNB029251008458776052",
+          "chq_ref": "776052",
+          "debit": "9230.00",
+          "credit": "0.00",
+          "balance": "261613.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "ACH D- HDFC BANK LTD-63057603",
+          "chq_ref": "000008377594278",
+          "debit": "9230.00",
+          "credit": "0.00",
+          "balance": "261613.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "EMI 152807884 CHQ 5152807884116 10251528 07884",
+          "chq_ref": "00000000000000",
+          "debit": "16951.00",
+          "credit": "0.00",
+          "balance": "244662.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-AMRESH KUMAR TYAGI-981057929@PTIHDFC-HDFC0000671-527805294171-NA",
+          "chq_ref": "0000527805294171",
+          "debit": "0.00",
+          "credit": "8500.00",
+          "balance": "253162.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-KISHAN PAL SO DEVI-C-9728406634@AXL-PUNB0408800-64789711171-PAYMENT FROM PH ONE",
+          "chq_ref": "000064789711171",
+          "debit": "0.00",
+          "credit": "80.00",
+          "balance": "253242.51"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-ZOMATO LIMITED,ZOMATO.PAYU@HDFCHAN K-HDFC00MERUPI-52780910846-UPIINTENT",
+          "chq_ref": "000052780910846",
+          "debit": "264.65",
+          "credit": "0.00",
+          "balance": "252977.86"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-AGARWAL GROSERY-PAYTMQ6M8X@PTYS-Y ESB0P1MUPI-527812248781-SENT USING PAYTM U",
+          "chq_ref": "0000527812248781",
+          "debit": "20.00",
+          "credit": "0.00",
+          "balance": "252957.86"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-MRS AARTI DEVI-Q2Q9537646@YBL-YESB0 YBLUPI-527812732667-SENT USING PAYTM U",
+          "chq_ref": "0000527812732667",
+          "debit": "170.00",
+          "credit": "0.00",
+          "balance": "252787.86"
+        },
+        {
+          "date": "05/10/2023",
+          "narration": "UPI-NYKAA ERETAIL PRIVAT-NYKAA.PAYU@HDFC BANK-HDFC00MERUPI-527813164121-UPIINTENT",
+          "chq_ref": "0000527813164121",
+          "debit": "280.00",
+          "credit": "0.00",
+          "balance": "252507.86"
+        },
+        {
+          "date": "06/10/2023",
+          "narration": "NEFT CR-SBIN000790-ITUTAX REFUND 2023-2 6 BWHPT4999K,ARUN TYAGI,SBIN00252010064 484863",
+          "chq_ref": "SBIN002520100644",
+          "debit": "0.00",
+          "credit": "12760.00",
+          "balance": "265267.86"
+        },
+        {
+          "date": "06/10/2023",
+          "narration": "UPI-PUNA GNA SECTOR F1-PAYTM.S1G@PNC@PTY-Y ESB0MCHUPI-527919242089-SENT USING PAYTM U",
+          "chq_ref": "0000527919242089",
+          "debit": "220.00",
+          "credit": "0.00",
+          "balance": "265047.86"
+        },
+        {
+          "date": "06/10/2023",
+          "narration": "UPI-PANKAJ DEVID SO VIRE-PAYTMQ8Z0MY6P@P TYS-YESB0P1MUPI-527919456956-SENT USING PAYTM U",
+          "chq_ref": "0000527919456956",
+          "debit": "200.00",
+          "credit": "0.00",
+          "balance": "264847.86"
+        },
+        {
+          "date": "06/10/2023",
+          "narration": "UPI-PINKI RAJPUT-BHARATPE-90071010179@FB",
+          "chq_ref": "0000527919464376",
+          "debit": "40.00",
+          "credit": "0.00",
+          "balance": "264807.86"
+        }
+      ],
+      "transaction_count": 28,
+      "gemini_model": "gemini-2.5-flash",
+      "pages_processed": 2,
+      "response_time_sec": 22.17
+    }
+  }
+}

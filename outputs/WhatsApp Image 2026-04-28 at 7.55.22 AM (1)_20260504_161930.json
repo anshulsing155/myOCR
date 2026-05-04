@@ -1,0 +1,61 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "extraction_method": "ocr",
+      "text_blocks": [
+        {
+          "type": "Text",
+          "bbox": [
+            0,
+            0,
+            780,
+            1040
+          ],
+          "text": "007/11/2036 03/11/201 aaid Blood Group Dile of Buth Unknown. 19/05/1994 / Name ANKUR SINGH Am@ w/Son/Dlughter/Wife of MANOJ KUMAR SINGH UP04689231MT UP3420160012704 MCWG 02/11/2016 (76140) UP /Addrest HNO 147 MOHALLA LOHAR BAGH THANA KOTWALI SITAPUR -261001 Holder's Signature wifed /issuling Authority Sign SITAPUR",
+          "confidence": 0.895
+        }
+      ],
+      "tables": [],
+      "language": {
+        "detected_languages": [
+          "en"
+        ],
+        "primary_language": "en",
+        "multilingual": false,
+        "translation_applied": false
+      },
+      "doc_type": "driving_license",
+      "doc_confidence": 0.107,
+      "extracted": {
+        "dl_number": "UP3420160012704",
+        "issuing_state": "Uttar Pradesh",
+        "vehicle_classes": [
+          "MCWG"
+        ]
+      }
+    }
+  ],
+  "document_intelligence": {
+    "doc_type": "driving_license",
+    "doc_confidence": 0.107,
+    "bank_name": null,
+    "bank_code": null,
+    "languages": {
+      "detected_languages": [
+        "en"
+      ],
+      "primary_language": "en",
+      "multilingual": false,
+      "translation_applied": false
+    },
+    "extracted": {
+      "doc_type": "driving_license",
+      "dl_number": "UP3420160012704",
+      "issuing_state": "Uttar Pradesh",
+      "vehicle_classes": [
+        "MCWG"
+      ]
+    }
+  }
+}

@@ -22,9 +22,28 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).parent))
 
 import config  # noqa: E402  (creates input/output dirs)
+from classification.doc_classifier import classify as classify_doc
 from layout.layout_detector import detect_layout
 from ocr.hybrid_runner import run_ocr
 from ocr.paddle_engine import run_paddle
+from parsers.bank_statement.bank_identifier import identify_bank
+from parsers.bank_statement.bank_parser import (
+    extract_account_metadata,
+    parse as parse_bank,
+)
+from parsers.pan_parser import PanParser
+from parsers.aadhaar_parser import AadhaarParser
+from parsers.eshram_parser import EshramParser
+from parsers.itr_parser import ItrParser
+from parsers.salary_slip_parser import SalarySlipParser
+from parsers.driving_license_parser import DrivingLicenseParser
+from parsers.generic_parser import GenericParser
+from postprocessing.language_processor import (
+    process_multilingual_ocr,
+    get_translated_ocr,
+    summarise_languages,
+    LANG_NAMES,
+)
 from postprocessing.cleaner import build_table_rows, clean_text
 from postprocessing.multipage import merge_multipage_tables
 from postprocessing.spatial_table import reconstruct_table, split_page_ocr
@@ -98,6 +117,41 @@ st.markdown(
     /* section divider */
     .section-sep { border-top: 1px solid #2d2d44; margin: 1rem 0; }
 
+    /* document intelligence banner */
+    .doc-intel-banner {
+        background: #0f1e35;
+        border: 1px solid #1a3a5c;
+        border-radius: 10px;
+        padding: 1rem 1.4rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+    }
+    .doc-intel-banner .doc-type {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #5fbfff;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .doc-intel-banner .bank-tag {
+        background: #1a3a1a;
+        color: #5fdd8f;
+        border-radius: 99px;
+        padding: 3px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .doc-intel-banner .conf-label {
+        color: #888;
+        font-size: 0.8rem;
+    }
+    .meta-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .meta-table td { padding: 4px 8px; font-size: 0.85rem; color: #ccc; }
+    .meta-table td:first-child { color: #888; font-size: 0.78rem; text-transform: uppercase; width: 160px; }
+
     /* Streamlit overrides */
     [data-testid="stSidebar"] { background: #0d0d1a; }
     </style>
@@ -111,21 +165,32 @@ def bgr_to_pil(img: np.ndarray) -> Image.Image:
     return Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 
-def load_uploaded_file(uploaded_file) -> list[np.ndarray]:
-    """Save upload to a temp file, return BGR numpy arrays per page."""
+def load_uploaded_file(uploaded_file) -> tuple[list[np.ndarray], str, str | None]:
+    """
+    Save upload to a temp file.
+    Returns (images, file_type, pdf_path_or_None).
+
+    file_type: "pdf_digital" | "pdf_scanned" | "pdf_mixed" | "image"
+    pdf_path: kept on disk for pdfplumber; caller must delete it.
+    """
+    from utils.pdf_extractor import classify_pdf
+
     suffix = Path(uploaded_file.name).suffix.lower()
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(uploaded_file.getbuffer())
-        tmp_path = tmp.name
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    tmp.write(uploaded_file.getbuffer())
+    tmp.close()
+    tmp_path = tmp.name
 
     if suffix == ".pdf":
-        images = pdf_to_images(tmp_path)
+        pdf_kind = classify_pdf(tmp_path)
+        file_type = f"pdf_{pdf_kind}"
+        images = pdf_to_images(tmp_path)      # always render images (for preview)
+        return images, file_type, tmp_path    # keep tmp for pdfplumber
     else:
         img = cv2.imread(tmp_path)
         images = [img] if img is not None else []
-
-    os.unlink(tmp_path)
-    return images
+        os.unlink(tmp_path)
+        return images, "image", None
 
 
 def _avg_conf(results: list[dict]) -> float:
@@ -142,7 +207,13 @@ def _is_fallback_layout(layout, image: np.ndarray) -> bool:
     return x2 >= w * 0.9 and y2 >= h * 0.9
 
 
-def process_page(image: np.ndarray, page_num: int, mode: str, show_debug: bool) -> dict:
+def process_page(
+    image: np.ndarray,
+    page_num: int,
+    mode: str,
+    show_debug: bool,
+    bank_fast_mode: bool = False,
+) -> dict:
     layout = detect_layout(image)
     debug_img = draw_layout_debug(image, layout) if show_debug else None
 
@@ -155,8 +226,7 @@ def process_page(image: np.ndarray, page_num: int, mode: str, show_debug: bool) 
     }
 
     if _is_fallback_layout(layout, image):
-        # LayoutParser not available — run full-page OCR + grid-based table detection
-        _process_fullpage(image, mode, page_result)
+        _process_fullpage(image, mode, page_result, bank_fast_mode=bank_fast_mode)
     else:
         for block in layout:
             _process_block(image, block, mode, page_result)
@@ -185,39 +255,114 @@ def _process_block(image: np.ndarray, block, mode: str, page_result: dict) -> No
             })
 
 
-def _process_fullpage(image: np.ndarray, mode: str, page_result: dict) -> None:
+_BANK_STATEMENT_LANG_SUMMARY: dict = {
+    "detected_languages": ["en"],
+    "primary_language": "en",
+    "multilingual": False,
+    "translation_applied": False,
+}
+
+
+def _process_fullpage(
+    image: np.ndarray,
+    mode: str,
+    page_result: dict,
+    bank_fast_mode: bool = False,
+) -> None:
     """
     Full-page OCR path (no LayoutParser).
 
-    Uses PaddleOCR bounding boxes to spatially reconstruct table structure
-    instead of relying on OpenCV grid-line detection (which fails on
-    borderless / low-contrast tables).
+    bank_fast_mode=True — bank statement: skip multilingual OCR and language
+    detection; force spatial table reconstruction on every page including
+    continuation pages that have no repeated column-header row.
+
+    Image quality gate: if the image is already sharp and clean (good
+    resolution scan or rendered PDF page), preprocessing is skipped to avoid
+    adding artefacts.  Poor-quality images (blurry, noisy scans) are
+    denoised + contrast-enhanced before OCR.
     """
+    from utils.image_quality import maybe_preprocess
+    image, _qi = maybe_preprocess(image)
+    if _qi["quality"] == "poor":
+        page_result["_image_quality"] = _qi
+
     h, w = image.shape[:2]
 
-    # Get per-line OCR results with bounding boxes
-    ocr_results = run_paddle(image)
-    if not ocr_results and mode == "tesseract":
-        from ocr.tesseract_engine import run_tesseract
-        ocr_results = run_tesseract(image)
+    if bank_fast_mode:
+        from ocr.paddle_engine import run_paddle
+        ocr_results = run_paddle(image)
+        if not ocr_results:
+            try:
+                from ocr.tesseract_engine import run_tesseract
+                ocr_results = run_tesseract(image)
+            except Exception:
+                pass
+        if not ocr_results:
+            return
+        page_result["_ocr_results"] = ocr_results
+        page_result["_lang_summary"] = _BANK_STATEMENT_LANG_SUMMARY
+        # Force full-page table reconstruction — no column header required
+        _, table_items = split_page_ocr(ocr_results, force_table=True)
+        if table_items:
+            raw_rows = reconstruct_table(table_items)
+            if raw_rows:
+                page_result["tables"].append(
+                    {"bbox": [0, 0, w, h], "rows": build_table_rows(raw_rows)})
+        return
+
+    # ── Full multilingual path (ID docs, non-bank) ────────────────────────────
+    from ocr.paddle_engine import run_paddle_multilingual
+    ocr_results, _detected_lang = run_paddle_multilingual(image)
+
+    if not ocr_results:
+        try:
+            from ocr.tesseract_engine import run_tesseract
+            ocr_results = run_tesseract(image)
+        except Exception:
+            pass
 
     if not ocr_results:
         return
 
+    # ── Language detection + translation ──────────────────────────────────────���─────────────────────
+    ocr_results = process_multilingual_ocr(ocr_results)
+    page_result["_lang_summary"] = summarise_languages(ocr_results)
+
+    # For document parsing: use translated text so classifiers/parsers get English
+    translated_ocr = get_translated_ocr(ocr_results)
+
+    # Store enriched OCR for downstream classification (translated version)
+    page_result["_ocr_results"] = translated_ocr
+    page_result["_ocr_results_original"] = ocr_results  # keep originals for display
+
     # Split: header items (above table) vs table items (from column-header row down)
-    header_items, table_items = split_page_ocr(ocr_results)
+    header_items, table_items = split_page_ocr(translated_ocr)
 
     # ── header / non-table text ──
     if header_items:
         header_text = " ".join(clean_text(r["text"]) for r in header_items)
         avg = _avg_conf(header_items)
         if header_text.strip():
-            page_result["text_blocks"].append({
+            block: dict = {
                 "type": "Text",
                 "bbox": [0, 0, w, h],
                 "text": header_text,
                 "confidence": round(avg, 3),
-            })
+            }
+            # Surface original-language text if translation occurred
+            orig_items = [r for r in page_result["_ocr_results_original"]
+                          if r.get("translated_text")]
+            if orig_items:
+                orig_text = " ".join(
+                    clean_text(r.get("text", "")) for r in
+                    page_result["_ocr_results_original"]
+                    if r in header_items or r.get("translated_text")
+                )
+                block["original_text"] = orig_text
+                lang_summary = page_result["_lang_summary"]
+                block["detected_lang"] = lang_summary.get("primary_language", "en")
+                block["lang_name"] = LANG_NAMES.get(block["detected_lang"], "")
+            page_result["text_blocks"].append(block)
 
     # ── table ──
     if table_items:
@@ -227,26 +372,243 @@ def _process_fullpage(image: np.ndarray, mode: str, page_result: dict) -> None:
             page_result["tables"].append({"bbox": [0, 0, w, h], "rows": rows})
     elif not header_items:
         # Entire page is just text (no table found at all)
-        all_text = " ".join(clean_text(r["text"]) for r in ocr_results)
+        all_text = " ".join(clean_text(r["text"]) for r in translated_ocr)
         if all_text.strip():
-            page_result["text_blocks"].append({
+            block = {
                 "type": "Text",
                 "bbox": [0, 0, w, h],
                 "text": all_text,
-                "confidence": round(_avg_conf(ocr_results), 3),
-            })
+                "confidence": round(_avg_conf(translated_ocr), 3),
+            }
+            lang_summary = page_result["_lang_summary"]
+            if lang_summary.get("translation_applied"):
+                orig_all = " ".join(
+                    clean_text(r.get("text", "")) for r in ocr_results
+                )
+                block["original_text"] = orig_all
+                block["detected_lang"] = lang_summary.get("primary_language", "en")
+                block["lang_name"] = LANG_NAMES.get(block["detected_lang"], "")
+            page_result["text_blocks"].append(block)
 
 
-def result_to_json_export(pages: list[dict]) -> dict:
+def _collect_digital_bank_rows(pages: list[dict]) -> list[dict]:
+    """
+    Collect normalised transaction rows from digital-extracted bank pages.
+
+    extract_digital_page() already calls normalise_digital_bank_rows() on
+    bank-like tables, so their rows have schema keys ("date", "balance", …).
+    For any remaining col_N tables we normalise here.
+    Skips non-transaction tables (e.g. Axis Bank charge-statement pages).
+    """
+    from utils.pdf_extractor import is_bank_transaction_table, normalise_digital_bank_rows
+
+    _BANK_AMOUNT_KEYS = {"withdrawal", "deposit", "debit", "credit", "balance"}
+
+    all_rows: list[dict] = []
+    for p in pages:
+        if p.get("_extraction") != "digital":
+            continue
+        for tbl in p.get("tables", []):
+            raw_rows = tbl.get("rows", [])
+            if not raw_rows:
+                continue
+            first_keys = set(raw_rows[0].keys())
+            # Already-normalised table: keys are schema names
+            if "date" in first_keys and first_keys & _BANK_AMOUNT_KEYS:
+                all_rows.extend(raw_rows)
+            # Still col_N: normalise now (shouldn't usually happen post-fix)
+            elif is_bank_transaction_table(raw_rows):
+                all_rows.extend(normalise_digital_bank_rows(raw_rows))
+    return all_rows
+
+
+def _parse_for_type(
+    ocr: list[dict],
+    doc_type: str,
+    digital_rows: list[dict] | None = None,
+) -> tuple[dict, str | None, str | None]:
+    """Run the right parser for doc_type. Returns (extracted, bank_name, bank_code)."""
+    bank_name = bank_code = None
+    if doc_type == "bank_statement":
+        bank_id = identify_bank(ocr)
+        if bank_id:
+            bank_name, bank_code = bank_id.name, bank_id.code
+        extracted = parse_bank(ocr, bank_code=bank_code or "default",
+                               digital_rows=digital_rows or None)
+    elif doc_type == "pan_card":
+        extracted = PanParser().parse(ocr)
+    elif doc_type == "aadhaar":
+        extracted = AadhaarParser().parse(ocr)
+    elif doc_type == "eshram":
+        extracted = EshramParser().parse(ocr)
+    elif doc_type == "itr":
+        extracted = ItrParser().parse(ocr)
+    elif doc_type == "salary_slip":
+        extracted = SalarySlipParser().parse(ocr)
+    elif doc_type == "driving_license":
+        extracted = DrivingLicenseParser().parse(ocr)
+    else:
+        extracted = GenericParser().parse(ocr, doc_type=doc_type)
+    return extracted, bank_name, bank_code
+
+
+def run_document_intelligence(pages: list[dict]) -> dict:
+    """
+    Per-page classification + multi-document grouping.
+
+    When all pages share the same doc type → single document result (backward compat).
+    When pages have different doc types → 'documents' list, one entry per distinct type/group.
+    Each page also gets its own 'doc_type' and 'extracted' stored back onto it.
+    """
+    if not pages:
+        return {"doc_type": "other", "doc_confidence": 0.0,
+                "bank_name": None, "bank_code": None, "extracted": {},
+                "languages": {"detected_languages": ["en"], "primary_language": "en",
+                              "multilingual": False, "translation_applied": False}}
+
+    # ── Per-page classification ───────────────────────────────────────────────
+    for p in pages:
+        page_ocr = p.get("_ocr_results", [])
+        if page_ocr:
+            dc = classify_doc(page_ocr)
+            p["_doc_type"]  = dc.type
+            p["_doc_conf"]  = dc.confidence
+        else:
+            p["_doc_type"] = "other"
+            p["_doc_conf"] = 0.0
+
+    # ── Propagate bank_statement classification ───────────────────────────────
+    # A bank statement spans multiple pages; pages with little text may be
+    # misclassified as "other".  If any page is confidently bank_statement,
+    # reclassify adjacent "other" pages as bank_statement too.
+    bank_conf = max((p["_doc_conf"] for p in pages
+                     if p.get("_doc_type") == "bank_statement"), default=0.0)
+    if bank_conf >= 0.5:
+        for p in pages:
+            if p.get("_doc_type") == "other":
+                p["_doc_type"] = "bank_statement"
+                p["_doc_conf"] = bank_conf * 0.85
+
+    # ── Aggregate language info ───────────────────────────────────────────────
+    all_lang_summaries = [p.get("_lang_summary", {}) for p in pages if p.get("_lang_summary")]
+    all_detected = list({l for s in all_lang_summaries for l in s.get("detected_languages", [])})
+    primary_lang = next((s.get("primary_language") for s in all_lang_summaries
+                         if s.get("primary_language") and s["primary_language"] != "en"), "en")
+    lang_info = {
+        "detected_languages": sorted(all_detected) if all_detected else ["en"],
+        "primary_language": primary_lang,
+        "multilingual": any(s.get("multilingual") for s in all_lang_summaries),
+        "translation_applied": any(s.get("translation_applied") for s in all_lang_summaries),
+    }
+
+    # ── Group consecutive pages by doc type ──────────────────────────────────
+    # e.g. [pan_card, aadhaar] → two groups; [aadhaar, aadhaar] → one group
+    groups: list[dict] = []  # {"doc_type", "pages": [idx,...], "ocr": [...]}
+    for p in pages:
+        dt = p["_doc_type"]
+        if groups and groups[-1]["doc_type"] == dt:
+            groups[-1]["pages"].append(p["page"])
+            groups[-1]["ocr"].extend(p.get("_ocr_results", []))
+        else:
+            groups.append({"doc_type": dt, "confidence": p["_doc_conf"],
+                           "pages": [p["page"]], "ocr": list(p.get("_ocr_results", []))})
+
+    # ── Single doc type → original simple output ──────────────────────────────
+    unique_types = {g["doc_type"] for g in groups}
+    if len(unique_types) == 1:
+        g = groups[0]  # merge all OCR
+        all_ocr = [r for p in pages for r in p.get("_ocr_results", [])]
+        # For bank statements: use pre-structured digital tables when available
+        digital_rows = _collect_digital_bank_rows(pages) if g["doc_type"] == "bank_statement" else None
+        extracted, bank_name, bank_code = _parse_for_type(all_ocr, g["doc_type"],
+                                                           digital_rows=digital_rows)
+        # Store per-page extracted too
+        for p in pages:
+            page_ext, _, _ = _parse_for_type(p.get("_ocr_results", []), p["_doc_type"])
+            p["_extracted"] = page_ext
+        return {
+            "doc_type":       g["doc_type"],
+            "doc_confidence": g["confidence"],
+            "bank_name":      bank_name,
+            "bank_code":      bank_code,
+            "languages":      lang_info,
+            "extracted":      extracted,
+        }
+
+    # ── Multi-document PDF → return grouped structure ─────────────────────────
+    documents = []
+    for g in groups:
+        group_pages = [p for p in pages if p.get("page") in g["pages"]]
+        digital_rows = _collect_digital_bank_rows(group_pages) if g["doc_type"] == "bank_statement" else None
+        extracted, bank_name, bank_code = _parse_for_type(g["ocr"], g["doc_type"],
+                                                           digital_rows=digital_rows)
+        doc_entry: dict = {
+            "doc_type":   g["doc_type"],
+            "confidence": round(g["confidence"], 3),
+            "pages":      g["pages"],
+            "extracted":  {k: v for k, v in extracted.items()
+                           if k not in ("raw_text", "doc_type")},
+        }
+        if bank_name:
+            doc_entry["bank_name"] = bank_name
+            doc_entry["bank_code"] = bank_code
+        documents.append(doc_entry)
+
+    # Store per-page extracted
+    for p in pages:
+        page_ext, _, _ = _parse_for_type(p.get("_ocr_results", []), p["_doc_type"])
+        p["_extracted"] = page_ext
+
+    # Primary doc type = highest confidence group
+    primary_group = max(groups, key=lambda g: g["confidence"])
+
+    return {
+        "doc_type":       "multi_document",
+        "doc_confidence": round(primary_group["confidence"], 3),
+        "bank_name":      None,
+        "bank_code":      None,
+        "languages":      lang_info,
+        "documents":      documents,
+        "extracted":      {},  # see 'documents' for per-type fields
+    }
+
+
+def result_to_json_export(pages: list[dict], doc_intel: dict | None = None) -> dict:
     """Strip internal UI keys before export."""
     clean_pages = []
     for p in pages:
-        clean_pages.append({
+        page_out: dict = {
             "page": p["page"],
+            "extraction_method": p.get("_extraction", "ocr"),
             "text_blocks": p["text_blocks"],
             "tables": p["tables"],
-        })
-    return {"pages": clean_pages}
+        }
+        if p.get("_lang_summary"):
+            page_out["language"] = p["_lang_summary"]
+        if p.get("_doc_type"):
+            page_out["doc_type"] = p["_doc_type"]
+            page_out["doc_confidence"] = round(p.get("_doc_conf", 0.0), 3)
+        if p.get("_extracted"):
+            page_out["extracted"] = {
+                k: v for k, v in p["_extracted"].items()
+                if k not in ("raw_text", "doc_type")
+            }
+        clean_pages.append(page_out)
+
+    out: dict = {"pages": clean_pages}
+    if doc_intel:
+        is_multi = doc_intel.get("doc_type") == "multi_document"
+        intel_out: dict = {
+            k: v for k, v in doc_intel.items()
+            if k not in ("extracted",)
+        }
+        if not is_multi:
+            intel_out["extracted"] = {
+                k: v for k, v in doc_intel.get("extracted", {}).items()
+                if k != "raw_text"
+            }
+        out["document_intelligence"] = intel_out
+    return out
 
 
 # ── sidebar ───────────────────────────────────────────────────────────────────
@@ -274,8 +636,31 @@ with st.sidebar:
     save_to_disk = st.toggle("Save JSON to outputs/", value=True)
 
     st.divider()
+    st.markdown("### 🤖 Gemini AI")
+    _gemini_default_key = os.environ.get("GEMINI_API_KEY", "")
+    gemini_enabled = st.toggle(
+        "Enable Gemini OCR",
+        value=bool(_gemini_default_key),
+        help="Use Gemini Vision for bank statement extraction",
+    )
+    gemini_api_key = ""
+    gemini_only = False
+    if gemini_enabled:
+        gemini_api_key = st.text_input(
+            "Gemini API Key",
+            value=_gemini_default_key,
+            type="password",
+            placeholder="AIza...",
+        )
+        gemini_only = st.toggle(
+            "Gemini only (skip local OCR)",
+            value=False,
+            help="Skip PaddleOCR/Tesseract entirely — send pages straight to Gemini",
+        )
+
+    st.divider()
     st.markdown(
-        "<small style='color:#555'>PaddleOCR · Tesseract · OpenCV · LayoutParser</small>",
+        "<small style='color:#555'>PaddleOCR · Tesseract · OpenCV · LayoutParser · Gemini</small>",
         unsafe_allow_html=True,
     )
 
@@ -306,8 +691,17 @@ if "last_filename" not in st.session_state:
     st.session_state.last_filename = None
 
 if uploaded_file and uploaded_file.name != st.session_state.last_filename:
+    # Clean up previous temp PDF if any
+    _old_pdf = st.session_state.get("pdf_path")
+    if _old_pdf:
+        try:
+            os.unlink(_old_pdf)
+        except Exception:
+            pass
     st.session_state.pop("pages", None)
     st.session_state.pop("raw_images", None)
+    st.session_state.pop("file_type", None)
+    st.session_state.pop("pdf_path", None)
     st.session_state.last_filename = uploaded_file.name
 
 # ── preview & run button ──────────────────────────────────────────────────────
@@ -316,55 +710,340 @@ if uploaded_file:
     # load images (cached in session state so we don't re-decode on every rerun)
     if "raw_images" not in st.session_state:
         with st.spinner("Loading file…"):
-            st.session_state.raw_images = load_uploaded_file(uploaded_file)
+            imgs, ftype, pdf_path = load_uploaded_file(uploaded_file)
+            st.session_state.raw_images = imgs
+            st.session_state.file_type  = ftype
+            st.session_state.pdf_path   = pdf_path
 
     raw_images: list[np.ndarray] = st.session_state.raw_images
+    file_type:  str               = st.session_state.get("file_type", "image")
+    pdf_path:   str | None        = st.session_state.get("pdf_path")
     n_pages = len(raw_images)
 
     col_info, col_btn = st.columns([3, 1])
     with col_info:
+        _ftype_label = {
+            "pdf_digital": "Digital PDF (direct text)",
+            "pdf_scanned": "Scanned PDF (OCR required)",
+            "pdf_mixed":   "Mixed PDF (digital + scanned pages)",
+            "image":       "Image",
+        }.get(file_type, file_type)
+        _ftype_color = "#5fdd8f" if "digital" in file_type else "#f0c060" if "mixed" in file_type else "#aaa"
         st.markdown(
             f"**{uploaded_file.name}** · {n_pages} page{'s' if n_pages != 1 else ''} · "
-            f"{uploaded_file.size / 1024:.1f} KB"
+            f"{uploaded_file.size / 1024:.1f} KB &nbsp;&nbsp;"
+            f'<span style="color:{_ftype_color};font-size:0.85rem">{_ftype_label}</span>',
+            unsafe_allow_html=True,
         )
     with col_btn:
         run_clicked = st.button("▶ Run OCR Pipeline", type="primary", use_container_width=True)
 
     if run_clicked:
-        st.session_state.pop("pages", None)  # clear previous results
+        st.session_state.pop("pages", None)
+        st.session_state.pop("doc_intel", None)
         pages: list[dict] = []
 
         progress_bar = st.progress(0, text="Starting pipeline…")
         status_area = st.empty()
 
+        # ── Gemini-only fast path ─────────────────────────────────────────────
+        if gemini_only and gemini_api_key:
+            import time as _time
+            status_area.info("🤖 Gemini AI: processing all pages…")
+            try:
+                from ocr.gemini_bank_ocr import GeminiBankOCR
+                _gcr = GeminiBankOCR(api_key=gemini_api_key)
+                if not _gcr.available:
+                    st.error("google-genai not available. Run: pip install google-genai")
+                else:
+                    _t_start = _time.perf_counter()
+                    _gresult = _gcr.extract(raw_images)
+                    _t_elapsed = _time.perf_counter() - _t_start
+
+                    if "error" in _gresult:
+                        st.error(f"Gemini error: {_gresult['error']}")
+                    else:
+                        # Build minimal page stubs so the rest of the UI works
+                        for i, img in enumerate(raw_images):
+                            pages.append({
+                                "page": i + 1,
+                                "text_blocks": [],
+                                "tables": [],
+                                "_original_img": img,
+                                "_debug_img": None,
+                                "_extraction": "gemini",
+                            })
+                        _gresult.pop("doc_type", None)
+                        _gresult["response_time_sec"] = round(_t_elapsed, 2)
+                        doc_intel = {
+                            "doc_type": "bank_statement",
+                            "doc_confidence": 1.0,
+                            "bank_name": _gresult.get("bank_name"),
+                            "bank_code": None,
+                            "languages": {"detected_languages": ["en"],
+                                          "primary_language": "en",
+                                          "multilingual": False,
+                                          "translation_applied": False},
+                            "extraction_engine": "gemini",
+                            "extracted": _gresult,
+                        }
+                        progress_bar.progress(1.0, text="Done!")
+                        _txn_count = _gresult.get('transaction_count', 0)
+                        status_area.success(
+                            f"✅ Gemini extracted {_txn_count} transactions "
+                            f"from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
+                        )
+                        st.info(
+                            f"⏱ Response time: **{_t_elapsed:.2f}s** · "
+                            f"Pages: {len(raw_images)} · "
+                            f"Transactions: {_txn_count} · "
+                            f"Model: {_gresult.get('gemini_model', 'gemini-2.5-flash')}"
+                        )
+                        if save_to_disk:
+                            export = result_to_json_export(pages, doc_intel)
+                            stem = Path(uploaded_file.name).stem
+                            fname = timestamp_filename(stem)
+                            saved = save_json(export, config.OUTPUT_DIR, fname)
+                            st.caption(f"💾 Saved to `{saved}`")
+                        st.session_state.pages = pages
+                        st.session_state.doc_intel = doc_intel
+            except Exception as _ge:
+                st.error(f"Gemini OCR failed: {_ge}")
+            st.stop()
+        # ── End Gemini-only path ──────────────────────────────────────────────
+
+        from utils.pdf_extractor import extract_digital_page, detect_pdf_page_types
+
+        # Determine per-page extraction method
+        _page_types: list[str] = []
+        if pdf_path and file_type != "image":
+            _page_types = detect_pdf_page_types(pdf_path)
+        else:
+            _page_types = ["scanned"] * n_pages
+
+        _known_doc_type: str | None = None   # set after page 1 classification
+        _known_bank_code: str | None = None  # set after bank identified on page 1
+
         for i, image in enumerate(raw_images):
             frac = i / n_pages
             progress_bar.progress(frac, text=f"Processing page {i + 1} / {n_pages}…")
-            status_area.info(f"🔄 Page {i + 1}: preprocessing → layout → OCR…")
 
-            page_result = process_page(image, i + 1, ocr_mode, show_debug)
+            _ptype = _page_types[i] if i < len(_page_types) else "scanned"
+            _is_bank = _known_doc_type == "bank_statement"
+
+            if _ptype == "digital":
+                _mode_label = "direct text (no OCR)"
+                status_area.info(f"📄 Page {i + 1} / {n_pages} — {_mode_label}…")
+                page_result = extract_digital_page(
+                    pdf_path, i, i + 1,
+                    bank_code=_known_bank_code or "",
+                )
+                page_result["_original_img"] = image
+                page_result["_debug_img"] = None
+            else:
+                _mode_label = "fast bank OCR" if _is_bank else "OCR"
+                status_area.info(f"🔄 Page {i + 1} / {n_pages} — {_mode_label}…")
+                page_result = process_page(
+                    image, i + 1, ocr_mode, show_debug,
+                    bank_fast_mode=_is_bank,
+                )
+
             pages.append(page_result)
 
-        # Merge tables that span multiple pages
+            # After page 1: peek at doc type + bank so remaining pages use fast path
+            if i == 0 and _known_doc_type is None and page_result.get("_ocr_results"):
+                _dc = classify_doc(page_result["_ocr_results"])
+                if _dc.type == "bank_statement":
+                    _known_doc_type = "bank_statement"
+                    _bid = identify_bank(page_result["_ocr_results"])
+                    if _bid:
+                        _known_bank_code = _bid.code
+                    if n_pages > 1:
+                        _bank_label = f" ({_bid.name})" if _bid else ""
+                        status_area.info(
+                            f"🏦 Bank statement{_bank_label} detected — fast mode for "
+                            f"remaining {n_pages - 1} page(s)."
+                        )
+
         if n_pages > 1:
             pages = merge_multipage_tables(pages)
 
+        # Document intelligence: classify + parse after all pages are done
+        status_area.info("🧠 Running document classification…")
+        doc_intel = run_document_intelligence(pages)
+
+        # Gemini bank statement enrichment (optional, runs after classification)
+        if (gemini_enabled and gemini_api_key
+                and doc_intel.get("doc_type") == "bank_statement"):
+            status_area.info("🤖 Gemini AI: extracting bank statement data…")
+            try:
+                from ocr.gemini_bank_ocr import GeminiBankOCR
+                _gcr = GeminiBankOCR(api_key=gemini_api_key)
+                if _gcr.available:
+                    _bank_hint = doc_intel.get("bank_name") or doc_intel.get("bank_code") or ""
+                    _gemini_result = _gcr.extract(raw_images, bank_hint=_bank_hint)
+                    if "error" not in _gemini_result:
+                        # Merge Gemini result into doc_intel extracted, preserving bank_name/code
+                        _gemini_result.pop("doc_type", None)
+                        doc_intel.setdefault("extracted", {})
+                        doc_intel["extracted"].update(_gemini_result)
+                        doc_intel["extraction_engine"] = "gemini"
+                    else:
+                        st.warning(f"Gemini extraction failed: {_gemini_result['error']}")
+            except Exception as _ge:
+                st.warning(f"Gemini OCR error: {_ge}")
+
         progress_bar.progress(1.0, text="Done!")
-        status_area.success(f"✅ Finished — {n_pages} page(s) processed.")
+        _dig = sum(1 for t in _page_types if t == "digital")
+        _scn = len(_page_types) - _dig
+        _summary = f"✅ {n_pages} page(s) processed"
+        if _dig and _scn:
+            _summary += f" — {_dig} digital (direct), {_scn} scanned (OCR)"
+        elif _dig:
+            _summary += " — direct text extraction (no OCR needed)"
+        status_area.success(_summary)
 
         if save_to_disk:
-            export = result_to_json_export(pages)
+            export = result_to_json_export(pages, doc_intel)
             stem = Path(uploaded_file.name).stem
             fname = timestamp_filename(stem)
             saved = save_json(export, config.OUTPUT_DIR, fname)
             st.caption(f"💾 Saved to `{saved}`")
 
         st.session_state.pages = pages
+        st.session_state.doc_intel = doc_intel
 
 # ── results ───────────────────────────────────────────────────────────────────
 
 if "pages" in st.session_state:
     pages: list[dict] = st.session_state.pages
+    doc_intel: dict = st.session_state.get("doc_intel", {})
+
+    # ── document intelligence banner ──────────────────────────────────────────
+    if doc_intel:
+        _lang_info    = doc_intel.get("languages", {})
+        _primary_lang = _lang_info.get("primary_language", "en")
+        _lang_name    = LANG_NAMES.get(_primary_lang, _primary_lang)
+        _is_multilang = _lang_info.get("multilingual", False)
+        _is_translated = _lang_info.get("translation_applied", False)
+        _all_langs    = _lang_info.get("detected_languages", ["en"])
+        _lang_display = " + ".join(LANG_NAMES.get(l, l) for l in _all_langs if l != "en")
+        _lang_html = ""
+        if _is_multilang or _primary_lang != "en":
+            _lang_label = f"🌐 {_lang_display or _lang_name}"
+            if _is_translated:
+                _lang_label += " (translated)"
+            _lang_html = f'<span class="bank-tag" style="background:#1a1a3a;color:#af8fff">{_lang_label}</span>'
+
+        _is_multi_doc = doc_intel.get("doc_type") == "multi_document"
+
+        if _is_multi_doc:
+            # ── Multi-document: show each detected doc separately ─────────────
+            _docs = doc_intel.get("documents", [])
+            _doc_labels = " · ".join(
+                f"{d['doc_type'].replace('_',' ').title()} (p{d['pages'][0]})"
+                for d in _docs
+            )
+            st.markdown(
+                f"""
+                <div class="doc-intel-banner">
+                    <div>
+                        <div class="conf-label">Multi-Document PDF</div>
+                        <div class="doc-type">{_doc_labels}</div>
+                    </div>
+                    {_lang_html}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            # Show extracted fields per document in expandable sections
+            for d in _docs:
+                _dtype_label = d["doc_type"].replace("_", " ").title()
+                _pages_label = ", ".join(f"p{pg}" for pg in d["pages"])
+                _bank_tag = f"&nbsp;·&nbsp;🏦 {d['bank_name']}" if d.get("bank_name") else ""
+                with st.expander(f"📄 {_dtype_label} ({_pages_label}){_bank_tag}", expanded=True):
+                    _ext = {k: v for k, v in d.get("extracted", {}).items()
+                            if k not in ("raw_text", "metadata", "transactions", "warnings")}
+                    if _ext:
+                        rows = "".join(
+                            f"<tr><td>{k.replace('_',' ').title()}</td><td>{v}</td></tr>"
+                            for k, v in _ext.items()
+                        )
+                        st.markdown(
+                            f'<table class="meta-table">{rows}</table>',
+                            unsafe_allow_html=True,
+                        )
+                    _meta = d.get("extracted", {}).get("metadata", {})
+                    if _meta:
+                        rows = "".join(
+                            f"<tr><td>{k.replace('_',' ').title()}</td><td>{v}</td></tr>"
+                            for k, v in _meta.items()
+                        )
+                        st.markdown(
+                            f'<table class="meta-table">{rows}</table>',
+                            unsafe_allow_html=True,
+                        )
+        else:
+            # ── Single doc type ───────────────────────────────────────────────
+            _dtype  = doc_intel.get("doc_type", "other").replace("_", " ").title()
+            _dconf  = int(doc_intel.get("doc_confidence", 0) * 100)
+            _bank   = doc_intel.get("bank_name", "")
+            _engine = doc_intel.get("extraction_engine", "")
+            _bank_html = (
+                f'<span class="bank-tag">🏦 {_bank}</span>' if _bank else ""
+            )
+            if _engine == "gemini":
+                _bank_html += ' <span class="bank-tag" style="background:#1a2a1a;color:#7fff7f">🤖 Gemini AI</span>'
+            _meta = doc_intel.get("extracted", {}).get("metadata", {})
+            _meta_rows_html = "".join(
+                f"<tr><td>{k.replace('_', ' ').title()}</td><td>{v}</td></tr>"
+                for k, v in _meta.items()
+            )
+            _meta_html = (
+                f'<table class="meta-table">{_meta_rows_html}</table>'
+                if _meta_rows_html else ""
+            )
+            _ext = {
+                k: v for k, v in doc_intel.get("extracted", {}).items()
+                if k not in ("doc_type", "raw_text", "metadata", "transactions",
+                             "warnings", "text_items")
+            }
+            _field_rows = []
+            for k, v in _ext.items():
+                label = k.replace("_", " ").title()
+                if isinstance(v, dict):
+                    for sub_k, sub_v in v.items():
+                        _field_rows.append(
+                            f"<tr><td>&nbsp;&nbsp;{label} › {sub_k.replace('_',' ').title()}</td>"
+                            f"<td>{sub_v}</td></tr>"
+                        )
+                else:
+                    _field_rows.append(f"<tr><td>{label}</td><td>{v}</td></tr>")
+            _fields_html = "".join(_field_rows)
+            _fields_section = (
+                f'<table class="meta-table">{_fields_html}</table>'
+                if _fields_html else ""
+            )
+            _warns = doc_intel.get("extracted", {}).get("warnings", [])
+            _warn_html = "".join(f"<li style='color:#f0c060'>{w}</li>" for w in _warns)
+
+            st.markdown(
+                f"""
+                <div class="doc-intel-banner">
+                    <div>
+                        <div class="conf-label">Document Type</div>
+                        <div class="doc-type">{_dtype}</div>
+                        <div class="conf-label">Confidence: {_dconf}%</div>
+                    </div>
+                    {_bank_html}
+                    {_lang_html}
+                </div>
+                {_meta_html}
+                {_fields_section}
+                {"<ul style='font-size:0.8rem;margin-top:0.5rem'>" + _warn_html + "</ul>" if _warn_html else ""}
+                """,
+                unsafe_allow_html=True,
+            )
 
     # ── summary metrics ──
     total_tables = sum(len(p["tables"]) for p in pages)
@@ -387,6 +1066,15 @@ if "pages" in st.session_state:
         unsafe_allow_html=True,
     )
 
+    # ── Gemini transactions table ──
+    _gemini_txns = doc_intel.get("extracted", {}).get("transactions") if doc_intel else None
+    if _gemini_txns and doc_intel.get("extraction_engine") == "gemini":
+        st.markdown("**🤖 Gemini AI — Extracted Transactions**")
+        _txn_count = doc_intel["extracted"].get("transaction_count", len(_gemini_txns))
+        st.caption(f"{_txn_count} transactions extracted by Gemini AI")
+        df_txn = pd.DataFrame(_gemini_txns)
+        st.dataframe(df_txn, use_container_width=True)
+
     # ── per-page tabs ──
     tab_labels = [f"Page {p['page']}" for p in pages]
     tabs = st.tabs(tab_labels)
@@ -406,6 +1094,27 @@ if "pages" in st.session_state:
 
             # ── RIGHT: OCR results ──
             with right:
+                # Extraction method badge
+                _extr = page.get("_extraction", "ocr")
+                if _extr == "digital":
+                    st.markdown(
+                        '<span class="badge" style="background:#0d2b1a;color:#5fdd8f">'
+                        'Direct text extraction</span>',
+                        unsafe_allow_html=True,
+                    )
+
+                # Page-level language tag
+                page_lang = page.get("_lang_summary", {})
+                if page_lang.get("multilingual") or page_lang.get("primary_language", "en") != "en":
+                    _pl = page_lang.get("primary_language", "en")
+                    _pn = LANG_NAMES.get(_pl, _pl)
+                    _tr = " · translated" if page_lang.get("translation_applied") else ""
+                    st.markdown(
+                        f'<span class="badge" style="background:#1a1a3a;color:#af8fff">'
+                        f'🌐 {_pn}{_tr}</span>',
+                        unsafe_allow_html=True,
+                    )
+
                 # ─ text blocks ─
                 text_blocks = page["text_blocks"]
                 if text_blocks:
@@ -415,9 +1124,10 @@ if "pages" in st.session_state:
                         badge_cls = f"badge-{btype.lower()}"
                         conf_pct = int(blk["confidence"] * 100)
                         conf_width = max(2, conf_pct)
+                        lang_tag = (f" · {blk['lang_name']}" if blk.get("lang_name") else "")
 
                         with st.expander(
-                            f"{btype} block — confidence {conf_pct}%",
+                            f"{btype} block — confidence {conf_pct}%{lang_tag}",
                             expanded=(btype == "Title"),
                         ):
                             st.markdown(
@@ -427,7 +1137,17 @@ if "pages" in st.session_state:
                                 f'</div>',
                                 unsafe_allow_html=True,
                             )
+                            # Show translated (English) text
                             st.markdown(blk["text"])
+                            # Show original Indian-language text if translated
+                            if blk.get("original_text"):
+                                st.caption(f"Original ({blk.get('lang_name','')}):")
+                                st.markdown(
+                                    f'<div style="color:#888;font-size:0.82rem;'
+                                    f'border-left:2px solid #333;padding-left:8px">'
+                                    f'{blk["original_text"]}</div>',
+                                    unsafe_allow_html=True,
+                                )
                             st.caption(
                                 f"bbox: {[round(v) for v in blk['bbox']]}"
                             )
@@ -453,7 +1173,7 @@ if "pages" in st.session_state:
 
     # ── JSON viewer + download ──
     st.divider()
-    export_data = result_to_json_export(pages)
+    export_data = result_to_json_export(pages, doc_intel if doc_intel else None)
     json_str = json.dumps(export_data, indent=2, ensure_ascii=False)
 
     col_dl, col_view = st.columns([1, 3])
