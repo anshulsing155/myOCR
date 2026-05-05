@@ -3,6 +3,7 @@ import logging
 import cv2
 import numpy as np
 from config import OCR_LANG, PADDLE_USE_ANGLE_CLS, PADDLE_DEVICE
+from ocr.availability import paddle_available
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,10 @@ _lang_init_failed: set[str] = set()
 def _get_ocr():
     global _ocr, _init_failed
     if _init_failed:
+        return None
+    if not paddle_available():
+        _init_failed = True
+        logger.info("PaddleOCR is not installed in this environment; using fallback OCR.")
         return None
     if _ocr is None:
         try:
@@ -61,6 +66,8 @@ _PADDLE_LANG_MAP = {
 def _get_lang_ocr(lang: str):
     """Get or create a PaddleOCR instance for the given language."""
     paddle_lang = _PADDLE_LANG_MAP.get(lang, lang)
+    if not paddle_available():
+        return None
     if paddle_lang not in _SUPPORTED_LANGS:
         return None
     if paddle_lang in _lang_init_failed:
@@ -105,7 +112,10 @@ def run_paddle(image: np.ndarray) -> list[dict]:
         raw = ocr.predict(_ensure_bgr(image))
         return _parse_result(raw)
     except Exception as exc:
+        global _init_failed, _ocr
         logger.warning("PaddleOCR predict failed: %s", exc)
+        _init_failed = True
+        _ocr = None
         return []
 
 
