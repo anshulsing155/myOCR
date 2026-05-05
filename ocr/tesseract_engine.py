@@ -35,14 +35,26 @@ if not os.environ.get("TESSDATA_PREFIX"):
         os.environ["TESSDATA_PREFIX"] = _tessdata
 
 
-def run_tesseract(image: np.ndarray) -> list[dict]:
-    """
-    Returns list of dicts (one per word):
-      { "text": str, "confidence": float, "bbox": [x, y, w, h] }
-    """
+# Mapping from PaddleOCR lang code → Tesseract lang string (always paired with eng)
+_TESS_LANG_MAP: dict[str, str] = {
+    "hi": "hin+eng",
+    "mr": "mar+eng",
+    "bn": "ben+eng",
+    "ta": "tam+eng",
+    "te": "tel+eng",
+    "kn": "kan+eng",
+    "ml": "mal+eng",
+    "gu": "guj+eng",
+    "pa": "pan+eng",
+    "ur": "urd+eng",
+    "or": "ori+eng",
+}
+
+
+def _tess_data(image: np.ndarray, lang: str) -> list[dict]:
     data = pytesseract.image_to_data(
         image,
-        lang=TESSERACT_LANG,
+        lang=lang,
         output_type=pytesseract.Output.DICT,
     )
     results = []
@@ -57,3 +69,21 @@ def run_tesseract(image: np.ndarray) -> list[dict]:
             "bbox": [data["left"][i], data["top"][i], data["width"][i], data["height"][i]],
         })
     return results
+
+
+def run_tesseract(image: np.ndarray) -> list[dict]:
+    """Run Tesseract with the configured default language (English)."""
+    return _tess_data(image, TESSERACT_LANG)
+
+
+def run_tesseract_lang(image: np.ndarray, paddle_lang: str) -> list[dict]:
+    """
+    Run Tesseract with the Indian-script language that corresponds to the given
+    PaddleOCR language code.  Falls back to English-only if the lang pack is
+    not installed or the call fails.
+    """
+    tess_lang = _TESS_LANG_MAP.get(paddle_lang, TESSERACT_LANG)
+    try:
+        return _tess_data(image, tess_lang)
+    except Exception:
+        return _tess_data(image, TESSERACT_LANG)

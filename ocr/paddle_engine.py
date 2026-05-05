@@ -15,10 +15,6 @@ _predict_lock = threading.Lock()  # PaddleOCR is not thread-safe in Streamlit
 _consecutive_failures = 0
 _MAX_CONSECUTIVE_FAILURES = 3  # Permanently disable after this many predict failures
 
-# Cache of per-language PaddleOCR instances (lang_code → instance)
-_lang_ocr: dict[str, object] = {}
-_lang_init_failed: set[str] = set()
-
 
 def _get_ocr():
     global _ocr, _init_failed
@@ -42,57 +38,6 @@ def _get_ocr():
             _init_failed = True
             return None
     return _ocr
-
-
-# Paddle lang codes that have dedicated recognition models
-_SUPPORTED_LANGS = {
-    "hi",  # Hindi (Devanagari)
-    "mr",  # Marathi — uses same Devanagari model via 'hi'
-    "bn",  # Bengali
-    "ta",  # Tamil
-    "te",  # Telugu
-    "kn",  # Kannada
-    "ml",  # Malayalam
-    "gu",  # Gujarati
-    "pa",  # Punjabi (Gurmukhi)
-    "ur",  # Urdu (Arabic script)
-}
-
-# Some fast_langdetect codes need remapping to PaddleOCR lang param
-_PADDLE_LANG_MAP = {
-    "mr": "hi",  # Marathi uses same Devanagari model as Hindi
-    "sa": "hi",  # Sanskrit
-    "ne": "hi",  # Nepali
-    "as": "bn",  # Assamese uses Bengali model
-    "or": "en",  # Odia — PaddleOCR doesn't have a dedicated model, fallback to English
-}
-
-
-def _get_lang_ocr(lang: str):
-    """Get or create a PaddleOCR instance for the given language."""
-    paddle_lang = _PADDLE_LANG_MAP.get(lang, lang)
-    if not paddle_available():
-        return None
-    if paddle_lang not in _SUPPORTED_LANGS:
-        return None
-    if paddle_lang in _lang_init_failed:
-        return None
-    if paddle_lang not in _lang_ocr:
-        try:
-            from paddleocr import PaddleOCR
-            instance = PaddleOCR(
-                lang=paddle_lang,
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                device=PADDLE_DEVICE,
-            )
-            _lang_ocr[paddle_lang] = instance
-            logger.info("Initialized PaddleOCR for lang=%s", paddle_lang)
-        except Exception as exc:
-            logger.warning("PaddleOCR lang=%s failed to init: %s", paddle_lang, exc)
-            _lang_init_failed.add(paddle_lang)
-            return None
-    return _lang_ocr[paddle_lang]
 
 
 def _ensure_bgr(image: np.ndarray) -> np.ndarray:
@@ -145,32 +90,6 @@ def run_paddle(image: np.ndarray) -> list[dict]:
             _init_failed = True
             _ocr = None
         return []
-
-
-def run_paddle_lang(image: np.ndarray, lang: str) -> list[dict]:
-    """
-    Run PaddleOCR with a specific regional language model.
-    Used for images where the dominant script is Indian (non-Latin).
-
-    Falls back to run_paddle() (English model) if the regional model
-    is unavailable or fails.
-    """
-    ocr = _get_lang_ocr(lang)
-    if ocr is None:
-        logger.debug("No regional model for lang=%s, using English model", lang)
-        return run_paddle(image)
-    try:
-        img = _ensure_bgr(image)
-        with _predict_lock:
-            raw = ocr.predict(img)
-            if not isinstance(raw, list):
-                raw = list(raw)
-        results = _parse_result(raw)
-        if results:
-            return results
-    except Exception as exc:
-        logger.warning("PaddleOCR lang=%s predict failed: %s\n%s", lang, exc, traceback.format_exc())
-    return run_paddle(image)
 
 
 _CONSONANTS = frozenset("bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ")
@@ -374,8 +293,9 @@ def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
     if detected_lang is None:
         return english_results, None
 
-    # ── Regional OCR pass ─────────────────────────────────────────────────────
-    regional_results = run_paddle_lang(image, detected_lang)
+    # ── Regional OCR pass (Tesseract avoids dual-Paddle-instance conflict) ────
+    from ocr.tesseract_engine import run_tesseract_lang
+    regional_results = run_tesseract_lang(image, detected_lang)
     if not regional_results:
         return english_results, detected_lang
 
