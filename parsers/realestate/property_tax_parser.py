@@ -39,7 +39,7 @@ _PENALTY_RE    = re.compile(
     re.I,
 )
 _TOTAL_RE      = re.compile(
-    r"(?:total\s*(?:amount(?:\s*(?:paid|payable|due))?|paid|payable|due)|net\s*payable)"
+    r"(?:total\s*(?:amount\s*)?(?:paid|payable|due)?|net\s*payable)"
     r"[:\s]*(?:rs\.?|inr)?\s*([\d,]+(?:\.\d{1,2})?)",
     re.I,
 )
