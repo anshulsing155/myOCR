@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 import pytesseract
 from config import TESSERACT_LANG
@@ -14,6 +15,8 @@ if not _TESSERACT_CMD:
         "/usr/local/bin/tesseract",
     ]
     _TESSERACT_CMD = next((p for p in _CANDIDATES if os.path.exists(p)), "")
+    if not _TESSERACT_CMD:
+        _TESSERACT_CMD = shutil.which("tesseract") or ""
 if _TESSERACT_CMD:
     pytesseract.pytesseract.tesseract_cmd = _TESSERACT_CMD
 
@@ -23,6 +26,8 @@ if not os.environ.get("TESSDATA_PREFIX"):
         r"C:\Program Files\Tesseract-OCR\tessdata",
         r"C:\Users\hp\miniforge3\share\tessdata",
         "/usr/share/tesseract-ocr/4.00/tessdata",
+        "/usr/share/tesseract-ocr/5/tessdata",
+        "/usr/share/tesseract-ocr/tessdata",
         "/usr/local/share/tessdata",
     ]
     _tessdata = next((p for p in _DATA_CANDIDATES if os.path.isdir(p)), "")
