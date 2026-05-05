@@ -636,31 +636,46 @@ with st.sidebar:
     save_to_disk = st.toggle("Save JSON to outputs/", value=True)
 
     st.divider()
-    st.markdown("### 🤖 Gemini AI")
-    _gemini_default_key = os.environ.get("GEMINI_API_KEY", "")
-    gemini_enabled = st.toggle(
-        "Enable Gemini OCR",
-        value=bool(_gemini_default_key),
-        help="Use Gemini Vision for bank statement extraction",
+    st.markdown("### 🤖 AI Engine")
+    _ai_engine = st.radio(
+        "Select AI engine",
+        options=["None (local OCR)", "Gemini", "Grok (xAI)"],
+        index=0,
+        help="Choose an AI Vision model to extract bank statement data",
     )
+
+    ai_api_key  = ""
+    ai_only     = False
+    gemini_enabled = False
     gemini_api_key = ""
-    gemini_only = False
-    if gemini_enabled:
+    gemini_only    = False
+
+    if _ai_engine == "Gemini":
+        gemini_enabled = True
+        _default = os.environ.get("GEMINI_API_KEY", "")
         gemini_api_key = st.text_input(
-            "Gemini API Key",
-            value=_gemini_default_key,
-            type="password",
-            placeholder="AIza...",
+            "Gemini API Key", value=_default, type="password", placeholder="AIza..."
         )
-        gemini_only = st.toggle(
-            "Gemini only (skip local OCR)",
-            value=False,
-            help="Skip PaddleOCR/Tesseract entirely — send pages straight to Gemini",
+        ai_api_key = gemini_api_key
+        ai_only = st.toggle(
+            "Gemini only (skip local OCR)", value=False,
+            help="Skip PaddleOCR/Tesseract — send pages straight to Gemini",
+        )
+        gemini_only = ai_only
+
+    elif _ai_engine == "Grok (xAI)":
+        _default = os.environ.get("GROK_API_KEY", "")
+        ai_api_key = st.text_input(
+            "Grok API Key", value=_default, type="password", placeholder="xai-..."
+        )
+        ai_only = st.toggle(
+            "Grok only (skip local OCR)", value=False,
+            help="Skip PaddleOCR/Tesseract — send pages straight to Grok",
         )
 
     st.divider()
     st.markdown(
-        "<small style='color:#555'>PaddleOCR · Tesseract · OpenCV · LayoutParser · Gemini</small>",
+        "<small style='color:#555'>PaddleOCR · Tesseract · OpenCV · LayoutParser · Gemini · Grok</small>",
         unsafe_allow_html=True,
     )
 
@@ -746,24 +761,26 @@ if uploaded_file:
         progress_bar = st.progress(0, text="Starting pipeline…")
         status_area = st.empty()
 
-        # ── Gemini-only fast path ─────────────────────────────────────────────
-        if gemini_only and gemini_api_key:
-            import time as _time
-            status_area.info("🤖 Gemini AI: processing all pages…")
+        # ── AI-only fast path (Gemini or Grok) ───────────────────────────────
+        if ai_only and ai_api_key:
+            _engine_name = _ai_engine.split()[0]   # "Gemini" or "Grok"
+            status_area.info(f"🤖 {_engine_name}: processing all pages…")
             try:
-                from ocr.gemini_bank_ocr import GeminiBankOCR
-                _gcr = GeminiBankOCR(api_key=gemini_api_key)
-                if not _gcr.available:
-                    st.error("google-genai not available. Run: pip install google-genai")
+                if _ai_engine == "Gemini":
+                    from ocr.gemini_bank_ocr import GeminiBankOCR
+                    _ocr_engine = GeminiBankOCR(api_key=ai_api_key)
                 else:
-                    _t_start = _time.perf_counter()
-                    _gresult = _gcr.extract(raw_images)
-                    _t_elapsed = _time.perf_counter() - _t_start
+                    from ocr.grok_bank_ocr import GrokBankOCR
+                    _ocr_engine = GrokBankOCR(api_key=ai_api_key)
 
-                    if "error" in _gresult:
-                        st.error(f"Gemini error: {_gresult['error']}")
+                if not _ocr_engine.available:
+                    st.error(f"{_engine_name} engine not available — check API key / dependencies.")
+                else:
+                    _airesult = _ocr_engine.extract(raw_images)
+
+                    if "error" in _airesult:
+                        st.error(f"{_engine_name} error: {_airesult['error']}")
                     else:
-                        # Build minimal page stubs so the rest of the UI works
                         for i, img in enumerate(raw_images):
                             pages.append({
                                 "page": i + 1,
@@ -771,33 +788,34 @@ if uploaded_file:
                                 "tables": [],
                                 "_original_img": img,
                                 "_debug_img": None,
-                                "_extraction": "gemini",
+                                "_extraction": _engine_name.lower(),
                             })
-                        _gresult.pop("doc_type", None)
-                        _gresult["response_time_sec"] = round(_t_elapsed, 2)
+                        _airesult.pop("doc_type", None)
+                        _t_elapsed  = _airesult.get("response_time_sec", 0)
+                        _txn_count  = _airesult.get("transaction_count", 0)
+                        _model_used = _airesult.get("ai_model") or _airesult.get("gemini_model", "")
                         doc_intel = {
                             "doc_type": "bank_statement",
                             "doc_confidence": 1.0,
-                            "bank_name": _gresult.get("bank_name"),
+                            "bank_name": _airesult.get("bank_name"),
                             "bank_code": None,
                             "languages": {"detected_languages": ["en"],
                                           "primary_language": "en",
                                           "multilingual": False,
                                           "translation_applied": False},
-                            "extraction_engine": "gemini",
-                            "extracted": _gresult,
+                            "extraction_engine": _engine_name.lower(),
+                            "extracted": _airesult,
                         }
                         progress_bar.progress(1.0, text="Done!")
-                        _txn_count = _gresult.get('transaction_count', 0)
                         status_area.success(
-                            f"✅ Gemini extracted {_txn_count} transactions "
+                            f"✅ {_engine_name} extracted {_txn_count} transactions "
                             f"from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
                         )
                         st.info(
                             f"⏱ Response time: **{_t_elapsed:.2f}s** · "
                             f"Pages: {len(raw_images)} · "
                             f"Transactions: {_txn_count} · "
-                            f"Model: {_gresult.get('gemini_model', 'gemini-2.5-flash')}"
+                            f"Model: {_model_used}"
                         )
                         if save_to_disk:
                             export = result_to_json_export(pages, doc_intel)
@@ -807,10 +825,10 @@ if uploaded_file:
                             st.caption(f"💾 Saved to `{saved}`")
                         st.session_state.pages = pages
                         st.session_state.doc_intel = doc_intel
-            except Exception as _ge:
-                st.error(f"Gemini OCR failed: {_ge}")
+            except Exception as _ae:
+                st.error(f"{_engine_name} OCR failed: {_ae}")
             st.stop()
-        # ── End Gemini-only path ──────────────────────────────────────────────
+        # ── End AI-only path ──────────────────────────────────────────────────
 
         from utils.pdf_extractor import extract_digital_page, detect_pdf_page_types
 
@@ -872,26 +890,32 @@ if uploaded_file:
         status_area.info("🧠 Running document classification…")
         doc_intel = run_document_intelligence(pages)
 
-        # Gemini bank statement enrichment (optional, runs after classification)
-        if (gemini_enabled and gemini_api_key
+        # AI enrichment after classification (runs when NOT in ai_only mode)
+        if (ai_api_key and not ai_only
                 and doc_intel.get("doc_type") == "bank_statement"):
-            status_area.info("🤖 Gemini AI: extracting bank statement data…")
+            _engine_name = _ai_engine.split()[0]
+            status_area.info(f"🤖 {_engine_name}: enriching bank statement data…")
             try:
-                from ocr.gemini_bank_ocr import GeminiBankOCR
-                _gcr = GeminiBankOCR(api_key=gemini_api_key)
-                if _gcr.available:
+                if _ai_engine == "Gemini":
+                    from ocr.gemini_bank_ocr import GeminiBankOCR
+                    _enricher = GeminiBankOCR(api_key=ai_api_key)
+                elif _ai_engine == "Grok (xAI)":
+                    from ocr.grok_bank_ocr import GrokBankOCR
+                    _enricher = GrokBankOCR(api_key=ai_api_key)
+                else:
+                    _enricher = None
+                if _enricher and _enricher.available:
                     _bank_hint = doc_intel.get("bank_name") or doc_intel.get("bank_code") or ""
-                    _gemini_result = _gcr.extract(raw_images, bank_hint=_bank_hint)
-                    if "error" not in _gemini_result:
-                        # Merge Gemini result into doc_intel extracted, preserving bank_name/code
-                        _gemini_result.pop("doc_type", None)
+                    _ai_result = _enricher.extract(raw_images, bank_hint=_bank_hint)
+                    if "error" not in _ai_result:
+                        _ai_result.pop("doc_type", None)
                         doc_intel.setdefault("extracted", {})
-                        doc_intel["extracted"].update(_gemini_result)
-                        doc_intel["extraction_engine"] = "gemini"
+                        doc_intel["extracted"].update(_ai_result)
+                        doc_intel["extraction_engine"] = _engine_name.lower()
                     else:
-                        st.warning(f"Gemini extraction failed: {_gemini_result['error']}")
-            except Exception as _ge:
-                st.warning(f"Gemini OCR error: {_ge}")
+                        st.warning(f"{_engine_name} extraction failed: {_ai_result['error']}")
+            except Exception as _ae:
+                st.warning(f"{_engine_name} OCR error: {_ae}")
 
         progress_bar.progress(1.0, text="Done!")
         _dig = sum(1 for t in _page_types if t == "digital")
@@ -992,8 +1016,9 @@ if "pages" in st.session_state:
             _bank_html = (
                 f'<span class="bank-tag">🏦 {_bank}</span>' if _bank else ""
             )
-            if _engine == "gemini":
-                _bank_html += ' <span class="bank-tag" style="background:#1a2a1a;color:#7fff7f">🤖 Gemini AI</span>'
+            if _engine in ("gemini", "grok"):
+                _engine_label = "Gemini AI" if _engine == "gemini" else "Grok (xAI)"
+                _bank_html += f' <span class="bank-tag" style="background:#1a2a1a;color:#7fff7f">🤖 {_engine_label}</span>'
             _meta = doc_intel.get("extracted", {}).get("metadata", {})
             _meta_rows_html = "".join(
                 f"<tr><td>{k.replace('_', ' ').title()}</td><td>{v}</td></tr>"

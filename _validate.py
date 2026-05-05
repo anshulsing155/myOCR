@@ -22,7 +22,11 @@ print(f"Using: {pdf_path}")
 images = pdf_to_images(pdf_path)
 print(f"Pages: {len(images)}")
 
-ocr = GeminiBankOCR(api_key="AIzaSyC5LxnaLw0MOyYq2ddIYictGFQErXIbRG8")
+api_key = os.environ.get("GEMINI_API_KEY", "")
+if not api_key:
+    print("Set GEMINI_API_KEY environment variable and re-run.")
+    sys.exit(1)
+ocr = GeminiBankOCR(api_key=api_key)
 result = ocr.extract(images, bank_hint="HDFC")
 
 if "error" in result:
