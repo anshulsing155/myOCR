@@ -4,11 +4,14 @@ Document Intelligence Pipeline orchestrator.
 Flow per document:
     1. OCR   — PaddleOCR with automatic Tesseract fallback
     2. Classify — keyword scoring → doc_type + confidence
-    3. Route — bank_statement → bank ID + bank parser
-                pan_card      → PAN parser
-                aadhaar       → Aadhaar parser
-                itr           → ITR parser
-                *             → Generic parser
+    3. Route — dispatches to the appropriate parser based on doc_type
+
+Supported doc_types:
+    bank_statement, pan_card, aadhaar, eshram, itr, salary_slip,
+    voter_id, passport, vehicle_rc, birth_certificate, marriage_certificate,
+    caste_certificate, income_certificate, domicile_certificate, ration_card,
+    gst_certificate, marksheet, degree_certificate, ayushman_card, ppo,
+    driving_license, invoice, property_doc, other
 """
 from __future__ import annotations
 
@@ -141,6 +144,62 @@ class DocumentPipeline:
         if doc_type == "salary_slip":
             from parsers.salary_slip_parser import SalarySlipParser
             return SalarySlipParser().parse(ocr_results)
+
+        if doc_type == "voter_id":
+            from parsers.voter_id_parser import VoterIdParser
+            return VoterIdParser().parse(ocr_results)
+
+        if doc_type == "passport":
+            from parsers.passport_parser import PassportParser
+            return PassportParser().parse(ocr_results)
+
+        if doc_type == "vehicle_rc":
+            from parsers.vehicle_rc_parser import VehicleRcParser
+            return VehicleRcParser().parse(ocr_results)
+
+        if doc_type == "birth_certificate":
+            from parsers.birth_certificate_parser import BirthCertificateParser
+            return BirthCertificateParser().parse(ocr_results)
+
+        if doc_type == "marriage_certificate":
+            from parsers.marriage_certificate_parser import MarriageCertificateParser
+            return MarriageCertificateParser().parse(ocr_results)
+
+        if doc_type == "caste_certificate":
+            from parsers.caste_certificate_parser import CasteCertificateParser
+            return CasteCertificateParser().parse(ocr_results)
+
+        if doc_type == "income_certificate":
+            from parsers.income_certificate_parser import IncomeCertificateParser
+            return IncomeCertificateParser().parse(ocr_results)
+
+        if doc_type == "domicile_certificate":
+            from parsers.domicile_certificate_parser import DomicileCertificateParser
+            return DomicileCertificateParser().parse(ocr_results)
+
+        if doc_type == "ration_card":
+            from parsers.ration_card_parser import RationCardParser
+            return RationCardParser().parse(ocr_results)
+
+        if doc_type == "gst_certificate":
+            from parsers.gst_certificate_parser import GstCertificateParser
+            return GstCertificateParser().parse(ocr_results)
+
+        if doc_type == "marksheet":
+            from parsers.marksheet_parser import MarksheetParser
+            return MarksheetParser().parse(ocr_results)
+
+        if doc_type == "degree_certificate":
+            from parsers.degree_certificate_parser import DegreeCertificateParser
+            return DegreeCertificateParser().parse(ocr_results)
+
+        if doc_type == "ayushman_card":
+            from parsers.ayushman_card_parser import AyushmanCardParser
+            return AyushmanCardParser().parse(ocr_results)
+
+        if doc_type == "ppo":
+            from parsers.ppo_parser import PpoParser
+            return PpoParser().parse(ocr_results)
 
         from parsers.generic_parser import GenericParser
         return GenericParser().parse(ocr_results, doc_type=doc_type)

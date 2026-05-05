@@ -447,6 +447,48 @@ def _parse_for_type(
         extracted = SalarySlipParser().parse(ocr)
     elif doc_type == "driving_license":
         extracted = DrivingLicenseParser().parse(ocr)
+    elif doc_type == "voter_id":
+        from parsers.voter_id_parser import VoterIdParser
+        extracted = VoterIdParser().parse(ocr)
+    elif doc_type == "passport":
+        from parsers.passport_parser import PassportParser
+        extracted = PassportParser().parse(ocr)
+    elif doc_type == "vehicle_rc":
+        from parsers.vehicle_rc_parser import VehicleRcParser
+        extracted = VehicleRcParser().parse(ocr)
+    elif doc_type == "birth_certificate":
+        from parsers.birth_certificate_parser import BirthCertificateParser
+        extracted = BirthCertificateParser().parse(ocr)
+    elif doc_type == "marriage_certificate":
+        from parsers.marriage_certificate_parser import MarriageCertificateParser
+        extracted = MarriageCertificateParser().parse(ocr)
+    elif doc_type == "caste_certificate":
+        from parsers.caste_certificate_parser import CasteCertificateParser
+        extracted = CasteCertificateParser().parse(ocr)
+    elif doc_type == "income_certificate":
+        from parsers.income_certificate_parser import IncomeCertificateParser
+        extracted = IncomeCertificateParser().parse(ocr)
+    elif doc_type == "domicile_certificate":
+        from parsers.domicile_certificate_parser import DomicileCertificateParser
+        extracted = DomicileCertificateParser().parse(ocr)
+    elif doc_type == "ration_card":
+        from parsers.ration_card_parser import RationCardParser
+        extracted = RationCardParser().parse(ocr)
+    elif doc_type == "gst_certificate":
+        from parsers.gst_certificate_parser import GstCertificateParser
+        extracted = GstCertificateParser().parse(ocr)
+    elif doc_type == "marksheet":
+        from parsers.marksheet_parser import MarksheetParser
+        extracted = MarksheetParser().parse(ocr)
+    elif doc_type == "degree_certificate":
+        from parsers.degree_certificate_parser import DegreeCertificateParser
+        extracted = DegreeCertificateParser().parse(ocr)
+    elif doc_type == "ayushman_card":
+        from parsers.ayushman_card_parser import AyushmanCardParser
+        extracted = AyushmanCardParser().parse(ocr)
+    elif doc_type == "ppo":
+        from parsers.ppo_parser import PpoParser
+        extracted = PpoParser().parse(ocr)
     else:
         extracted = GenericParser().parse(ocr, doc_type=doc_type)
     return extracted, bank_name, bank_code

@@ -4,8 +4,11 @@ Classify a document by type using two-phase scoring on OCR text:
   Phase 2 — structural regex patterns (PAN number, Aadhaar 12-digit, IFSC, etc.)
 
 Supported types:
-    bank_statement, pan_card, aadhaar, eshram, itr, invoice,
-    salary_slip, property_doc, other
+    bank_statement, pan_card, aadhaar, eshram, itr, invoice, salary_slip,
+    property_doc, driving_license, voter_id, passport, vehicle_rc,
+    birth_certificate, marriage_certificate, caste_certificate,
+    income_certificate, domicile_certificate, ration_card, gst_certificate,
+    marksheet, degree_certificate, ayushman_card, ppo, other
 """
 from __future__ import annotations
 
@@ -148,6 +151,188 @@ _SIGNATURES: dict[str, list[tuple[str, float]]] = {
         ("issued by",                        2.0),
         ("blood group",                      1.0),
     ],
+    "voter_id": [
+        ("election commission of india",     6.0),
+        ("electors photo identity card",     6.0),
+        ("epic",                             4.0),
+        ("electoral roll",                   3.0),
+        ("polling station",                  3.0),
+        ("part no",                          2.0),
+        ("assembly constituency",            3.0),
+        ("parliamentary constituency",       2.0),
+        ("voter",                            2.0),
+        ("elector",                          2.0),
+    ],
+    "passport": [
+        ("republic of india",                3.0),
+        ("passport",                         5.0),
+        ("place of birth",                   2.0),
+        ("place of issue",                   2.0),
+        ("date of expiry",                   3.0),
+        ("date of issue",                    1.5),
+        ("nationality",                      2.0),
+        ("type of passport",                 3.0),
+        ("ministry of external affairs",     4.0),
+        ("emigration check",                 3.0),
+    ],
+    "vehicle_rc": [
+        ("registration certificate",         5.0),
+        ("motor vehicles act",               3.0),
+        ("vahan",                            4.0),
+        ("chassis no",                       3.0),
+        ("engine no",                        3.0),
+        ("insurance validity",               3.0),
+        ("fitness validity",                 3.0),
+        ("registered owner",                 3.0),
+        ("fuel type",                        2.0),
+        ("vehicle class",                    2.0),
+        ("reg. no",                          2.0),
+        ("seating capacity",                 2.0),
+    ],
+    "birth_certificate": [
+        ("birth certificate",                6.0),
+        ("certificate of birth",             6.0),
+        ("date of birth",                    2.0),
+        ("place of birth",                   2.0),
+        ("father's name",                    2.0),
+        ("mother's name",                    2.0),
+        ("municipal corporation",            2.5),
+        ("gram panchayat",                   2.0),
+        ("birth registration",               3.0),
+        ("born on",                          1.5),
+    ],
+    "marriage_certificate": [
+        ("marriage certificate",             6.0),
+        ("certificate of marriage",          6.0),
+        ("date of marriage",                 4.0),
+        ("groom",                            2.0),
+        ("bride",                            2.0),
+        ("husband",                          2.0),
+        ("wife",                             2.0),
+        ("marriage registration",            3.0),
+        ("solemnized",                       3.0),
+        ("hindu marriage act",               4.0),
+        ("special marriage act",             4.0),
+    ],
+    "caste_certificate": [
+        ("caste certificate",                6.0),
+        ("community certificate",            5.0),
+        ("scheduled caste",                  4.0),
+        ("scheduled tribe",                  4.0),
+        ("other backward class",             4.0),
+        ("obc",                              3.0),
+        ("belongs to",                       2.0),
+        ("social category",                  3.0),
+        ("creamy layer",                     3.0),
+        ("non-creamy layer",                 3.0),
+        ("tahsildar",                        2.0),
+        ("revenue department",               2.0),
+    ],
+    "income_certificate": [
+        ("income certificate",               6.0),
+        ("annual income",                    4.0),
+        ("per annum",                        3.0),
+        ("income per annum",                 4.0),
+        ("income from all sources",          4.0),
+        ("revenue officer",                  2.0),
+        ("tehsildar",                        2.0),
+        ("income proof",                     3.0),
+        ("yearly income",                    3.0),
+    ],
+    "domicile_certificate": [
+        ("domicile certificate",             6.0),
+        ("residence certificate",            5.0),
+        ("permanent resident",               4.0),
+        ("state of domicile",                5.0),
+        ("bonafide resident",                4.0),
+        ("domicile",                         3.0),
+        ("residing in",                      2.0),
+        ("resident of",                      2.0),
+    ],
+    "ration_card": [
+        ("ration card",                      6.0),
+        ("public distribution system",       5.0),
+        ("pds",                              3.0),
+        ("fair price shop",                  4.0),
+        ("antyodaya anna yojana",            5.0),
+        ("aay",                              3.0),
+        ("bpl",                              3.0),
+        ("apl",                              2.5),
+        ("phh",                              3.0),
+        ("priority household",               3.0),
+        ("food and civil supplies",          3.0),
+        ("nfsa",                             3.0),
+    ],
+    "gst_certificate": [
+        ("goods and services tax",           4.0),
+        ("central goods",                    3.0),
+        ("state goods",                      3.0),
+        ("gst registration",                 5.0),
+        ("registration certificate",         2.0),
+        ("legal name of business",           3.0),
+        ("trade name",                       2.0),
+        ("taxpayer type",                    3.0),
+        ("constitution of business",         3.0),
+        ("principal place of business",      3.0),
+        ("nature of business",               2.0),
+    ],
+    "marksheet": [
+        ("mark sheet",                       5.0),
+        ("statement of marks",               5.0),
+        ("cbse",                             4.0),
+        ("icse",                             4.0),
+        ("board of secondary education",     4.0),
+        ("examination result",               3.0),
+        ("class x",                          3.0),
+        ("class xii",                        3.0),
+        ("10th",                             2.0),
+        ("12th",                             2.0),
+        ("roll number",                      2.0),
+        ("marks obtained",                   3.0),
+        ("pass/fail",                        2.0),
+        ("result",                           1.0),
+        ("grade",                            1.0),
+    ],
+    "degree_certificate": [
+        ("degree certificate",               5.0),
+        ("bachelor of",                      5.0),
+        ("master of",                        5.0),
+        ("doctor of",                        5.0),
+        ("diploma in",                       4.0),
+        ("university",                       2.0),
+        ("conferred",                        4.0),
+        ("awarded the degree",               5.0),
+        ("convocation",                      4.0),
+        ("chancellor",                       3.0),
+        ("this is to certify",               1.5),
+        ("year of passing",                  2.0),
+    ],
+    "ayushman_card": [
+        ("ayushman bharat",                  6.0),
+        ("pmjay",                            6.0),
+        ("pradhan mantri jan arogya",        6.0),
+        ("pm-jan arogya yojana",             6.0),
+        ("health benefit package",           4.0),
+        ("beneficiary",                      2.0),
+        ("empanelled hospital",              3.0),
+        ("family id",                        2.0),
+        ("pm jay",                           5.0),
+    ],
+    "ppo": [
+        ("pension payment order",            6.0),
+        ("ppo",                              4.0),
+        ("pensioner",                        3.0),
+        ("cpao",                             4.0),
+        ("central pension",                  4.0),
+        ("date of retirement",               3.0),
+        ("commuted pension",                 4.0),
+        ("gratuity",                         2.0),
+        ("dcrg",                             3.0),
+        ("superannuation",                   3.0),
+        ("epfo",                             3.0),
+        ("monthly pension",                  4.0),
+        ("family pension",                   3.0),
+    ],
 }
 
 _MAX_KW_SCORE = {k: sum(w for _, w in v) for k, v in _SIGNATURES.items()}
@@ -180,6 +365,44 @@ _PATTERN_SCORES: list[tuple[re.Pattern, str, float]] = [
     (re.compile(r"\b\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d][Z][A-Z\d]\b"), "invoice", 3.0),
     # Indian DL number: StateCode(2) + DistrictCode(2) + Year(4) + Serial(7)
     (re.compile(r"\b[A-Z]{2}[-\s]?\d{2}[-\s]?\d{4}[-\s]?\d{7}\b"), "driving_license", 5.0),
+    # Voter ID EPIC number: 2-3 uppercase letters + 7 digits
+    (re.compile(r"\b[A-Z]{2,3}\d{7}\b"),                             "voter_id",        4.0),
+    # Election Commission of India label
+    (re.compile(r"election\s*commission\s*of\s*india", re.I),        "voter_id",        6.0),
+    # Indian Passport number: letter (A-Z excl Q/X) + 7 digits
+    (re.compile(r"\b[A-PR-WY]\d{7}\b"),                              "passport",        5.0),
+    # MRZ line (machine-readable zone): 20+ uppercase + digits + '<'
+    (re.compile(r"\bP<IND[A-Z<]{10,}"),                              "passport",        6.0),
+    # Vehicle registration number: state-code(2) + district(2) + series + number
+    (re.compile(r"\b[A-Z]{2}\s*\d{1,2}\s*[A-Z]{1,3}\s*\d{1,4}\b"), "vehicle_rc",      4.0),
+    # Chassis number: 17-char VIN
+    (re.compile(r"\b[A-Z0-9]{17}\b"),                                "vehicle_rc",      2.0),
+    # Birth certificate keyword
+    (re.compile(r"birth\s*certificate", re.I),                       "birth_certificate", 6.0),
+    # Marriage certificate keyword
+    (re.compile(r"marriage\s*certificate", re.I),                    "marriage_certificate", 6.0),
+    # Caste certificate patterns
+    (re.compile(r"caste\s*certificate|community\s*certificate", re.I), "caste_certificate", 6.0),
+    (re.compile(r"\b(SC|ST|OBC|EWS)\b"),                             "caste_certificate", 2.0),
+    # Income certificate
+    (re.compile(r"income\s*certificate", re.I),                      "income_certificate", 6.0),
+    # Domicile certificate
+    (re.compile(r"domicile\s*certificate|residence\s*certificate", re.I), "domicile_certificate", 6.0),
+    # Ration card
+    (re.compile(r"ration\s*card", re.I),                             "ration_card",     6.0),
+    (re.compile(r"\b(APL|BPL|AAY|PHH|NFSA)\b"),                     "ration_card",     3.0),
+    # GST certificate — GSTIN already covered in invoice; add GST registration label
+    (re.compile(r"gst\s*registration\s*certificate", re.I),          "gst_certificate", 6.0),
+    # Marksheet patterns
+    (re.compile(r"mark\s*sheet|statement\s*of\s*marks", re.I),       "marksheet",       5.0),
+    # Degree certificate
+    (re.compile(r"degree\s*certificate|bachelor\s*of|master\s*of|doctor\s*of", re.I), "degree_certificate", 4.0),
+    (re.compile(r"conferred|awarded\s*the\s*degree", re.I),          "degree_certificate", 4.0),
+    # Ayushman Bharat / PM-JAY
+    (re.compile(r"ayushman\s*bharat|pmjay|pradhan\s*mantri\s*jan\s*arogya", re.I), "ayushman_card", 6.0),
+    # PPO / Pension Payment Order
+    (re.compile(r"pension\s*payment\s*order|ppo\s*no", re.I),        "ppo",             6.0),
+    (re.compile(r"\bCPAO\b|\bEPFO\b"),                               "ppo",             4.0),
 ]
 
 
