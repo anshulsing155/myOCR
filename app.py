@@ -660,6 +660,10 @@ def run_document_intelligence(pages: list[dict]) -> dict:
             doc_entry["bank_code"] = bank_code
         documents.append(doc_entry)
 
+    # Cross-reference PAN + Aadhaar fields (name, DOB) when both appear together
+    from pipeline.document_pipeline import _crossref_identity_docs
+    _crossref_identity_docs(documents)
+
     # Store per-page extracted
     for p in pages:
         page_ext, _, _ = _parse_for_type(p.get("_ocr_results", []), p["_doc_type"])

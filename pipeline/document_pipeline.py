@@ -63,6 +63,49 @@ def run_ocr_with_fallback(image: np.ndarray, mode: str = "auto") -> list[dict]:
 
 # ── pipeline ──────────────────────────────────────────────────────────────────
 
+def _crossref_identity_docs(documents: list[dict]) -> None:
+    """
+    Post-processing for multi-document PDFs: cross-validate PAN + Aadhaar pairs.
+
+    - DOB mismatch → warning on both docs
+    - PAN name missing or low-confidence + Aadhaar name present → copy Aadhaar name to PAN
+    - PAN name and Aadhaar name both present but share no words → flag PAN as low-confidence
+      and attach Aadhaar name as a hint
+    Modifies documents in-place; no-op when PAN or Aadhaar not found.
+    """
+    pan_doc = next((d for d in documents if d.get("doc_type") == "pan_card"), None)
+    aad_doc = next((d for d in documents if d.get("doc_type") == "aadhaar"), None)
+    if not pan_doc or not aad_doc:
+        return
+
+    pan_ext = pan_doc.setdefault("extracted", {})
+    aad_ext = aad_doc.get("extracted", {})
+
+    pan_name = pan_ext.get("name", "")
+    aad_name = aad_ext.get("name", "")
+    pan_dob  = pan_ext.get("date_of_birth", "")
+    aad_dob  = aad_ext.get("date_of_birth", "")
+
+    # DOB cross-check
+    if pan_dob and aad_dob and pan_dob != aad_dob:
+        msg = f"DOB mismatch: PAN={pan_dob}, Aadhaar={aad_dob}"
+        pan_doc.setdefault("warnings", []).append(msg)
+        aad_doc.setdefault("warnings", []).append(msg)
+
+    # Name cross-reference
+    if aad_name:
+        if not pan_name or pan_ext.get("name_confidence") == "low":
+            pan_ext["name"] = aad_name
+            pan_ext["name_source"] = "aadhaar_cross_reference"
+            pan_ext.pop("name_confidence", None)
+        else:
+            pan_words = set(pan_name.upper().split())
+            aad_words = set(aad_name.upper().split())
+            if not pan_words & aad_words:
+                pan_ext["name_confidence"] = "low"
+                pan_ext["name_aadhaar_hint"] = aad_name
+
+
 class DocumentPipeline:
     """
     Stateless pipeline.
@@ -392,6 +435,8 @@ class DocumentPipeline:
                 doc_entry["bank_name"] = dummy["bank_name"]
                 doc_entry["bank_code"] = dummy["bank_code"]
             documents.append(doc_entry)
+
+        _crossref_identity_docs(documents)
 
         primary_group = max(groups, key=lambda g: g["doc_confidence"])
         return {

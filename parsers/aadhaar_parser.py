@@ -136,7 +136,8 @@ class AadhaarParser(BaseParser):
         # ── Aadhaar number ────────────────────────────────────────────────────
         m = _AADHAAR_RE.search(text_clean)
         if m:
-            result["aadhaar_number"] = re.sub(r"\s", "", m.group(1))
+            digits = re.sub(r"\s", "", m.group(1))
+            result["aadhaar_number"] = f"{digits[:4]} {digits[4:8]} {digits[8:]}"
 
         # ── Date of birth ─────────────────────────────────────────────────────
         m = _DOB_RE.search(text) or _BARE_DATE_RE.search(text)

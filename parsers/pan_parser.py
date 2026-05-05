@@ -1,4 +1,4 @@
-"""PAN card parser — extract PAN number, name, father's name, DOB.
+"""PAN card parser — extract PAN number, name, father’s name, DOB.
 
 Layout of a physical PAN card (top → bottom):
   INCOME TAX DEPARTMENT / GOVT. OF INDIA
@@ -7,8 +7,8 @@ Layout of a physical PAN card (top → bottom):
   AAAAA9999A          ← PAN
   Name
   FIRST LAST          ← holder name (always ALL CAPS)
-  Father's Name
-  FIRST LAST          ← father's name (always ALL CAPS)
+  Father’s Name
+  FIRST LAST          ← father’s name (always ALL CAPS)
   Date of Birth
   DD/MM/YYYY          ← DOB
 
@@ -33,14 +33,14 @@ _DOB_LABELED_RE = re.compile(
 )
 _DOB_BARE_RE = re.compile(r"\b(\d{2}/\d{2}/\d{4})\b")
 
-# Father's name — explicit label variants
+# Father’s name — explicit label variants
 _FATHER_LABELED_RE = re.compile(
-    r"(?:father['’s]*\s*(?:name)?|s/o|d/o|w/o|son\s+of|daughter\s+of|wife\s+of)"
+    r"(?:father[‘’s]*\s*(?:name)?|s/o|d/o|w/o|son\s+of|daughter\s+of|wife\s+of)"
     r"\s*[:\-]?\s*([A-Z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
     re.I | re.MULTILINE,
 )
 
-# Name label on card (sometimes OCR'd as "Name" before the actual name)
+# Name label on card (sometimes OCR’d as "Name" before the actual name)
 _NAME_LABELED_RE = re.compile(
     r"(?:^|\n)\s*Name\s*[:\-]?\n?\s*([A-Z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
     re.I | re.MULTILINE,
@@ -62,9 +62,25 @@ _PAN_TYPE = {
     "J": "Artificial Juridical Person", "G": "Government",
 }
 
+_CONSONANTS = frozenset("bcdfghjklmnpqrstvwxyz")
+
+
+def _is_garbled(word: str) -> bool:
+    """Return True if word looks like garbled OCR (too few vowels or consonant pile-up)."""
+    alpha = [c.lower() for c in word if c.isalpha() and c.isascii()]
+    if len(alpha) < 4:
+        return False
+    vowels = sum(1 for c in alpha if c in "aeiou")
+    run = max_run = 0
+    for c in alpha:
+        run = (run + 1) if c in _CONSONANTS else 0
+        max_run = max(max_run, run)
+    # Fewer than 20% vowels OR 4+ consecutive consonants signals garbled OCR
+    return (vowels / len(alpha)) < 0.20 or max_run >= 4
+
 
 def _is_name_line(line: str) -> bool:
-    """True if a line looks like a person/entity name: 2-5 words, alpha only."""
+    """True if a line looks like a person/entity name: 2-5 words, alpha only, not garbled."""
     words = line.strip().split()
     if not (2 <= len(words) <= 5):
         return False
@@ -73,6 +89,8 @@ def _is_name_line(line: str) -> bool:
     if any(w.upper() in _SKIP_WORDS for w in words):
         return False
     if re.search(r"\d", line):
+        return False
+    if any(_is_garbled(w) for w in words if len(w) >= 4):
         return False
     return True
 
@@ -128,6 +146,7 @@ class PanParser(BaseParser):
 
         if name_lines and "name" not in result:
             result["name"] = name_lines[0]
+            result["name_confidence"] = "low"   # positional fallback — may be garbled OCR
         if len(name_lines) >= 2 and "father_name" not in result:
             result["father_name"] = name_lines[1]
 
