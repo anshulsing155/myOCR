@@ -12,11 +12,24 @@ __pycache__/
 dist/
 build/
 .eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
 
 # Environment / secrets
 .env
-.env.*
+.env.local
+.env.production
+!.env.example
 *.key
+
+# Test & coverage artefacts
+.pytest_cache/
+.coverage
+htmlcov/
 
 # IDE
 .vscode/
@@ -25,3 +38,4 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini

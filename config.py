@@ -1,5 +1,11 @@
 import os
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # --- Input / Output ---
 INPUT_DIR = "inputs"
 OUTPUT_DIR = "outputs"
