@@ -489,6 +489,63 @@ def _parse_for_type(
     elif doc_type == "ppo":
         from parsers.ppo_parser import PpoParser
         extracted = PpoParser().parse(ocr)
+    elif doc_type == "sale_deed":
+        from parsers.realestate.sale_deed_parser import SaleDeedParser
+        extracted = SaleDeedParser().parse(ocr)
+    elif doc_type == "agreement_to_sale":
+        from parsers.realestate.agreement_to_sale_parser import AgreementToSaleParser
+        extracted = AgreementToSaleParser().parse(ocr)
+    elif doc_type == "encumbrance_certificate":
+        from parsers.realestate.encumbrance_certificate_parser import EncumbranceCertificateParser
+        extracted = EncumbranceCertificateParser().parse(ocr)
+    elif doc_type == "property_tax_receipt":
+        from parsers.realestate.property_tax_parser import PropertyTaxParser
+        extracted = PropertyTaxParser().parse(ocr)
+    elif doc_type == "khata":
+        from parsers.realestate.khata_parser import KhataParser
+        extracted = KhataParser().parse(ocr)
+    elif doc_type == "mutation_certificate":
+        from parsers.realestate.mutation_certificate_parser import MutationCertificateParser
+        extracted = MutationCertificateParser().parse(ocr)
+    elif doc_type == "land_record":
+        from parsers.realestate.land_record_parser import LandRecordParser
+        extracted = LandRecordParser().parse(ocr)
+    elif doc_type == "rera_certificate":
+        from parsers.realestate.rera_certificate_parser import ReraCertificateParser
+        extracted = ReraCertificateParser().parse(ocr)
+    elif doc_type == "occupancy_certificate":
+        from parsers.realestate.occupancy_certificate_parser import OccupancyCertificateParser
+        extracted = OccupancyCertificateParser().parse(ocr)
+    elif doc_type == "possession_letter":
+        from parsers.realestate.possession_letter_parser import PossessionLetterParser
+        extracted = PossessionLetterParser().parse(ocr)
+    elif doc_type == "power_of_attorney":
+        from parsers.realestate.power_of_attorney_parser import PowerOfAttorneyParser
+        extracted = PowerOfAttorneyParser().parse(ocr)
+    elif doc_type == "lease_deed":
+        from parsers.realestate.lease_deed_parser import LeaseDeedParser
+        extracted = LeaseDeedParser().parse(ocr)
+    elif doc_type == "gift_deed":
+        from parsers.realestate.gift_deed_parser import GiftDeedParser
+        extracted = GiftDeedParser().parse(ocr)
+    elif doc_type == "partition_deed":
+        from parsers.realestate.partition_deed_parser import PartitionDeedParser
+        extracted = PartitionDeedParser().parse(ocr)
+    elif doc_type == "mortgage_deed":
+        from parsers.realestate.mortgage_deed_parser import MortgageDeedParser
+        extracted = MortgageDeedParser().parse(ocr)
+    elif doc_type == "estamp_certificate":
+        from parsers.realestate.estamp_certificate_parser import EStampCertificateParser
+        extracted = EStampCertificateParser().parse(ocr)
+    elif doc_type == "property_valuation":
+        from parsers.realestate.property_valuation_parser import PropertyValuationParser
+        extracted = PropertyValuationParser().parse(ocr)
+    elif doc_type == "home_loan_sanction":
+        from parsers.realestate.home_loan_sanction_parser import HomeLoanSanctionParser
+        extracted = HomeLoanSanctionParser().parse(ocr)
+    elif doc_type == "legal_heir_certificate":
+        from parsers.realestate.legal_heir_certificate_parser import LegalHeirCertificateParser
+        extracted = LegalHeirCertificateParser().parse(ocr)
     else:
         extracted = GenericParser().parse(ocr, doc_type=doc_type)
     return extracted, bank_name, bank_code

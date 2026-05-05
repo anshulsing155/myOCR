@@ -11,7 +11,12 @@ Supported doc_types:
     voter_id, passport, vehicle_rc, birth_certificate, marriage_certificate,
     caste_certificate, income_certificate, domicile_certificate, ration_card,
     gst_certificate, marksheet, degree_certificate, ayushman_card, ppo,
-    driving_license, invoice, property_doc, other
+    driving_license, invoice, property_doc,
+    sale_deed, agreement_to_sale, encumbrance_certificate, property_tax_receipt,
+    khata, mutation_certificate, land_record, rera_certificate,
+    occupancy_certificate, possession_letter, power_of_attorney, lease_deed,
+    gift_deed, partition_deed, mortgage_deed, estamp_certificate,
+    property_valuation, home_loan_sanction, legal_heir_certificate, other
 """
 from __future__ import annotations
 
@@ -200,6 +205,82 @@ class DocumentPipeline:
         if doc_type == "ppo":
             from parsers.ppo_parser import PpoParser
             return PpoParser().parse(ocr_results)
+
+        if doc_type == "sale_deed":
+            from parsers.realestate.sale_deed_parser import SaleDeedParser
+            return SaleDeedParser().parse(ocr_results)
+
+        if doc_type == "agreement_to_sale":
+            from parsers.realestate.agreement_to_sale_parser import AgreementToSaleParser
+            return AgreementToSaleParser().parse(ocr_results)
+
+        if doc_type == "encumbrance_certificate":
+            from parsers.realestate.encumbrance_certificate_parser import EncumbranceCertificateParser
+            return EncumbranceCertificateParser().parse(ocr_results)
+
+        if doc_type == "property_tax_receipt":
+            from parsers.realestate.property_tax_parser import PropertyTaxParser
+            return PropertyTaxParser().parse(ocr_results)
+
+        if doc_type == "khata":
+            from parsers.realestate.khata_parser import KhataParser
+            return KhataParser().parse(ocr_results)
+
+        if doc_type == "mutation_certificate":
+            from parsers.realestate.mutation_certificate_parser import MutationCertificateParser
+            return MutationCertificateParser().parse(ocr_results)
+
+        if doc_type == "land_record":
+            from parsers.realestate.land_record_parser import LandRecordParser
+            return LandRecordParser().parse(ocr_results)
+
+        if doc_type == "rera_certificate":
+            from parsers.realestate.rera_certificate_parser import ReraCertificateParser
+            return ReraCertificateParser().parse(ocr_results)
+
+        if doc_type == "occupancy_certificate":
+            from parsers.realestate.occupancy_certificate_parser import OccupancyCertificateParser
+            return OccupancyCertificateParser().parse(ocr_results)
+
+        if doc_type == "possession_letter":
+            from parsers.realestate.possession_letter_parser import PossessionLetterParser
+            return PossessionLetterParser().parse(ocr_results)
+
+        if doc_type == "power_of_attorney":
+            from parsers.realestate.power_of_attorney_parser import PowerOfAttorneyParser
+            return PowerOfAttorneyParser().parse(ocr_results)
+
+        if doc_type == "lease_deed":
+            from parsers.realestate.lease_deed_parser import LeaseDeedParser
+            return LeaseDeedParser().parse(ocr_results)
+
+        if doc_type == "gift_deed":
+            from parsers.realestate.gift_deed_parser import GiftDeedParser
+            return GiftDeedParser().parse(ocr_results)
+
+        if doc_type == "partition_deed":
+            from parsers.realestate.partition_deed_parser import PartitionDeedParser
+            return PartitionDeedParser().parse(ocr_results)
+
+        if doc_type == "mortgage_deed":
+            from parsers.realestate.mortgage_deed_parser import MortgageDeedParser
+            return MortgageDeedParser().parse(ocr_results)
+
+        if doc_type == "estamp_certificate":
+            from parsers.realestate.estamp_certificate_parser import EStampCertificateParser
+            return EStampCertificateParser().parse(ocr_results)
+
+        if doc_type == "property_valuation":
+            from parsers.realestate.property_valuation_parser import PropertyValuationParser
+            return PropertyValuationParser().parse(ocr_results)
+
+        if doc_type == "home_loan_sanction":
+            from parsers.realestate.home_loan_sanction_parser import HomeLoanSanctionParser
+            return HomeLoanSanctionParser().parse(ocr_results)
+
+        if doc_type == "legal_heir_certificate":
+            from parsers.realestate.legal_heir_certificate_parser import LegalHeirCertificateParser
+            return LegalHeirCertificateParser().parse(ocr_results)
 
         from parsers.generic_parser import GenericParser
         return GenericParser().parse(ocr_results, doc_type=doc_type)
