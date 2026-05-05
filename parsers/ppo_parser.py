@@ -37,7 +37,9 @@ _TYPE_RE      = re.compile(
 )
 
 
-def _norm_date(raw: str) -> str:
+def _norm_date(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     raw = raw.strip().replace("-", "/").replace(".", "/")
     parts = raw.split("/")
     if len(parts) == 3:
@@ -48,7 +50,9 @@ def _norm_date(raw: str) -> str:
     return raw
 
 
-def _clean_amount(raw: str) -> str:
+def _clean_amount(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     return raw.strip().replace(",", "")
 
 

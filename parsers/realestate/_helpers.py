@@ -14,7 +14,9 @@ _MONTH_MAP = {
 }
 
 
-def norm_date(raw: str) -> str:
+def norm_date(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     raw = raw.strip()
     m = re.match(r"(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})", raw)
     if m:
@@ -37,7 +39,9 @@ _LAKH_RE   = re.compile(r"([\d,]+(?:\.\d+)?)\s*lakh", re.I)
 _AMOUNT_RE = re.compile(r"(?:rs\.?|inr|rupees?)[\.:\s]*([\d,]+(?:\.\d{1,2})?)", re.I)
 
 
-def clean_amount(raw: str) -> str:
+def clean_amount(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     return raw.strip().replace(",", "")
 
 

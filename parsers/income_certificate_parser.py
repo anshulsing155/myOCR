@@ -55,7 +55,9 @@ _AUTHORITY_RE = re.compile(
 _ADDRESS_RE   = re.compile(r"(?:res(?:iding|ident)?\s*(?:at|of)|address|village|vill\.?)[:\s]+([A-Za-z0-9\s,/\-\.]+?)(?:\n\n|\d{6}|dist)", re.I)
 
 
-def _norm_date(raw: str) -> str:
+def _norm_date(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     raw = raw.strip().replace("-", "/").replace(".", "/")
     parts = raw.split("/")
     if len(parts) == 3:
@@ -66,7 +68,9 @@ def _norm_date(raw: str) -> str:
     return raw
 
 
-def _clean_amount(raw: str) -> str:
+def _clean_amount(raw: str | None) -> str | None:
+    if raw is None:
+        return None
     return raw.strip().replace(",", "")
 
 
