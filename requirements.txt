@@ -3,9 +3,8 @@ streamlit>=1.35.0
 pandas>=2.0.0
 
 # OCR engines
-# Paddle does not publish wheels for Python 3.14 yet, so keep it optional there.
-paddlepaddle>=2.5.0; python_version < "3.14"
-paddleocr>=2.7.0; python_version < "3.14"
+paddlepaddle>=2.5.0
+paddleocr>=2.7.0
 pytesseract>=0.3.10
 
 # PDF handling
@@ -13,7 +12,7 @@ PyMuPDF>=1.23.0
 pdfplumber>=0.10.0
 
 # Image processing
-opencv-python-headless>=4.8.0
+opencv-python>=4.8.0
 numpy>=1.24.0
 Pillow>=10.0.0
 

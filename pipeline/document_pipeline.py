@@ -150,6 +150,10 @@ class DocumentPipeline:
             from parsers.salary_slip_parser import SalarySlipParser
             return SalarySlipParser().parse(ocr_results)
 
+        if doc_type == "driving_license":
+            from parsers.driving_license_parser import DrivingLicenseParser
+            return DrivingLicenseParser().parse(ocr_results)
+
         if doc_type == "voter_id":
             from parsers.voter_id_parser import VoterIdParser
             return VoterIdParser().parse(ocr_results)

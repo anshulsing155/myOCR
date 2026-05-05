@@ -50,13 +50,6 @@ class EStampCertificateParser(BaseParser):
         text = "\n".join(r.get("text", "") for r in ocr_results)
         result: dict[str, Any] = {"doc_type": "estamp_certificate"}
 
-        m = _CERT_NO_RE.search(text)
-        if not m:
-            m = _ESTAMP_BARE_RE.search(text)
-        if m:
-            result["certificate_number"] = m.group(0).strip() if not hasattr(m, 'group') or m.lastindex is None else m.group(1).strip()
-
-        # Better cert number extraction
         cert_m = _CERT_NO_RE.search(text)
         bare_m = _ESTAMP_BARE_RE.search(text)
         if cert_m:

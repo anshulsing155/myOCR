@@ -64,7 +64,7 @@ _AMT = r"([\d,]+(?:\.\d{1,2})?)"
 
 
 def _amt(pattern: str, flags: int = re.I) -> re.Pattern:
-    return re.compile(r"(?:" + pattern + r")\s*[:\-]?\s*" + _AMT, flags)
+    return re.compile(pattern + r"\s*[:\-]?\s*" + _AMT, flags)
 
 
 # ── Earnings ──────────────────────────────────────────────────────────────────
@@ -99,10 +99,8 @@ _NET_RE = re.compile(
 _CTC_RE = re.compile(r"(?:annual\s*)?ctc\s*[:\-]?\s*" + _AMT, re.I)
 
 
-def _ca(v: str | None) -> str | None:
+def _ca(v: str) -> str:
     """Clean amount string: remove commas and extra spaces."""
-    if v is None:
-        return None
     return v.replace(",", "").strip()
 
 
@@ -110,9 +108,7 @@ def _first(text: str, *patterns: re.Pattern) -> str | None:
     for p in patterns:
         m = p.search(text)
         if m:
-            value = _ca(m.group(1) if m.lastindex else None)
-            if value:
-                return value
+            return _ca(m.group(1))
     return None
 
 
