@@ -1,4 +1,6 @@
 import logging
+import traceback
+import threading
 
 import cv2
 import numpy as np
@@ -8,7 +10,10 @@ from ocr.availability import paddle_available
 logger = logging.getLogger(__name__)
 
 _ocr = None
-_init_failed = False   # set once on first failure; prevents repeated crash attempts
+_init_failed = False           # True only after init fails; prevents re-init loops
+_predict_lock = threading.Lock()  # PaddleOCR is not thread-safe in Streamlit
+_consecutive_failures = 0
+_MAX_CONSECUTIVE_FAILURES = 3  # Permanently disable after this many predict failures
 
 # Cache of per-language PaddleOCR instances (lang_code → instance)
 _lang_ocr: dict[str, object] = {}
@@ -91,11 +96,17 @@ def _get_lang_ocr(lang: str):
 
 
 def _ensure_bgr(image: np.ndarray) -> np.ndarray:
-    """PaddleOCR v3 always expects a 3-channel BGR image."""
+    """PaddleOCR v3 expects a 3-channel uint8 BGR numpy array."""
     if image.ndim == 2:
-        return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-    if image.shape[2] == 4:
-        return cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    elif image.ndim == 3 and image.shape[2] == 4:
+        image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+    # Enforce uint8 — float images (0.0–1.0) must be scaled first
+    if image.dtype != np.uint8:
+        if image.max() <= 1.0:
+            image = (image * 255).clip(0, 255).astype(np.uint8)
+        else:
+            image = image.clip(0, 255).astype(np.uint8)
     return image
 
 
@@ -105,17 +116,34 @@ def run_paddle(image: np.ndarray) -> list[dict]:
       { "text": str, "confidence": float, "bbox": [[x,y], ...] }
     Returns [] (no exception) when PaddleOCR is unavailable.
     """
+    global _init_failed, _ocr, _consecutive_failures
     ocr = _get_ocr()
     if ocr is None:
         return []
     try:
-        raw = ocr.predict(_ensure_bgr(image))
-        return _parse_result(raw)
+        img = _ensure_bgr(image)
+        with _predict_lock:
+            raw = ocr.predict(img)
+            # PaddleOCR 3.x predict() may return a generator — materialise it
+            if not isinstance(raw, list):
+                raw = list(raw)
+        result = _parse_result(raw)
+        _consecutive_failures = 0   # reset on success
+        return result
     except Exception as exc:
-        global _init_failed, _ocr
-        logger.warning("PaddleOCR predict failed: %s", exc)
-        _init_failed = True
-        _ocr = None
+        _consecutive_failures += 1
+        logger.warning(
+            "PaddleOCR predict failed (%d/%d): %s\n%s",
+            _consecutive_failures, _MAX_CONSECUTIVE_FAILURES,
+            exc, traceback.format_exc(),
+        )
+        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+            logger.error(
+                "Disabling PaddleOCR after %d consecutive failures — falling back to Tesseract",
+                _consecutive_failures,
+            )
+            _init_failed = True
+            _ocr = None
         return []
 
 
@@ -132,12 +160,16 @@ def run_paddle_lang(image: np.ndarray, lang: str) -> list[dict]:
         logger.debug("No regional model for lang=%s, using English model", lang)
         return run_paddle(image)
     try:
-        raw = ocr.predict(_ensure_bgr(image))
+        img = _ensure_bgr(image)
+        with _predict_lock:
+            raw = ocr.predict(img)
+            if not isinstance(raw, list):
+                raw = list(raw)
         results = _parse_result(raw)
         if results:
             return results
     except Exception as exc:
-        logger.warning("PaddleOCR lang=%s predict failed: %s", lang, exc)
+        logger.warning("PaddleOCR lang=%s predict failed: %s\n%s", lang, exc, traceback.format_exc())
     return run_paddle(image)
 
 
@@ -369,8 +401,16 @@ def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
 
 
 def _parse_result(raw) -> list[dict]:
-    """Handle both v2 (list-of-lists) and v3 (OCRResult objects) return formats."""
+    """Handle both v2 (list-of-lists) and v3 (OCRResult objects / generators)."""
     results = []
+    if raw is None:
+        return results
+    # Materialise any generator so we can index safely
+    if not isinstance(raw, list):
+        try:
+            raw = list(raw)
+        except Exception:
+            return results
     if not raw:
         return results
 
