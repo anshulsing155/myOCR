@@ -39,7 +39,7 @@ _PENALTY_RE    = re.compile(
     re.I,
 )
 _TOTAL_RE      = re.compile(
-    r"(?:total\s*(?:amount\s*)?(?:paid|payable|due)|net\s*payable)"
+    r"(?:total\s*(?:amount(?:\s*(?:paid|payable|due))?|paid|payable|due)|net\s*payable)"
     r"[:\s]*(?:rs\.?|inr)?\s*([\d,]+(?:\.\d{1,2})?)",
     re.I,
 )
@@ -94,7 +94,9 @@ class PropertyTaxParser(BaseParser):
 
         m = _TOTAL_RE.search(text)
         if m:
-            result["total_paid"] = clean_amount(m.group(1))
+            total = clean_amount(m.group(1))
+            result["total_paid"] = total
+            result["total_amount"] = total
 
         m = _RECEIPT_RE.search(text)
         if m:

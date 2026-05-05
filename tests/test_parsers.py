@@ -68,6 +68,20 @@ def test_salary_slip_parser():
     assert result["doc_type"] == "salary_slip"
 
 
+def test_salary_slip_parser_tolerates_incomplete_amount_labels():
+    from parsers.salary_slip_parser import SalarySlipParser
+    ocr = _ocr(
+        "SALARY SLIP\n"
+        "Employee Name: Rahul Kumar\n"
+        "DA\n"
+        "Provident Fund\n"
+        "Net Salary: 42000"
+    )
+    result = SalarySlipParser().parse(ocr)
+    assert result["doc_type"] == "salary_slip"
+    assert result.get("net_salary") == "42000"
+
+
 def test_gst_certificate_parser():
     from parsers.gst_certificate_parser import GstCertificateParser
     ocr = _ocr("GST Registration Certificate\nGoods and Services Tax\nGSTIN: 07ABCDE1234F1Z5\nLegal Name of Business: ABC Traders\nTrade Name: ABC\nConstitution of Business: Proprietorship\nDate of Registration: 01/07/2017\nStatus: Active")

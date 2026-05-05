@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import config  # noqa: E402  (creates input/output dirs)
 from classification.doc_classifier import classify as classify_doc
 from layout.layout_detector import detect_layout
+from ocr.availability import local_ocr_status
 from ocr.hybrid_runner import run_ocr
 from ocr.paddle_engine import run_paddle
 from parsers.bank_statement.bank_identifier import identify_bank
@@ -833,6 +834,8 @@ if uploaded_file:
     file_type:  str               = st.session_state.get("file_type", "image")
     pdf_path:   str | None        = st.session_state.get("pdf_path")
     n_pages = len(raw_images)
+    _ocr_status = local_ocr_status()
+    _local_ocr_ready = _ocr_status["paddle"] or _ocr_status["tesseract"]
 
     col_info, col_btn = st.columns([3, 1])
     with col_info:
@@ -851,6 +854,14 @@ if uploaded_file:
         )
     with col_btn:
         run_clicked = st.button("▶ Run OCR Pipeline", type="primary", use_container_width=True)
+
+    if file_type in {"pdf_scanned", "pdf_mixed", "image"} and not _local_ocr_ready and not ai_only:
+        st.warning(
+            "Local OCR engines are not available in this environment. "
+            "Digital PDF pages can still work, but scanned PDFs/images need "
+            "PaddleOCR or the Tesseract binary. Use AI-only mode or deploy on "
+            "Python 3.12 with OCR dependencies installed."
+        )
 
     if run_clicked:
         st.session_state.pop("pages", None)
@@ -928,6 +939,14 @@ if uploaded_file:
                 st.error(f"{_engine_name} OCR failed: {_ae}")
             st.stop()
         # ── End AI-only path ──────────────────────────────────────────────────
+
+        if file_type in {"pdf_scanned", "image"} and not _local_ocr_ready:
+            st.error(
+                "No local OCR engine is available for this file type. "
+                "Scanned PDFs and images require PaddleOCR or Tesseract, or "
+                "you can enable AI-only mode."
+            )
+            st.stop()
 
         from utils.pdf_extractor import extract_digital_page, detect_pdf_page_types
 

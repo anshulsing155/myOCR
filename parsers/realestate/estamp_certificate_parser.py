@@ -31,7 +31,7 @@ _DESC_RE       = re.compile(
 )
 _ARTICLE_RE    = re.compile(r"(?:article\s*(?:no\.?|number)?)[:\s]+(\d+[A-Z]?)", re.I)
 _AMOUNT_RE     = re.compile(
-    r"(?:stamp\s*duty\s*(?:amount\s*)?paid|amount\s*of\s*stamp\s*duty|"
+    r"(?:stamp\s*duty\s*amount|stamp\s*duty\s*(?:amount\s*)?paid|amount\s*of\s*stamp\s*duty|"
     r"stamp\s*duty)[:\s]*(?:rs\.?|inr)?\s*([\d,]+(?:\.\d{1,2})?)",
     re.I,
 )
