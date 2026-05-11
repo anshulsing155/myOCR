@@ -1,4 +1,4 @@
-# Contributing to myOCR
+# Contributing to DocuSense
 
 Thank you for your interest in contributing! This document covers how to add new parsers, banks, OCR engines, and other improvements.
 

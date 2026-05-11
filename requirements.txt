@@ -19,6 +19,7 @@ Pillow>=10.0.0
 # Language detection & translation
 deep-translator>=1.11.0
 langdetect>=1.0.9
+fast-langdetect>=0.3.0
 
 # HTTP (Vision AI engines)
 requests>=2.31.0

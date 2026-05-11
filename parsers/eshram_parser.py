@@ -61,14 +61,20 @@ _RELATION_RE = re.compile(
     re.I | re.MULTILINE,
 )
 
+_NAME_LABEL_RE = re.compile(
+    r"^(?:name|full\s*name|worker\s*name)\s*[:\-]?\s*([A-Z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
+    re.I | re.MULTILINE,
+)
+
 _OCC_RE = re.compile(
     r"occupation\s*[:\-]?\s*([A-Za-z][A-Za-z,\s]{2,60}?)(?:\n|$)",
     re.I | re.MULTILINE,
 )
 
 # ── Address ───────────────────────────────────────────────────────────────────
+# Colon/dash is optional — some OCR outputs drop the punctuation after the label
 _ADDR_START_RE = re.compile(
-    r"(?:current\s*address|address|permanent\s*address|addr\.?)\s*[:\-]",
+    r"(?:current\s*address|address|permanent\s*address|addr\.?)\s*[:\-]?",
     re.I,
 )
 _PIN_RE = re.compile(r"\b(\d{6})\b")
@@ -185,21 +191,62 @@ class EshramParser(BaseParser):
                 result["state"] = state_m.group(1).title()
 
         # ── Name ─────────────────────────────────────────────────────────────
-        for line in text.splitlines():
-            line = line.strip()
-            words = line.split()
-            if not (2 <= len(words) <= 5):
-                continue
-            if not all(w[0].isalpha() and w[0].isupper() for w in words if w):
-                continue
-            if any(w.upper() in _SKIP for w in words):
-                continue
-            if re.search(r"\d|[:/\\@#$%&*\-]", line):
-                continue
-            if len(line) > 45:
-                continue
-            result["name"] = line
-            break
+        # Labeled approach first ("Name: Ramesh Kumar")
+        m = _NAME_LABEL_RE.search(text)
+        if m:
+            candidate = m.group(1).strip()
+            if not any(w.upper() in _SKIP for w in candidate.split()):
+                result["name"] = candidate
+
+        def _plausible_name_word(w: str) -> bool:
+            """Return True if w looks like a valid Indian name component."""
+            alpha = [c.lower() for c in w if c.isalpha()]
+            if len(alpha) < 2:
+                return False
+            # 3-char words: reject if last 2 are both consonants (e.g. "Uld", "Gld")
+            VOWELS = set("aeiou")
+            if len(alpha) == 3 and alpha[-1] not in VOWELS and alpha[-2] not in VOWELS:
+                return False
+            return True
+
+        # Bilingual OCR pattern: "7AH/Name\n:\n<Hindi>\n/\nFirstname\nLastname"
+        # A lone "/" line separates Hindi script from the English transliteration.
+        if "name" not in result:
+            lines = text.splitlines()
+            for i, line in enumerate(lines):
+                if line.strip() != "/":
+                    continue
+                # Collect consecutive Title-case single words after the "/"
+                candidates: list[str] = []
+                for j in range(i + 1, min(i + 5, len(lines))):
+                    word = lines[j].strip()
+                    if (re.match(r"^[A-Z][a-z]{1,25}$", word)
+                            and word.upper() not in _SKIP
+                            and _plausible_name_word(word)):
+                        candidates.append(word)
+                    else:
+                        break
+                if 2 <= len(candidates) <= 4:
+                    result["name"] = " ".join(candidates)
+                    break
+
+        # Positional fallback: first 2-5 uppercase word line not matching skip words
+        if "name" not in result:
+            for line in text.splitlines():
+                line = line.strip()
+                words = line.split()
+                if not (2 <= len(words) <= 5):
+                    continue
+                if not all(w[0].isalpha() and w[0].isupper() for w in words if w):
+                    continue
+                if any(w.upper() in _SKIP for w in words):
+                    continue
+                if re.search(r"\d|[:/\\@#$%&*\-]", line):
+                    continue
+                if len(line) > 45:
+                    continue
+                result["name"] = line
+                break
 
         result["raw_text"] = text
         return result

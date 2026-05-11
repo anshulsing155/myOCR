@@ -14,8 +14,9 @@ from parsers.base_parser import BaseParser
 
 # ── Employee details ──────────────────────────────────────────────────────────
 
+# Match "Employee Name:", "Emp. Name:", OR bare "Name:" at start of line
 _EMP_NAME_RE  = re.compile(
-    r"(?:employee|emp\.?)\s*name\s*[:\-]?\s*([A-Za-z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
+    r"(?:(?:employee|emp\.?)\s*name|^name)\s*[:\-]?\s*([A-Za-z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
     re.I | re.MULTILINE)
 _EMP_ID_RE    = re.compile(
     r"(?:employee|emp\.?)\s*(?:id|code|no\.?|number)\s*[:\-]?\s*(\w{2,20})", re.I)
@@ -33,9 +34,13 @@ _EMPLOYER_RE  = re.compile(
     r"([A-Za-z][A-Za-z\s\.,&\(\)]{2,60}?)(?:\n|$)",
     re.I | re.MULTILINE)
 _PERIOD_RE    = re.compile(
-    r"(?:pay\s*(?:period|month)|for\s*the\s*month(?:\s*of)?|salary\s*(?:month|for)|"
-    r"month\s*of|payroll\s*(?:period|month))\s*[:\-]?\s*"
-    r"([A-Za-z]+[\s\-]\d{4}|\d{1,2}[/\-]\d{4}|[A-Za-z]+\s+\d{4})",
+    r"(?:pay\s*(?:period|month|date)|for\s*the\s*month(?:\s*of)?|salary\s*(?:month|for)|"
+    r"month\s*of|payroll\s*(?:period|month)|salary\s*for)\s*[:\-]?\s*"
+    r"([A-Za-z]+[\s\-]\d{4}|\d{1,2}[/\-]\d{4}|[A-Za-z]+\s+\d{4}|\d{1,2}[/\-]\d{2}[/\-]\d{4})",
+    re.I)
+_PAY_DATE_RE  = re.compile(
+    r"(?:pay\s*date|payment\s*date|salary\s*date|disbursement\s*date)\s*[:\-]?\s*"
+    r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{2,4})",
     re.I)
 _WORKING_DAYS_RE = re.compile(
     r"(?:working|paid|present)\s*days?\s*[:\-]?\s*(\d{1,2}(?:\.\d)?)", re.I)
@@ -45,8 +50,12 @@ _LEAVES_RE    = re.compile(
 # ── Identity numbers ──────────────────────────────────────────────────────────
 
 _PAN_RE       = re.compile(r"\b([A-Z]{5}[0-9]{4}[A-Z])\b")
+# PF account numbers follow the EPFO format: AA/AAA/0000000/0000000 or state/office/estab/member
+# Being more specific avoids capturing amounts or random text after the label.
 _PF_ACC_RE    = re.compile(
-    r"(?:pf|provident\s*fund)\s*(?:acc(?:ount)?\.?|no\.?|number)?\s*[:\-]?\s*([\w/\-]{5,30})", re.I)
+    r"(?:pf|provident\s*fund)\s*(?:acc(?:ount)?\.?|no\.?|number)?\s*[:\-]?\s*"
+    r"([A-Z]{2}/[A-Z]{3}/\d{7}/\d{7}|[A-Z]{2}/[A-Z0-9]{3,10}/\d{5,10}/\d{3,10}|[A-Z0-9]{5,30})",
+    re.I)
 _UAN_RE       = re.compile(
     r"(?:uan|universal\s*account\s*(?:number|no\.?))\s*[:\-]?\s*(\d{12})", re.I)
 _ESIC_RE_NUM  = re.compile(
@@ -64,7 +73,7 @@ _AMT = r"([\d,]+(?:\.\d{1,2})?)"
 
 
 def _amt(pattern: str, flags: int = re.I) -> re.Pattern:
-    return re.compile(pattern + r"\s*[:\-]?\s*" + _AMT, flags)
+    return re.compile(r"(?:" + pattern + r")\s*[:\-]?\s*" + _AMT, flags)
 
 
 # ── Earnings ──────────────────────────────────────────────────────────────────
@@ -99,15 +108,17 @@ _NET_RE = re.compile(
 _CTC_RE = re.compile(r"(?:annual\s*)?ctc\s*[:\-]?\s*" + _AMT, re.I)
 
 
-def _ca(v: str) -> str:
+def _ca(v: str | None) -> str:
     """Clean amount string: remove commas and extra spaces."""
+    if v is None:
+        return ""
     return v.replace(",", "").strip()
 
 
 def _first(text: str, *patterns: re.Pattern) -> str | None:
     for p in patterns:
         m = p.search(text)
-        if m:
+        if m and m.group(1) is not None:
             return _ca(m.group(1))
     return None
 
@@ -145,6 +156,11 @@ class SalarySlipParser(BaseParser):
         m = _PERIOD_RE.search(text)
         if m:
             result["pay_period"] = m.group(1).strip()
+
+        m = _PAY_DATE_RE.search(text)
+        if m:
+            raw = m.group(1).strip()
+            result["pay_date"] = re.sub(r"[-\.]", "/", raw)
 
         m = _WORKING_DAYS_RE.search(text)
         if m:

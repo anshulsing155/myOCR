@@ -40,8 +40,14 @@ def _get_ocr():
     return _ocr
 
 
+# PaddleOCR's C++ text-detection predictor crashes ("Unknown exception") on
+# very large images (e.g. A4 at 300 DPI = 2480×3509 px).  Cap at 1920 px on
+# the long edge — still ~230 DPI, well above OCR quality requirements.
+_MAX_PADDLE_DIM = 1920
+
+
 def _ensure_bgr(image: np.ndarray) -> np.ndarray:
-    """PaddleOCR v3 expects a 3-channel uint8 BGR numpy array."""
+    """PaddleOCR v3 expects a 3-channel uint8 BGR numpy array, max 1920 px."""
     if image.ndim == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     elif image.ndim == 3 and image.shape[2] == 4:
@@ -52,6 +58,12 @@ def _ensure_bgr(image: np.ndarray) -> np.ndarray:
             image = (image * 255).clip(0, 255).astype(np.uint8)
         else:
             image = image.clip(0, 255).astype(np.uint8)
+    # Resize if the longest dimension exceeds the safe limit
+    h, w = image.shape[:2]
+    if max(h, w) > _MAX_PADDLE_DIM:
+        scale = _MAX_PADDLE_DIM / max(h, w)
+        image = cv2.resize(image, (int(w * scale), int(h * scale)),
+                           interpolation=cv2.INTER_AREA)
     return image
 
 
@@ -82,13 +94,9 @@ def run_paddle(image: np.ndarray) -> list[dict]:
             _consecutive_failures, _MAX_CONSECUTIVE_FAILURES,
             exc, traceback.format_exc(),
         )
-        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
-            logger.error(
-                "Disabling PaddleOCR after %d consecutive failures — falling back to Tesseract",
-                _consecutive_failures,
-            )
-            _init_failed = True
-            _ocr = None
+        # Predict failures are image-specific — don't permanently disable
+        # PaddleOCR for the session.  Tesseract fallback handles this image;
+        # PaddleOCR remains available for subsequent images.
         return []
 
 
@@ -290,6 +298,11 @@ def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
             lang, lang_conf = detect_language(combined)
             detected_lang = lang if lang_conf >= 0.3 else paddle_code
 
+    # Heuristic 4 (low avg confidence) removed: it triggered Hindi OCR on blurry
+    # English documents (bank statements, salary slips) causing degraded results.
+    # The three heuristics above (OSD + noise ratio + consonant run) already cover
+    # all real Indian-script cases reliably.
+
     if detected_lang is None:
         return english_results, None
 
@@ -313,11 +326,13 @@ def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
             detected_lang = lang
         return merged, detected_lang
     else:
-        # Regional model gave only Latin/digits (couldn't read script either)
-        # Prefer whichever has higher average confidence
+        # Regional model gave only Latin/digits (couldn't read the script either).
+        # This means the document is actually in English — reset detected_lang so
+        # the language processor doesn't incorrectly tag it as Hindi/regional.
+        # Prefer whichever pass has higher average confidence.
         avg_en = sum(r["confidence"] for r in english_results) / len(english_results)
         avg_re = sum(r["confidence"] for r in regional_results) / len(regional_results)
-        return (regional_results if avg_re > avg_en else english_results), detected_lang
+        return (regional_results if avg_re > avg_en else english_results), None
 
 
 def _parse_result(raw) -> list[dict]:

@@ -1,0 +1,15 @@
+{
+  "doc_type": "aadhaar",
+  "doc_confidence": 0.85,
+  "extraction_method": "tesseract_ocr",
+  "extracted": {
+    "aadhaar_number": "XXXX XXXX XXXX",
+    "name": "Example Name",
+    "date_of_birth": "01/01/1990",
+    "gender": "Male",
+    "relation_name": "Example Father Name",
+    "address": "123 Example Street, Example Colony, City",
+    "pin_code": "110001",
+    "state": "Delhi"
+  }
+}

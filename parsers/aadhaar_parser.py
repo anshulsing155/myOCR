@@ -19,9 +19,9 @@ from parsers.base_parser import BaseParser
 
 # ── Aadhaar / VID ─────────────────────────────────────────────────────────────
 
-# Aadhaar: 12 digits, optional single-space grouping (XXXX XXXX XXXX)
-# Exclude numbers starting with 0 or 1 (invalid Aadhaar prefixes)
-_AADHAAR_RE = re.compile(r"\b([2-9]\d{3}\s?\d{4}\s?\d{4})\b")
+# Aadhaar: 12 digits, optional whitespace/hyphen grouping (XXXX XXXX XXXX or XXXX-XXXX-XXXX or no sep)
+# Exclude numbers starting with 0 or 1 (invalid Aadhaar prefixes per UIDAI spec)
+_AADHAAR_RE = re.compile(r"\b([2-9]\d{3}[\s\-]*\d{4}[\s\-]*\d{4})\b")
 
 # VID: 16 digits after explicit label
 _VID_RE = re.compile(
@@ -51,16 +51,19 @@ _GENDER_RE = re.compile(r"\b(male|female|transgender)\b", re.I)
 # Name label on Aadhaar (front side usually has no label — pure positional)
 # Back side of some variants has "Name:" explicitly
 _NAME_LABEL_RE = re.compile(
-    r"(?:^|\n)\s*(?:name|नाम)\s*[:\-]?\s*([A-Z][A-Za-z\s\.]{2,50}?)(?:\n|$)",
+    r"(?:^|\n)\s*(?:name|नाम)\s*[:\-]?\s*([A-Z][A-Za-z \.]{2,50}?)(?:\n|$)",
     re.I | re.MULTILINE,
 )
 
 # ── Address ───────────────────────────────────────────────────────────────────
 
-# Address trigger labels (relation indicators / location terms)
+# Explicit "Address:" label on back of Aadhaar — strong, unambiguous trigger
+_ADDR_LABEL_RE = re.compile(r"^\s*(?:address|पता)\s*[:\-]?", re.I)
+
+# Address trigger keywords — note: "\bpo\b" removed (too short, matches garbled OCR)
 _ADDR_START_RE = re.compile(
     r"\b(?:s/o|d/o|w/o|c/o|h\.?\s*no|house\s*no|flat\s*no|plot\s*no|"
-    r"village|vill\.?|po\b|post\s*office|dist(?:rict)?|tehsil|taluk|"
+    r"village|vill\.?|post\s*(?:office|box)|dist(?:rict)?|tehsil|taluk|"
     r"near|ward|nagar|mohalla|street|road|lane|colony|sector|block)\b",
     re.I,
 )
@@ -68,7 +71,7 @@ _ADDR_START_RE = re.compile(
 # Relative name: s/o, d/o, w/o followed by a name
 _RELATIVE_RE = re.compile(
     r"(?:s/o|d/o|w/o|c/o|son\s+of|daughter\s+of|wife\s+of|care\s+of)"
-    r"\s*[:\-]?\s*([A-Z][A-Za-z\s\.]{2,50}?)(?:[,\n]|$)",
+    r"\s*[:\-]?\s*([A-Z][A-Za-z \.]{2,50}?)(?:[,\n]|$)",
     re.I | re.MULTILINE,
 )
 
@@ -79,11 +82,13 @@ _PIN_RE = re.compile(r"\b(\d{6})\b")
 _STATES = {
     "andhra pradesh","arunachal pradesh","assam","bihar","chhattisgarh",
     "goa","gujarat","haryana","himachal pradesh","jammu and kashmir",
-    "jharkhand","karnataka","kerala","madhya pradesh","maharashtra",
-    "manipur","meghalaya","mizoram","nagaland","odisha","punjab",
-    "rajasthan","sikkim","tamil nadu","telangana","tripura",
-    "uttar pradesh","uttarakhand","west bengal","delhi","chandigarh",
-    "puducherry","andaman and nicobar","lakshadweep","dadra and nagar haveli",
+    "jammu & kashmir","j&k","jharkhand","karnataka","kerala",
+    "madhya pradesh","maharashtra","manipur","meghalaya","mizoram",
+    "nagaland","odisha","punjab","rajasthan","sikkim","tamil nadu",
+    "telangana","tripura","uttar pradesh","uttarakhand","west bengal",
+    "delhi","chandigarh","puducherry","pondicherry",
+    "andaman and nicobar","andaman & nicobar",
+    "lakshadweep","dadra and nagar haveli","daman and diu","ladakh",
 }
 _STATE_RE = re.compile(
     r"\b(" + "|".join(re.escape(s) for s in _STATES) + r")\b", re.I)
@@ -106,9 +111,17 @@ _CONSONANTS = frozenset("bcdfghjklmnpqrstvwxyz")
 
 def _is_garbled(word: str) -> bool:
     alpha = [c.lower() for c in word if c.isalpha() and c.isascii()]
-    if len(alpha) < 4:
+    if not alpha:
         return False
     vowels = sum(1 for c in alpha if c in "aeiou")
+    # Short all-consonant words ("HRH", "TRT") are garbled OCR artifacts
+    if len(alpha) <= 3 and vowels == 0:
+        return True
+    # 3-char words starting with 2 consecutive consonants ("Gwe", "Kws") are garbled
+    if len(alpha) == 3 and alpha[0] not in "aeiou" and alpha[1] not in "aeiou":
+        return True
+    if len(alpha) < 4:
+        return False
     run = max_run = 0
     for c in alpha:
         run = (run + 1) if c in _CONSONANTS else 0
@@ -168,15 +181,35 @@ class AadhaarParser(BaseParser):
                 if collecting and address_lines:
                     break
                 continue
-            if _ADDR_START_RE.search(line):
-                collecting = True
+            if not collecting:
+                # Explicit "Address:" label takes priority over keyword heuristics
+                label_m = _ADDR_LABEL_RE.match(line)
+                if label_m:
+                    collecting = True
+                    rest = line[label_m.end():].strip()
+                    if rest:
+                        address_lines.append(rest)
+                    continue
+                if _ADDR_START_RE.search(line):
+                    collecting = True
             if collecting:
+                # Another address label while collecting → restart from here.
+                # This handles translated Hindi "address:" → English "Address:"
+                # appearing on the same back page for bilingual Aadhaar cards.
+                label_m2 = _ADDR_LABEL_RE.match(line)
+                if label_m2:
+                    address_lines.clear()
+                    rest = line[label_m2.end():].strip()
+                    if rest:
+                        address_lines.append(rest)
+                    continue
                 digits = re.sub(r"\D", "", line)
-                # Stop at the Aadhaar number line (≥ 12 digits)
-                if len(digits) >= 12:
+                # Stop at the Aadhaar number line: must be exactly 12 digits AND
+                # match the Aadhaar pattern (avoids stopping at +91-XXXXXXXXXX phone lines)
+                if len(digits) >= 12 and _AADHAAR_RE.search(line):
                     break
                 address_lines.append(line)
-                if len(address_lines) >= 6:
+                if len(address_lines) >= 10:
                     break
 
         if address_lines:
@@ -194,35 +227,103 @@ class AadhaarParser(BaseParser):
                 result["state"] = state_m.group(1).title()
 
         # ── Name ─────────────────────────────────────────────────────────────
+        # Build a set of words to never accept as the holder's name:
+        # the relation_name lines and any S/O prefix lines already extracted.
+        _relation_words: set[str] = set()
+        if result.get("relation_name"):
+            _relation_words = {w.upper() for w in result["relation_name"].split()}
+
         # Try label-based first
         m = _NAME_LABEL_RE.search(text)
         if m:
-            name_candidate = m.group(1).strip()
+            name_candidate = re.sub(r"\s+", " ", m.group(1)).strip()
             if not any(_is_garbled(w) for w in name_candidate.split()):
                 result["name"] = name_candidate
         else:
             # Positional: first 2-5 word title-case / upper-case line that
-            # doesn't look like an org header or garbled OCR
+            # doesn't look like an org header or garbled OCR.
+            # Only scan lines BEFORE the DOB/gender/address block to avoid
+            # picking up father's name or address text as the holder name.
+            lines_before_dob: list[str] = []
             for line in text.splitlines():
-                line = line.strip()
+                stripped = line.strip()
+                # Stop collecting candidate lines once we hit DOB or gender
+                if re.search(r"\b(date\s+of\s+birth|dob|d\.o\.b|year\s+of\s+birth|"
+                             r"male|female|transgender|address|s/o|d/o|w/o)\b",
+                             stripped, re.I):
+                    break
+                lines_before_dob.append(stripped)
+
+            # If DOB-stop didn't help (scan entire text as fallback), use all lines
+            candidate_lines = lines_before_dob if lines_before_dob else text.splitlines()
+
+            def _valid_name_line(ln: str) -> bool:
+                """Return True if ln passes all name-candidate checks."""
+                ln = ln.strip()
+                if not ln:
+                    return False
+                ws = ln.split()
+                if not all(w[0].isalpha() for w in ws if w):
+                    return False
+                if not all(len(w) >= 2 for w in ws):
+                    return False
+                if not ws[0][0].isupper():
+                    return False
+                if any(w.upper() in _SKIP_WORDS for w in ws):
+                    return False
+                if any(p in ln.lower() for p in _SKIP_PHRASES):
+                    return False
+                if re.search(r"\d|[/\\@#$%&*:]", ln):
+                    return False
+                if any(_is_garbled(w) for w in ws):
+                    return False
+                if _relation_words and {w.upper() for w in ws} == _relation_words:
+                    return False
+                if re.match(r"[AEIOUaeiou]{2}", ws[0]):
+                    return False
+                if len(ln) > 50:
+                    return False
+                return True
+
+            stripped_candidates = [ln.strip() for ln in candidate_lines]
+
+            # First pass: try single-line 2-5 word names
+            for line in stripped_candidates:
                 words = line.split()
-                line_lower = line.lower()
-                if not (2 <= len(words) <= 5):
-                    continue
-                if not all(w[0].isalpha() for w in words if w):
-                    continue
+                if 2 <= len(words) <= 5 and _valid_name_line(line):
+                    result["name"] = line
+                    break
+
+            # Second pass: merge two adjacent single-word lines (Tesseract splits name across lines)
+            if "name" not in result:
+                for i in range(len(stripped_candidates) - 1):
+                    combined = stripped_candidates[i] + " " + stripped_candidates[i + 1]
+                    if combined.count(" ") <= 4 and _valid_name_line(combined):
+                        result["name"] = combined
+                        break
+
+        # Fallback: full-text scan for "Firstname Lastname" when all OCR is one line
+        if "name" not in result:
+            for m in re.finditer(
+                r'\b([A-Z][a-z]{1,20}(?:[ \t]+[A-Z][a-z]{1,20}){1,2})\b', text
+            ):
+                candidate = re.sub(r"\s+", " ", m.group(1)).strip()
+                words = candidate.split()
                 if any(w.upper() in _SKIP_WORDS for w in words):
                     continue
-                if any(p in line_lower for p in _SKIP_PHRASES):
-                    continue
-                if re.search(r"\d|[/\\@#$%&*]", line):
+                if any(p in candidate.lower() for p in _SKIP_PHRASES):
                     continue
                 if any(_is_garbled(w) for w in words):
                     continue
-                if len(line) > 50:
+                # Skip relation name
+                if _relation_words and {w.upper() for w in words} == _relation_words:
                     continue
-                result["name"] = line
+                result["name"] = candidate
                 break
+
+        # Strip trailing OCR punctuation noise from name ("Tyag!" → "Tyag")
+        if result.get("name"):
+            result["name"] = re.sub(r"[^A-Za-z\s]+$", "", result["name"]).strip()
 
         result["raw_text"] = text
         return result

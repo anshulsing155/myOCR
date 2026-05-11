@@ -245,15 +245,44 @@ def _process_block(image: np.ndarray, block, mode: str, page_result: dict) -> No
             "rows": rows,
         })
     else:
-        ocr_results = run_ocr(region, mode=mode)
-        text = " ".join(clean_text(r["text"]) for r in ocr_results)
+        from ocr.paddle_engine import run_paddle_multilingual
+        ocr_results, _lang = run_paddle_multilingual(region)
+        if not ocr_results:
+            ocr_results = run_ocr(region, mode=mode)
+        ocr_results = process_multilingual_ocr(ocr_results)
+        translated = get_translated_ocr(ocr_results)
+        text = " ".join(clean_text(r["text"]) for r in translated)
         if text:
-            page_result["text_blocks"].append({
+            blk: dict = {
                 "type": block.type,
                 "bbox": list(block.block.coordinates),
                 "text": text,
                 "confidence": round(_avg_conf(ocr_results), 3),
-            })
+            }
+            orig_items = [r for r in ocr_results if r.get("translated_text")]
+            if orig_items:
+                blk["original_text"] = " ".join(
+                    clean_text(r.get("text", "")) for r in ocr_results
+                )
+                blk["detected_lang"] = next(
+                    (r["detected_lang"] for r in ocr_results if r.get("detected_lang")), "en"
+                )
+                blk["lang_name"] = LANG_NAMES.get(blk["detected_lang"], "")
+            page_result["text_blocks"].append(blk)
+        # Always accumulate OCR results so classification works on LayoutParser pages
+        page_result.setdefault("_ocr_results", []).extend(translated)
+        # Merge lang summary
+        _blk_lang = summarise_languages(ocr_results)
+        existing = page_result.get("_lang_summary")
+        if not existing:
+            page_result["_lang_summary"] = _blk_lang
+        elif _blk_lang.get("multilingual"):
+            existing["multilingual"] = True
+            for l in _blk_lang.get("detected_languages", []):
+                if l not in existing.get("detected_languages", []):
+                    existing.setdefault("detected_languages", []).append(l)
+            if _blk_lang.get("primary_language", "en") != "en":
+                existing["primary_language"] = _blk_lang["primary_language"]
 
 
 _BANK_STATEMENT_LANG_SUMMARY: dict = {
@@ -325,7 +354,7 @@ def _process_fullpage(
     if not ocr_results:
         return
 
-    # ── Language detection + translation ──────────────────────────────────────���─────────────────────
+    # ── Language detection + translation ─────────────────────────────────────
     ocr_results = process_multilingual_ocr(ocr_results)
     page_result["_lang_summary"] = summarise_languages(ocr_results)
 
@@ -594,6 +623,22 @@ def run_document_intelligence(pages: list[dict]) -> dict:
             if p.get("_doc_type") == "other":
                 p["_doc_type"] = "bank_statement"
                 p["_doc_conf"] = bank_conf * 0.85
+
+    # ── Propagate ID-document type to adjacent low-confidence pages ──────────
+    # Aadhaar/PAN/etc. are 2-page front+back scans; the back page often has a
+    # garbled UIDAI header that scores near-zero for aadhaar but accidentally
+    # matches some other pattern (e.g. garbled "HP12A" → vehicle_rc).
+    _ID_DOC_TYPES = {"aadhaar", "pan_card", "voter_id", "passport",
+                     "driving_license", "eshram"}
+    for i, p in enumerate(pages):
+        if p.get("_doc_type") in _ID_DOC_TYPES and p.get("_doc_conf", 0) >= 0.15:
+            for j in (i - 1, i + 1):
+                if 0 <= j < len(pages):
+                    adj = pages[j]
+                    if (adj.get("_doc_conf", 0) < 0.15
+                            and adj.get("_doc_type") not in _ID_DOC_TYPES):
+                        adj["_doc_type"] = p["_doc_type"]
+                        adj["_doc_conf"] = round(p["_doc_conf"] * 0.7, 3)
 
     # ── Aggregate language info ───────────────────────────────────────────────
     all_lang_summaries = [p.get("_lang_summary", {}) for p in pages if p.get("_lang_summary")]
@@ -1219,12 +1264,14 @@ if "pages" in st.session_state:
         unsafe_allow_html=True,
     )
 
-    # ── Gemini transactions table ──
+    # ── AI-extracted transactions table ──
     _gemini_txns = doc_intel.get("extracted", {}).get("transactions") if doc_intel else None
-    if _gemini_txns and doc_intel.get("extraction_engine") == "gemini":
-        st.markdown("**🤖 Gemini AI — Extracted Transactions**")
+    _ai_engine_used = doc_intel.get("extraction_engine", "") if doc_intel else ""
+    if _gemini_txns and _ai_engine_used in ("gemini", "grok"):
+        _ai_label = "Gemini AI" if _ai_engine_used == "gemini" else "Grok (xAI)"
+        st.markdown(f"**🤖 {_ai_label} — Extracted Transactions**")
         _txn_count = doc_intel["extracted"].get("transaction_count", len(_gemini_txns))
-        st.caption(f"{_txn_count} transactions extracted by Gemini AI")
+        st.caption(f"{_txn_count} transactions extracted by {_ai_label}")
         df_txn = pd.DataFrame(_gemini_txns)
         st.dataframe(df_txn, use_container_width=True)
 
@@ -1240,7 +1287,7 @@ if "pages" in st.session_state:
             with left:
                 st.markdown("**Document Preview**")
                 display_img = page["_debug_img"] if show_debug and page["_debug_img"] is not None else page["_original_img"]
-                st.image(bgr_to_pil(display_img), width="stretch")
+                st.image(bgr_to_pil(display_img), use_container_width=True)
 
                 if show_debug:
                     st.caption("🟢 Text  🔴 Title  🔵 Table  🟠 Figure  🟣 List")

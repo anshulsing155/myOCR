@@ -1,0 +1,18 @@
+{
+  "doc_type": "eshram",
+  "doc_confidence": 0.73,
+  "extraction_method": "tesseract_ocr",
+  "extracted": {
+    "uan": "123456789012",
+    "name": "Example Worker",
+    "date_of_birth": "15/08/1985",
+    "gender": "Male",
+    "blood_group": "O+",
+    "occupation": "Construction Worker",
+    "contact_number": "9876543210",
+    "address": "456 Example Lane, Example Village, District",
+    "pin_code": "201001",
+    "state": "Uttar Pradesh",
+    "registration_date": "01/06/2022"
+  }
+}

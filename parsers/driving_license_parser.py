@@ -14,10 +14,12 @@ from parsers.base_parser import BaseParser
 
 # ── DL number ─────────────────────────────────────────────────────────────────
 # State(2) + District(2) + optional separator + Year(4) + Serial(7) = 15 digits
+# Separators can be space, hyphen, or slash (different states use different formats)
 _DL_RE = re.compile(
-    r"\b([A-Z]{2}[-\s]?\d{2}\s+\d{4}\d{7})\b"            # "UP61 20130002817"
-    r"|\b([A-Z]{2}[-\s]?\d{2}[-\s]\d{4}[-\s]\d{7})\b"    # "UP-61-2013-0002817"
-    r"|\b([A-Z]{2}\d{13})\b",                              # compact 15-digit
+    r"\b([A-Z]{2}[-\s]?\d{2}\s+\d{4}\d{7})\b"               # "UP61 20130002817"
+    r"|\b([A-Z]{2}[-\s]?\d{2}[-\s]\d{4}[-\s]\d{7})\b"       # "UP-61-2013-0002817"
+    r"|\b([A-Z]{2}[/\-\s]?\d{2}[/\-\s]\d{4}[/\-\s]\d{7})\b" # "UP/61/2013/0002817"
+    r"|\b([A-Z]{2}\d{13})\b",                                 # compact 15-digit
 )
 
 # ── Date patterns ─────────────────────────────────────────────────────────────
@@ -118,9 +120,11 @@ class DrivingLicenseParser(BaseParser):
         m = _DL_RE.search(text)
         if m:
             raw = next(g for g in m.groups() if g)
-            dl = re.sub(r"[\s\-]+", " ", raw.strip()).upper()
+            # Normalise all separators to spaces for consistent display
+            dl = re.sub(r"[\s\-/]+", " ", raw.strip()).upper()
             result["dl_number"] = dl
-            code = raw[:2].upper().replace("-", "").replace(" ", "")
+            code = raw[:2].upper()
+            code = re.sub(r"[^A-Z]", "", code)
             if code in _STATE:
                 result["issuing_state"] = _STATE[code]
 

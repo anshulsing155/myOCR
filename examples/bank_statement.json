@@ -1,0 +1,42 @@
+{
+  "doc_type": "bank_statement",
+  "doc_confidence": 0.565,
+  "extraction_method": "digital_pdf",
+  "extracted": {
+    "metadata": {
+      "bank_name": "HDFC",
+      "account_number": "XXXXXXXXXXXX",
+      "account_holder": "Example User",
+      "ifsc_code": "HDFC0001234",
+      "statement_from": "01/10/2025",
+      "statement_to": "31/03/2026",
+      "opening_balance": "10000.00",
+      "closing_balance": "25000.00",
+      "branch": "Example Branch"
+    },
+    "transactions": [
+      {
+        "date": "01/10/2025",
+        "narration": "NEFT/CR/EXAMPLE SENDER/SALARY",
+        "credit": "50000.00",
+        "debit": "",
+        "balance": "60000.00"
+      },
+      {
+        "date": "05/10/2025",
+        "narration": "UPI/DR/EXAMPLE MERCHANT/PAYTM",
+        "credit": "",
+        "debit": "500.00",
+        "balance": "59500.00"
+      },
+      {
+        "date": "10/10/2025",
+        "narration": "UPI/CR/EXAMPLE PERSON/PAYMENT",
+        "credit": "1000.00",
+        "debit": "",
+        "balance": "60500.00"
+      }
+    ],
+    "warnings": []
+  }
+}

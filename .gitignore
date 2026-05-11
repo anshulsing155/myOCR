@@ -1,6 +1,8 @@
-# Personal documents — never commit inputs/outputs
-inputs/
-outputs/
+# Documents and pipeline outputs — never commit
+inputs/*
+!inputs/.gitkeep
+outputs/*
+!outputs/.gitkeep
 
 # Python
 __pycache__/
@@ -39,3 +41,12 @@ htmlcov/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Claude Code session data
+.claude/
+
+# Root-level private dev scripts (use scripts/ instead)
+_validate.py
+_batch_run.py
+_test_json.py
+_test_json_repair.py

@@ -1,12 +1,30 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to **DocuSense** are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
 ## [Unreleased]
+
+## [1.3.0] — 2026-05-11
+
+### Changed
+- Project renamed from **myOCR** to **DocuSense** for open-source publication
+- Package name updated to `docusense`; CLI entry point is now `docsense`
+- `pyproject.toml` URLs updated to `https://github.com/anshulsing155/DocuSense`
+- `README.md` fully rewritten with comprehensive documentation and usage examples
+- `__pycache__` bytecode removed from git tracking
+- Private dev scripts moved out of git tracking (`_validate.py`, `_batch_run.py`, etc.)
+- `scripts/batch_run.py` and `scripts/validate_gemini.py` are the clean public equivalents
+
+### Added
+- `examples/` directory with anonymised JSON output samples for all supported document types
+- `inputs/.gitkeep` and `outputs/.gitkeep` placeholder files so empty directories are preserved
+- `tests/test_gemini_json_parser.py` and `tests/test_gemini_json_repair.py` migrated from root dev scripts
+- CI security scan job: checks tracked files for hardcoded API key patterns (Gemini, OpenAI, AWS)
+- CI coverage artifact upload
 
 ## [1.2.0] — 2026-05-05
 

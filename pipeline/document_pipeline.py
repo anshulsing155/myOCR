@@ -81,16 +81,27 @@ def _crossref_identity_docs(documents: list[dict]) -> None:
     pan_ext = pan_doc.setdefault("extracted", {})
     aad_ext = aad_doc.get("extracted", {})
 
-    pan_name = pan_ext.get("name", "")
-    aad_name = aad_ext.get("name", "")
-    pan_dob  = pan_ext.get("date_of_birth", "")
-    aad_dob  = aad_ext.get("date_of_birth", "")
+    pan_name   = pan_ext.get("name", "")
+    aad_name   = aad_ext.get("name", "")
+    pan_number = pan_ext.get("pan_number", "")
+    pan_dob    = pan_ext.get("date_of_birth", "")
+    aad_dob    = aad_ext.get("date_of_birth", "")
 
     # DOB cross-check
     if pan_dob and aad_dob and pan_dob != aad_dob:
         msg = f"DOB mismatch: PAN={pan_dob}, Aadhaar={aad_dob}"
         pan_doc.setdefault("warnings", []).append(msg)
         aad_doc.setdefault("warnings", []).append(msg)
+
+    # PAN number encodes the surname initial at position 4 (0-indexed) for
+    # individual PANs (position 3 == 'P').  Use this to validate Aadhaar name
+    # before cross-referencing — garbled OCR names like "SIRG FRCAR" will have
+    # the wrong initial and get filtered out.
+    if aad_name and pan_number and len(pan_number) >= 5 and pan_number[3] == "P":
+        expected_initial = pan_number[4].upper()
+        aad_words = aad_name.strip().upper().split()
+        if aad_words and aad_words[-1][0] != expected_initial:
+            aad_name = ""  # surname initial mismatch — likely garbled OCR
 
     # Name cross-reference
     if aad_name:
@@ -100,8 +111,8 @@ def _crossref_identity_docs(documents: list[dict]) -> None:
             pan_ext.pop("name_confidence", None)
         else:
             pan_words = set(pan_name.upper().split())
-            aad_words = set(aad_name.upper().split())
-            if not pan_words & aad_words:
+            aad_words_set = set(aad_name.upper().split())
+            if not pan_words & aad_words_set:
                 pan_ext["name_confidence"] = "low"
                 pan_ext["name_aadhaar_hint"] = aad_name
 
@@ -364,6 +375,19 @@ class DocumentPipeline:
             "translation_applied": any(p.get("languages", {}).get("translation_applied")
                                        for p in page_results),
         }
+
+        # ── Propagate ID-document type to adjacent low-confidence pages ─────────
+        _ID_DOC_TYPES = {"aadhaar", "pan_card", "voter_id", "passport",
+                         "driving_license", "eshram"}
+        for i, p in enumerate(page_results):
+            if p.get("doc_type") in _ID_DOC_TYPES and p.get("doc_confidence", 0) >= 0.15:
+                for j in (i - 1, i + 1):
+                    if 0 <= j < len(page_results):
+                        adj = page_results[j]
+                        if (adj.get("doc_confidence", 0) < 0.15
+                                and adj.get("doc_type") not in _ID_DOC_TYPES):
+                            adj["doc_type"] = p["doc_type"]
+                            adj["doc_confidence"] = round(p["doc_confidence"] * 0.7, 3)
 
         # ── Group consecutive pages by doc type ───────────────────────────────
         groups: list[dict] = []

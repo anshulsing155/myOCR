@@ -1,0 +1,32 @@
+{
+  "doc_type": "salary_slip",
+  "doc_confidence": 0.78,
+  "extraction_method": "digital_pdf",
+  "extracted": {
+    "employee_name": "EXAMPLE EMPLOYEE",
+    "employee_id": "EMP001",
+    "month": "March 2026",
+    "designation": "Software Engineer",
+    "department": "Engineering",
+    "location": "Delhi",
+    "pan": "ABCDE1234F",
+    "pf_account": "DL/12345/6789",
+    "bank_account": "XXXXXXXXXX",
+    "ifsc_code": "HDFC0001234",
+    "earnings": {
+      "basic": "40000",
+      "hra": "16000",
+      "da": "2000",
+      "special_allowance": "5000",
+      "transport_allowance": "1600"
+    },
+    "deductions": {
+      "pf": "4800",
+      "professional_tax": "200",
+      "income_tax": "0"
+    },
+    "gross_salary": "64600",
+    "total_deductions": "5000",
+    "net_salary": "59600"
+  }
+}

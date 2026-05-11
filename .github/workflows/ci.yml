@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint (ruff)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,9 +27,40 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - name: Install lightweight deps only
+
+      - name: Install lightweight dependencies
         run: |
           pip install pytest pytest-cov
-          pip install numpy pillow pdfplumber PyMuPDF requests langdetect deep-translator
+          pip install numpy pillow pdfplumber PyMuPDF requests langdetect deep-translator python-dotenv
+
+      - name: Ensure inputs/ and outputs/ directories exist
+        run: |
+          mkdir -p inputs outputs
+
       - name: Run tests
-        run: pytest tests/ -v --tb=short 2>/dev/null || echo "No tests yet"
+        run: pytest tests/ -v --tb=short
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: .coverage
+          if-no-files-found: ignore
+
+  security:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for hardcoded secrets
+        run: |
+          # Fail if any real-looking API key patterns appear in tracked files
+          if git ls-files | xargs grep -l \
+            -E "(AIza[0-9A-Za-z_-]{35}|sk-[A-Za-z0-9]{48}|AKIA[0-9A-Z]{16})" 2>/dev/null; then
+            echo "Possible API key found in repository!"
+            exit 1
+          fi
+          echo "No hardcoded secrets detected."

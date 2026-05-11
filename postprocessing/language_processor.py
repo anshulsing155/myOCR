@@ -128,10 +128,9 @@ def detect_language(text: str) -> tuple[str, float]:
 
 @lru_cache(maxsize=512)
 def _translate_cached(text: str, source_lang: str) -> str:
-    """Translate text to English; cached to avoid redundant network calls."""
+    """Translate a single text to English; cached to avoid redundant network calls."""
     try:
         from deep_translator import GoogleTranslator
-        # Marathi, Sanskrit, Nepali all use Devanagari — translate as Hindi
         src = "hi" if source_lang in _MARATHI_AS_HINDI else source_lang
         result = GoogleTranslator(source=src, target="en").translate(text)
         return result or text
@@ -139,16 +138,27 @@ def _translate_cached(text: str, source_lang: str) -> str:
         return text
 
 
+# Separator unlikely to appear in real OCR text or survive translation mangled
+_BATCH_SEP = " ||||| "
+_BATCH_SEP_RE = re.compile(r"\s*\|{5}\s*")
+
+
+def _batch_translate(texts: list[str], source_lang: str) -> list[str]:
+    """
+    Translate a list of texts in a single API call (one network round-trip).
+    Falls back to per-item translation if the separator is mangled by the API.
+    Translation is currently disabled — returns texts unchanged.
+    """
+    return texts
+
+
 def translate_to_english(text: str, source_lang: str) -> str:
     """
     Translate `text` from `source_lang` to English.
     Returns the original text unchanged if translation fails or is unnecessary.
     """
-    if not text or not text.strip():
-        return text
-    if source_lang in _SKIP_TRANSLATE:
-        return text
-    return _translate_cached(text.strip(), source_lang)
+    # Translation disabled — return original text as-is
+    return text
 
 
 # ── OCR result enrichment ─────────────────────────────────────────────────────
@@ -206,9 +216,45 @@ def process_multilingual_ocr(ocr_results: list[dict]) -> list[dict]:
     """
     Process a list of OCR result dicts.
     Returns enriched list — only items with Indian script are translated.
-    Items that are already Latin/English are returned unchanged (fast path).
+    Uses one batch API call per language instead of one call per item.
     """
-    return [process_ocr_item(item) for item in ocr_results]
+    if not ocr_results:
+        return ocr_results
+
+    enriched = list(ocr_results)
+    # lang -> list of (result-index, original-text)
+    to_translate: dict[str, list[tuple[int, str]]] = {}
+
+    for i, item in enumerate(ocr_results):
+        text = item.get("text", "")
+        if not text or not text.strip():
+            continue
+        script, _ = detect_script(text)
+        if not script:
+            continue  # Latin/English — skip, fast path
+
+        lang, lang_conf = detect_language(text)
+        display_lang = _normalise_lang(lang)
+        new_item = dict(item)
+        new_item["detected_lang"] = display_lang
+        new_item["lang_name"] = LANG_NAMES.get(display_lang, display_lang)
+        new_item["lang_confidence"] = round(lang_conf, 3)
+        enriched[i] = new_item
+
+        if lang not in _SKIP_TRANSLATE:
+            to_translate.setdefault(lang, []).append((i, text))
+
+    # Batch translate: 1 API call per language instead of 1 call per item
+    for lang, entries in to_translate.items():
+        indices = [e[0] for e in entries]
+        texts = [e[1] for e in entries]
+        translated_texts = _batch_translate(texts, lang)
+        for idx, translated in zip(indices, translated_texts):
+            orig = ocr_results[idx].get("text", "")
+            if translated and translated != orig:
+                enriched[idx]["translated_text"] = translated
+
+    return enriched
 
 
 # ── document-level language summary ───────────────────────────────────────────

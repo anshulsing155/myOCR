@@ -23,7 +23,8 @@ from parsers.base_parser import BaseParser
 
 # ── Core patterns ─────────────────────────────────────────────────────────────
 
-_PAN_RE = re.compile(r"\b([A-Z]{5}[0-9]{4}[A-Z])\b")
+# Case-insensitive: OCR sometimes returns lowercase letters; we uppercase later.
+_PAN_RE = re.compile(r"\b([A-Za-z]{5}[0-9]{4}[A-Za-z])\b")
 
 # DOB: handles DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, with optional label
 _DOB_LABELED_RE = re.compile(
@@ -31,7 +32,8 @@ _DOB_LABELED_RE = re.compile(
     r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})",
     re.I,
 )
-_DOB_BARE_RE = re.compile(r"\b(\d{2}/\d{2}/\d{4})\b")
+# Bare date: also match dash- and dot-separated formats that garbled labels leave behind
+_DOB_BARE_RE = re.compile(r"\b(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})\b")
 
 # Father’s name — explicit label variants
 _FATHER_LABELED_RE = re.compile(
@@ -68,9 +70,14 @@ _CONSONANTS = frozenset("bcdfghjklmnpqrstvwxyz")
 def _is_garbled(word: str) -> bool:
     """Return True if word looks like garbled OCR (too few vowels or consonant pile-up)."""
     alpha = [c.lower() for c in word if c.isalpha() and c.isascii()]
-    if len(alpha) < 4:
+    if not alpha:
         return False
     vowels = sum(1 for c in alpha if c in "aeiou")
+    # Short all-consonant words ("HRH", "TRT") are garbled OCR artifacts
+    if len(alpha) <= 3 and vowels == 0:
+        return True
+    if len(alpha) < 4:
+        return False
     run = max_run = 0
     for c in alpha:
         run = (run + 1) if c in _CONSONANTS else 0
@@ -108,7 +115,7 @@ class PanParser(BaseParser):
         # ── PAN number ────────────────────────────────────────────────────────
         m = _PAN_RE.search(text)
         if m:
-            pan = m.group(1)
+            pan = m.group(1).upper()  # normalise to uppercase (OCR may return mixed case)
             result["pan_number"] = pan
             # Derive holder type from 4th character
             holder_char = pan[3] if len(pan) >= 4 else ""

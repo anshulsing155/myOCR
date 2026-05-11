@@ -42,7 +42,15 @@ _AMOUNT_RE = re.compile(r"(?:rs\.?|inr|rupees?)[\.:\s]*([\d,]+(?:\.\d{1,2})?)", 
 def clean_amount(raw: str | None) -> str | None:
     if raw is None:
         return None
-    return raw.strip().replace(",", "")
+    raw = raw.strip()
+    # OCR sometimes reads decimal '.' as ',' — "45,000,00" should be 45000, not 4500000
+    # Pattern: trailing group of exactly 2 digits preceded by a group of 3 → decimal
+    raw = re.sub(r"(\d{3}),(\d{2})$", r"\1.\2", raw)
+    cleaned = raw.replace(",", "")
+    # Drop trailing ".00" to return integer string
+    if cleaned.endswith(".00"):
+        cleaned = cleaned[:-3]
+    return cleaned
 
 
 def parse_amount(text: str) -> str | None:
@@ -108,7 +116,12 @@ STATE_RE    = re.compile(
     r"andaman|lakshadweep|dadra)\b",
     re.I,
 )
-DISTRICT_RE = re.compile(r"(?:district|dist\.?)[:\s]+([A-Za-z\s]+?)(?:\n|state|pin|taluk)", re.I)
+DISTRICT_RE = re.compile(
+    r"(?:district|dist\.?)[:\s]+"
+    r"(?!(?:collector|court|magistrate|judge|level|office|administration)\b)"
+    r"([A-Za-z][A-Za-z\s]{1,35}?)(?:\n|state|pin|taluk|,|\.|u\.?p\.?$)",
+    re.I,
+)
 SRO_RE      = re.compile(
     r"(?:sub[\s\-]?registrar(?:'s)?\s*office|sro|office\s*of\s*sub[\s\-]?registrar)"
     r"[:\s,]+([A-Za-z\s,\-]+?)(?:\n|book|vol|doc|reg|\d{4})",
@@ -129,9 +142,10 @@ BOOK_RE     = re.compile(
 )
 DATE_RE     = re.compile(r"\b(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{2,4})\b")
 SURVEY_RE   = re.compile(
-    r"(?:survey\s*(?:no\.?|number)|s\.?\s*no\.?|khasra\s*(?:no\.?|number)|"
-    r"plot\s*(?:no\.?|number)|gat\s*(?:no\.?|number)|dag\s*(?:no\.?|number))"
-    r"[:\s]+([A-Z0-9/,\s]+?)(?:\n|area|measuring|admeasuring|ward|dist)",
+    r"(?:survey\s*(?:no\.?|number)|khasra\s*(?:no\.?|number)|"
+    r"dag\s*(?:no\.?|number)|gat\s*(?:no\.?|number)|sys\s*(?:no\.?|number)|"
+    r"plot\s*(?:no\.?|number))"
+    r"[:\s\-]+([A-Z0-9/,\.\s]{1,40}?)(?:\n|area|measuring|admeasuring|village|ward|dist|$)",
     re.I,
 )
 IFSC_RE     = re.compile(r"\b([A-Z]{4}0[A-Z0-9]{6})\b")

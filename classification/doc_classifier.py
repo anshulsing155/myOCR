@@ -593,14 +593,19 @@ _PATTERN_SCORES: list[tuple[re.Pattern, str, float]] = [
     (re.compile(r"\b\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d][Z][A-Z\d]\b"), "invoice", 3.0),
     # Indian DL number: StateCode(2) + DistrictCode(2) + Year(4) + Serial(7)
     (re.compile(r"\b[A-Z]{2}[-\s]?\d{2}[-\s]?\d{4}[-\s]?\d{7}\b"), "driving_license", 5.0),
-    # Voter ID EPIC number: 2-3 uppercase letters + 7 digits
-    (re.compile(r"\b[A-Z]{2,3}\d{7}\b"),                             "voter_id",        4.0),
-    # Election Commission of India label
+    # Voter ID EPIC number: explicit "EPIC" label near 2-3 letters + 7 digits pattern
+    # (bare alphanumeric is too broad — matches DL state codes, bank codes, etc.)
+    (re.compile(r"\bEPIC\b.*?\b[A-Z]{2,3}\d{7}\b|\b[A-Z]{2,3}\d{7}\b.*?\bEPIC\b", re.I | re.S), "voter_id", 5.0),
+    # Standalone EPIC pattern only when near electoral roll keywords
+    (re.compile(r"\belectors?\s+photo\s+identity\b|\belectoral\s+roll\b", re.I), "voter_id", 5.0),
+    # Election Commission of India label — strongest signal
     (re.compile(r"election\s*commission\s*of\s*india", re.I),        "voter_id",        6.0),
-    # Indian Passport number: letter (A-Z excl Q/X) + 7 digits
-    (re.compile(r"\b[A-PR-WY]\d{7}\b"),                              "passport",        5.0),
+    # Indian Passport number: letter + 7 digits PRECEDED by "Passport No" label to avoid false positives
+    (re.compile(r"passport\s*(?:no\.?|number)[:\s]*[A-PR-WY]\d{7}", re.I), "passport", 6.0),
     # MRZ line (machine-readable zone): 20+ uppercase + digits + '<'
     (re.compile(r"\bP<IND[A-Z<]{10,}"),                              "passport",        6.0),
+    # Bare passport number only as a secondary signal (weight reduced to avoid false positives)
+    (re.compile(r"\b[A-PR-WY]\d{7}\b"),                              "passport",        2.0),
     # Vehicle registration number: state-code(2) + district(2) + series + number
     (re.compile(r"\b[A-Z]{2}\s*\d{1,2}\s*[A-Z]{1,3}\s*\d{1,4}\b"), "vehicle_rc",      4.0),
     # Chassis number: 17-char VIN

@@ -1,0 +1,12 @@
+{
+  "doc_type": "pan_card",
+  "doc_confidence": 0.9,
+  "extraction_method": "tesseract_ocr",
+  "extracted": {
+    "pan_number": "ABCDE1234F",
+    "pan_holder_type": "Individual",
+    "name": "EXAMPLE NAME",
+    "father_name": "EXAMPLE FATHER NAME",
+    "date_of_birth": "01/01/1990"
+  }
+}
