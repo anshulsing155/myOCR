@@ -1,7 +1,9 @@
+import io
+
 import fitz  # PyMuPDF
 import numpy as np
 from PIL import Image
-import io
+
 from config import PDF_DPI
 
 

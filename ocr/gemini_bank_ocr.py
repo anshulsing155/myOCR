@@ -11,16 +11,12 @@ Usage:
 """
 from __future__ import annotations
 
-import base64
 import json
 import logging
-import re
-import tempfile
 import os
-from pathlib import Path
+import re
 from typing import Any
 
-import cv2
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -86,6 +82,7 @@ CRITICAL — Indian number format:
 
 def _encode_image(img: np.ndarray, max_dim: int = 2400) -> tuple[bytes, str]:
     """Resize if huge, encode as PNG (lossless) for digit accuracy. Returns (png_bytes, mime_type)."""
+    import cv2  # lazy: only needed when Vision AI path is active
     h, w = img.shape[:2]
     if max(h, w) > max_dim:
         scale = max_dim / max(h, w)

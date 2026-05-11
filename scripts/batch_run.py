@@ -22,12 +22,12 @@ from pathlib import Path
 sys.stdout.reconfigure(line_buffering=True)
 sys.path.insert(0, str(Path(__file__).parent))
 
-import cv2
-import numpy as np
+import cv2  # noqa: E402
+import numpy as np  # noqa: E402
 
-from classification.doc_classifier import classify
-from pipeline.document_pipeline import DocumentPipeline
-from utils.pdf_to_image import pdf_to_images
+from classification.doc_classifier import classify  # noqa: E402
+from pipeline.document_pipeline import DocumentPipeline  # noqa: E402
+from utils.pdf_to_image import pdf_to_images  # noqa: E402
 
 INPUT_DIR  = "inputs"
 OUTPUT_DIR = "outputs"
@@ -41,8 +41,8 @@ pipeline = DocumentPipeline()
 
 def _ocr_results_from_text(text: str) -> list[dict]:
     """Wrap plain text as a synthetic OCR result list (for digital PDFs)."""
-    lines = [l for l in text.splitlines() if l.strip()]
-    return [{"text": l, "confidence": 1.0, "bbox": None} for l in lines]
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    return [{"text": ln, "confidence": 1.0, "bbox": None} for ln in lines]
 
 
 _TXN_DATE_RE = re.compile(
@@ -93,7 +93,7 @@ def _build_txn_row(line_words: list, page_w: float,
             r"^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*(?:\s+\d+)?\s*",
             "", inline, flags=re.I,
         ).strip()
-    narr = " ".join([l for l in pre_narr if l] + ([inline] if inline else []))
+    narr = " ".join([ln for ln in pre_narr if ln] + ([inline] if inline else []))
     return {"date": date_str, "narration": narr,
             "debit": amount, "credit": "", "balance": balance}
 
@@ -107,8 +107,9 @@ def _pdf_bank_rows(path: str) -> list[dict]:
       • DD Mon DD Mon NARR + YYYY YYYY ... (SBI split-date style for double-digit days)
       • Serial-prefixed rows  (ICICI: "19 20.10.2025 300.00 462088.51")
     """
-    import pdfplumber
     from collections import defaultdict
+
+    import pdfplumber
 
     rows: list[dict] = []
     with pdfplumber.open(path) as pdf:
@@ -205,7 +206,7 @@ def process_digital_pdf(path: str) -> dict:
     if dc.type == "bank_statement":
         from parsers.bank_statement.bank_identifier import identify_bank
         from parsers.bank_statement.bank_parser import (
-            parse as bank_parse, extract_account_metadata,
+            parse as bank_parse,
         )
         bank_id = identify_bank(all_ocr)
         bank_code = bank_id.code if bank_id else "default"

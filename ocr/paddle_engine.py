@@ -1,10 +1,11 @@
 import logging
-import traceback
 import threading
+import traceback
 
 import cv2
 import numpy as np
-from config import OCR_LANG, PADDLE_USE_ANGLE_CLS, PADDLE_DEVICE
+
+from config import OCR_LANG, PADDLE_DEVICE, PADDLE_USE_ANGLE_CLS
 from ocr.availability import paddle_available
 
 logger = logging.getLogger(__name__)
@@ -266,7 +267,7 @@ def run_paddle_multilingual(image: np.ndarray) -> tuple[list[dict], str | None]:
 
     Returns (merged_ocr_results, detected_lang_code_or_None).
     """
-    from postprocessing.language_processor import detect_script, detect_language
+    from postprocessing.language_processor import detect_language, detect_script
 
     # First pass: English model
     english_results = run_paddle(image)

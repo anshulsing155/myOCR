@@ -6,8 +6,12 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, clean_amount,
-    PIN_RE, STATE_RE, DISTRICT_RE, SRO_RE, SURVEY_RE, DATE_RE,
+    DISTRICT_RE,
+    SRO_RE,
+    STATE_RE,
+    SURVEY_RE,
+    clean_amount,
+    norm_date,
 )
 
 _EC_NO_RE      = re.compile(

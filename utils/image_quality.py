@@ -71,9 +71,9 @@ def preprocess_for_ocr(image: np.ndarray) -> np.ndarray:
 
     # CLAHE contrast enhancement on luminance only
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-    l, a, b = cv2.split(lab)
+    lum, a, b = cv2.split(lab)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    img = cv2.cvtColor(cv2.merge([clahe.apply(l), a, b]), cv2.COLOR_LAB2BGR)
+    img = cv2.cvtColor(cv2.merge([clahe.apply(lum), a, b]), cv2.COLOR_LAB2BGR)
 
     return img
 

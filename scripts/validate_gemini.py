@@ -5,11 +5,11 @@ Usage:
     Copy a bank statement PDF into inputs/, then run:
         GEMINI_API_KEY=your-key python scripts/validate_gemini.py inputs/statement.pdf HDFC
 """
-import sys
+import argparse
+import glob
 import json
 import os
-import glob
-import argparse
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

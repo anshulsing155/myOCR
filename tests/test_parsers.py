@@ -1,7 +1,6 @@
 """Smoke tests for all Indian document parsers."""
-import sys
 import os
-import pytest
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

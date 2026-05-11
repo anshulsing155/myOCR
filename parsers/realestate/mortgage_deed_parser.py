@@ -6,8 +6,17 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, parse_area, clean_amount, PIN_RE, STATE_RE, DISTRICT_RE,
-    SRO_RE, STAMP_RE, REGN_NO_RE, SURVEY_RE, IFSC_RE,
+    DISTRICT_RE,
+    IFSC_RE,
+    PIN_RE,
+    REGN_NO_RE,
+    SRO_RE,
+    STAMP_RE,
+    STATE_RE,
+    SURVEY_RE,
+    clean_amount,
+    norm_date,
+    parse_area,
 )
 
 _DEED_TYPE_RE  = re.compile(

@@ -6,8 +6,14 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, parse_amount, parse_area, clean_amount,
-    PIN_RE, STATE_RE, DISTRICT_RE, SURVEY_RE,
+    DISTRICT_RE,
+    PIN_RE,
+    STATE_RE,
+    SURVEY_RE,
+    clean_amount,
+    norm_date,
+    parse_amount,
+    parse_area,
 )
 
 _AGR_DATE_RE   = re.compile(

@@ -13,7 +13,6 @@ the UI still shows what was actually on the document.
 from __future__ import annotations
 
 import re
-import unicodedata
 from functools import lru_cache
 from typing import Any
 
@@ -308,7 +307,7 @@ def summarise_languages(ocr_results: list[dict]) -> dict[str, Any]:
         }
 
     all_langs = sorted(lang_counts, key=lambda k: lang_counts[k], reverse=True)
-    non_en = [l for l in all_langs if l != "en"]
+    non_en = [lang for lang in all_langs if lang != "en"]
     primary = non_en[0] if non_en else "en"
 
     return {

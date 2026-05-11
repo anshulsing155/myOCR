@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 from config import H_KERNEL_WIDTH, V_KERNEL_HEIGHT
 from ocr.hybrid_runner import run_ocr
 

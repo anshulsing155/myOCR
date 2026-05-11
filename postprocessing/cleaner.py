@@ -1,6 +1,6 @@
 import re
-from config import AMOUNT_REGEX, DATE_REGEX
 
+from config import AMOUNT_REGEX, DATE_REGEX
 
 # ── basic text cleaning ───────────────────────────────────────────────────────
 

@@ -6,7 +6,11 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, parse_area, PIN_RE, STATE_RE, DISTRICT_RE,
+    DISTRICT_RE,
+    PIN_RE,
+    STATE_RE,
+    norm_date,
+    parse_area,
 )
 
 _CERT_NO_RE    = re.compile(

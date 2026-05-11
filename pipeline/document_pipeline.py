@@ -21,7 +21,6 @@ Supported doc_types:
 from __future__ import annotations
 
 import logging
-from collections import Counter
 from typing import Any
 
 import numpy as np
@@ -53,7 +52,7 @@ def run_ocr_with_fallback(image: np.ndarray, mode: str = "auto") -> list[dict]:
             logger.warning("Tesseract also failed: %s", exc)
 
     if ocr_results:
-        from postprocessing.language_processor import process_multilingual_ocr, get_translated_ocr
+        from postprocessing.language_processor import get_translated_ocr, process_multilingual_ocr
         ocr_results = process_multilingual_ocr(ocr_results)
         # Return translated version so parsers receive English text
         ocr_results = get_translated_ocr(ocr_results)
@@ -273,7 +272,9 @@ class DocumentPipeline:
             return AgreementToSaleParser().parse(ocr_results)
 
         if doc_type == "encumbrance_certificate":
-            from parsers.realestate.encumbrance_certificate_parser import EncumbranceCertificateParser
+            from parsers.realestate.encumbrance_certificate_parser import (
+                EncumbranceCertificateParser,
+            )
             return EncumbranceCertificateParser().parse(ocr_results)
 
         if doc_type == "property_tax_receipt":
@@ -359,8 +360,8 @@ class DocumentPipeline:
 
         # ── Aggregate language info ───────────────────────────────────────────
         all_langs = list({
-            l for p in page_results
-            for l in p.get("languages", {}).get("detected_languages", [])
+            lang for p in page_results
+            for lang in p.get("languages", {}).get("detected_languages", [])
         })
         primary_lang = next(
             (p["languages"]["primary_language"] for p in page_results

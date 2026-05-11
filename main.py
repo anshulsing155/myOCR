@@ -18,7 +18,6 @@ from config import OUTPUT_DIR
 from layout.layout_detector import detect_layout
 from ocr.hybrid_runner import run_ocr
 from postprocessing.cleaner import build_table_rows, clean_text
-from preprocessing.preprocess import preprocess
 from table.table_extractor import extract_table
 from utils.helpers import crop_region, draw_layout_debug, save_json, timestamp_filename
 from utils.pdf_to_image import pdf_to_images

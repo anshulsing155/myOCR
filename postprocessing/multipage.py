@@ -7,6 +7,7 @@ continues with data rows.  This module merges those into one table.
 """
 
 from __future__ import annotations
+
 import copy
 
 

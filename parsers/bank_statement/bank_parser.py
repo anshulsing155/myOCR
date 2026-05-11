@@ -4,18 +4,17 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from parsers.bank_statement.banks import (
+    BANK_SCHEMAS,
+    extract_bank_metadata,
+    get_bank_schema,
+)
+from postprocessing.cleaner import build_table_rows, clean_transaction_rows
 from postprocessing.spatial_table import (
     normalise_col_name,
     reconstruct_table,
     split_page_ocr,
-    find_table_header_row,
-    group_into_rows,
 )
-from postprocessing.cleaner import build_table_rows, clean_transaction_rows
-from parsers.bank_statement.banks import (
-    extract_bank_metadata, get_bank_schema, BANK_SCHEMAS,
-)
-
 
 # ── account-field regex ────────────────────────────────────────────────────────
 

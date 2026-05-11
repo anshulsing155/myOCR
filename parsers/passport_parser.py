@@ -98,8 +98,8 @@ class PassportParser(BaseParser):
             result["file_number"] = m.group(1).strip()
 
         # MRZ lines (top-2 longest all-caps lines with < chars)
-        mrz_candidates = [l.strip() for l in text.splitlines()
-                          if re.match(r"^[A-Z0-9<]{15,}", l.strip())]
+        mrz_candidates = [ln.strip() for ln in text.splitlines()
+                          if re.match(r"^[A-Z0-9<]{15,}", ln.strip())]
         if len(mrz_candidates) >= 2:
             result["mrz_line1"] = mrz_candidates[0]
             result["mrz_line2"] = mrz_candidates[1]

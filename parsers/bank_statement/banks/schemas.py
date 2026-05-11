@@ -1,5 +1,6 @@
 """Bank-specific column schemas and metadata patterns."""
 from __future__ import annotations
+
 import re
 
 # ── per-bank column aliases ───────────────────────────────────────────────────
@@ -144,7 +145,6 @@ def normalise_col_for_bank(header_text: str, bank_code: str) -> str | None:
     Map a column header string to canonical key using bank-specific aliases.
     Returns None if no match found (caller should fall back to generic mapping).
     """
-    import re
     h = re.sub(r"\s+", " ", header_text.lower().strip())
     alias_map = get_col_alias_map(bank_code)
     # Exact match first
@@ -159,7 +159,6 @@ def normalise_col_for_bank(header_text: str, bank_code: str) -> str | None:
 
 def extract_bank_metadata(text: str, bank_code: str) -> dict:
     """Extract bank-specific metadata fields from raw text."""
-    import re
     patterns = BANK_METADATA_PATTERNS.get(bank_code, {})
     result = {}
     for field, pattern in patterns.items():

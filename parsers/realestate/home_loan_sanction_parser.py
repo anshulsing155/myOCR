@@ -6,7 +6,13 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, parse_area, clean_amount, PIN_RE, STATE_RE, DISTRICT_RE, IFSC_RE,
+    DISTRICT_RE,
+    IFSC_RE,
+    PIN_RE,
+    STATE_RE,
+    clean_amount,
+    norm_date,
+    parse_area,
 )
 
 _LOAN_ACC_RE   = re.compile(r"(?:loan\s*account\s*(?:no\.?|number)|account\s*(?:no\.?|number)|loan\s*(?:no\.?|number|id))[:\s]+([A-Z0-9/\-]+)", re.I)

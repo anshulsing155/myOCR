@@ -123,7 +123,7 @@ class VoterIdParser(BaseParser):
             result["address"] = " ".join(addr_lines)
 
         # Name — positional: 2–4 uppercase words, not in skip words
-        lines = [l.strip() for l in text.splitlines() if l.strip()]
+        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
         for line in lines:
             words = line.split()
             if (2 <= len(words) <= 4

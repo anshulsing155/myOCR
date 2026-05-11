@@ -1,8 +1,9 @@
-import cv2
-import numpy as np
 import json
 import os
 from datetime import datetime
+
+import cv2
+import numpy as np
 
 
 def crop_region(image: np.ndarray, bbox) -> np.ndarray:

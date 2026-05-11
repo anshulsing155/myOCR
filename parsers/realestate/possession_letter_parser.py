@@ -6,7 +6,12 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 from parsers.realestate._helpers import (
-    norm_date, parse_area, clean_amount, PIN_RE, STATE_RE, DISTRICT_RE,
+    DISTRICT_RE,
+    PIN_RE,
+    STATE_RE,
+    clean_amount,
+    norm_date,
+    parse_area,
 )
 
 _LETTER_NO_RE  = re.compile(r"(?:letter\s*(?:no\.?|number|ref)|ref(?:erence)?\s*(?:no\.?|number))[:\s]+([A-Z0-9/\-]+)", re.I)

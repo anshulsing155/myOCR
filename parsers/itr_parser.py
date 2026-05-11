@@ -19,7 +19,6 @@ from typing import Any
 
 from parsers.base_parser import BaseParser
 
-
 # ── helper patterns ─────────────────────────────────────────────────────────
 
 # Mandatory row-number separator: " NN " (1–2 digit sequential index in table)

@@ -1,4 +1,5 @@
 import numpy as np
+
 from config import LAYOUT_MODEL, LAYOUT_SCORE_THRESHOLD
 
 _model = None

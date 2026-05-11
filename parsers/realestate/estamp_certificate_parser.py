@@ -5,7 +5,7 @@ import re
 from typing import Any
 
 from parsers.base_parser import BaseParser
-from parsers.realestate._helpers import norm_date, clean_amount, STATE_RE
+from parsers.realestate._helpers import STATE_RE, clean_amount, norm_date
 
 # e-Stamp number: IN-XX followed by digits+chars (SHCIL format)
 _CERT_NO_RE    = re.compile(

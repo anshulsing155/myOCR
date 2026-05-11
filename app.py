@@ -5,7 +5,6 @@ Run:
     streamlit run app.py
 """
 
-import io
 import json
 import os
 import sys
@@ -26,26 +25,24 @@ from classification.doc_classifier import classify as classify_doc
 from layout.layout_detector import detect_layout
 from ocr.availability import local_ocr_status
 from ocr.hybrid_runner import run_ocr
-from ocr.paddle_engine import run_paddle
+from parsers.aadhaar_parser import AadhaarParser
 from parsers.bank_statement.bank_identifier import identify_bank
 from parsers.bank_statement.bank_parser import (
-    extract_account_metadata,
     parse as parse_bank,
 )
-from parsers.pan_parser import PanParser
-from parsers.aadhaar_parser import AadhaarParser
-from parsers.eshram_parser import EshramParser
-from parsers.itr_parser import ItrParser
-from parsers.salary_slip_parser import SalarySlipParser
 from parsers.driving_license_parser import DrivingLicenseParser
+from parsers.eshram_parser import EshramParser
 from parsers.generic_parser import GenericParser
-from postprocessing.language_processor import (
-    process_multilingual_ocr,
-    get_translated_ocr,
-    summarise_languages,
-    LANG_NAMES,
-)
+from parsers.itr_parser import ItrParser
+from parsers.pan_parser import PanParser
+from parsers.salary_slip_parser import SalarySlipParser
 from postprocessing.cleaner import build_table_rows, clean_text
+from postprocessing.language_processor import (
+    LANG_NAMES,
+    get_translated_ocr,
+    process_multilingual_ocr,
+    summarise_languages,
+)
 from postprocessing.multipage import merge_multipage_tables
 from postprocessing.spatial_table import reconstruct_table, split_page_ocr
 from table.table_extractor import extract_table
@@ -278,9 +275,9 @@ def _process_block(image: np.ndarray, block, mode: str, page_result: dict) -> No
             page_result["_lang_summary"] = _blk_lang
         elif _blk_lang.get("multilingual"):
             existing["multilingual"] = True
-            for l in _blk_lang.get("detected_languages", []):
-                if l not in existing.get("detected_languages", []):
-                    existing.setdefault("detected_languages", []).append(l)
+            for lang in _blk_lang.get("detected_languages", []):
+                if lang not in existing.get("detected_languages", []):
+                    existing.setdefault("detected_languages", []).append(lang)
             if _blk_lang.get("primary_language", "en") != "en":
                 existing["primary_language"] = _blk_lang["primary_language"]
 
@@ -527,7 +524,9 @@ def _parse_for_type(
             from parsers.realestate.agreement_to_sale_parser import AgreementToSaleParser
             extracted = AgreementToSaleParser().parse(ocr)
         elif doc_type == "encumbrance_certificate":
-            from parsers.realestate.encumbrance_certificate_parser import EncumbranceCertificateParser
+            from parsers.realestate.encumbrance_certificate_parser import (
+                EncumbranceCertificateParser,
+            )
             extracted = EncumbranceCertificateParser().parse(ocr)
         elif doc_type == "property_tax_receipt":
             from parsers.realestate.property_tax_parser import PropertyTaxParser
@@ -642,7 +641,7 @@ def run_document_intelligence(pages: list[dict]) -> dict:
 
     # ── Aggregate language info ───────────────────────────────────────────────
     all_lang_summaries = [p.get("_lang_summary", {}) for p in pages if p.get("_lang_summary")]
-    all_detected = list({l for s in all_lang_summaries for l in s.get("detected_languages", [])})
+    all_detected = list({lang for s in all_lang_summaries for lang in s.get("detected_languages", [])})
     primary_lang = next((s.get("primary_language") for s in all_lang_summaries
                          if s.get("primary_language") and s["primary_language"] != "en"), "en")
     lang_info = {
@@ -1003,7 +1002,7 @@ if uploaded_file:
             )
             st.stop()
 
-        from utils.pdf_extractor import extract_digital_page, detect_pdf_page_types
+        from utils.pdf_extractor import detect_pdf_page_types, extract_digital_page
 
         # Determine per-page extraction method
         _page_types: list[str] = []
@@ -1124,7 +1123,7 @@ if "pages" in st.session_state:
         _is_multilang = _lang_info.get("multilingual", False)
         _is_translated = _lang_info.get("translation_applied", False)
         _all_langs    = _lang_info.get("detected_languages", ["en"])
-        _lang_display = " + ".join(LANG_NAMES.get(l, l) for l in _all_langs if l != "en")
+        _lang_display = " + ".join(LANG_NAMES.get(lang, lang) for lang in _all_langs if lang != "en")
         _lang_html = ""
         if _is_multilang or _primary_lang != "en":
             _lang_label = f"🌐 {_lang_display or _lang_name}"

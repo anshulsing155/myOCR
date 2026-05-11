@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 from config import ADAPTIVE_BLOCK_SIZE, ADAPTIVE_C, MEDIAN_BLUR_KSIZE
 
 

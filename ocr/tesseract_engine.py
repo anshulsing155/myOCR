@@ -1,7 +1,9 @@
 import os
 import shutil
+
 import numpy as np
 import pytesseract
+
 from config import TESSERACT_LANG
 
 # Resolve tesseract binary: env var → common install locations → let pytesseract find it

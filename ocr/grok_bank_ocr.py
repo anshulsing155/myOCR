@@ -15,20 +15,18 @@ import base64
 import json
 import logging
 import os
-import re
 import time
 from typing import Any
 
-import cv2
 import numpy as np
 
 # Reuse shared prompt and helpers from gemini module
 from ocr.gemini_bank_ocr import (
     _EXTRACT_PROMPT,
-    _parse_gemini_json,
-    _normalise_result,
-    _encode_image,
     _MAX_PAGES,
+    _encode_image,
+    _normalise_result,
+    _parse_gemini_json,
 )
 
 logger = logging.getLogger(__name__)

@@ -6,10 +6,10 @@ OpenCV grid-line detection (which fails on borderless tables).
 """
 
 from __future__ import annotations
+
 import re
 import statistics
 from typing import Optional
-
 
 # ── bbox helpers ──────────────────────────────────────────────────────────────
 

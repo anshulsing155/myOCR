@@ -155,7 +155,6 @@ def extract_digital_page(
 
             # ── Text (words not inside table bboxes) ──────────────────────────
             # Crop away table regions first
-            page_to_use = pl_page
             if tbls:
                 try:
                     tbl_bboxes = [t.bbox for t in pl_page.find_tables()]

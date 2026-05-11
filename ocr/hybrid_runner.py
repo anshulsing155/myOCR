@@ -1,4 +1,5 @@
 import numpy as np
+
 from config import OCR_MODE
 from ocr.paddle_engine import run_paddle
 from ocr.tesseract_engine import run_tesseract
