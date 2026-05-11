@@ -203,6 +203,18 @@ home_loan_sanction →
 estamp_certificate →
   stamp_number, purchaser_name, first_party, second_party,
   purpose, stamp_duty_amount, issue_date, state
+
+━━━━━━ MULTI-DOCUMENT PDFs ━━━━━━
+If pages contain DIFFERENT document types (e.g. page 1 = PAN card, page 2 = Aadhaar),
+return ALL of them using this array format:
+{
+  "documents": [
+    { "doc_type": "pan_card",  "doc_confidence": 1.0,  "pages": [1], "extracted": {...} },
+    { "doc_type": "aadhaar",   "doc_confidence": 0.98, "pages": [2], "extracted": {...} }
+  ]
+}
+Use the "documents" array ONLY when genuinely different document types are on separate pages.
+For a single document type (even spanning many pages), use the standard single-document format.
 """
 
 # ── Shared helpers ────────────────────────────────────────────────────────────
@@ -360,9 +372,29 @@ class GeminiDocumentOCR:
         except json.JSONDecodeError as exc:
             return {"error": f"JSON parse failed: {exc}", "raw_response": raw_text[:500]}
 
-        extracted = _clean_amounts(result.get("extracted", {}))
+        # ── Multi-document response ────────────────────────────────────────────
+        if "documents" in result and isinstance(result["documents"], list):
+            docs = result["documents"]
+            for d in docs:
+                d["extracted"] = _clean_amounts(d.get("extracted", {}))
+                if d.get("doc_type") == "bank_statement":
+                    txns = d["extracted"].get("transactions", [])
+                    d["extracted"].setdefault("transaction_count", len(txns))
+                d.setdefault("pages", [])
+                d.setdefault("doc_confidence", 0.9)
+            return {
+                "doc_type":          "multi_document",
+                "doc_confidence":    max((d["doc_confidence"] for d in docs), default=0.9),
+                "extracted":         {},
+                "documents":         docs,
+                "extraction_method": "gemini_vision",
+                "gemini_model":      self._model,
+                "pages_processed":   len(pages),
+                "response_time_sec": elapsed,
+            }
 
-        # Ensure transaction_count for bank statements
+        # ── Single-document response ───────────────────────────────────────────
+        extracted = _clean_amounts(result.get("extracted", {}))
         if result.get("doc_type") == "bank_statement":
             txns = extracted.get("transactions", [])
             extracted.setdefault("transaction_count", len(txns))

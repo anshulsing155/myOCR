@@ -976,24 +976,38 @@ if uploaded_file:
                             "extraction_engine": _engine_name.lower(),
                             "extracted":         _extracted,
                         }
+                        # Multi-document PDFs: copy the documents list for display
+                        if _detected_type == "multi_document" and "documents" in _airesult:
+                            doc_intel["documents"] = _airesult["documents"]
+
                         progress_bar.progress(1.0, text="Done!")
-                        _type_label = _detected_type.replace("_", " ").title()
-                        if _txn_count:
+                        if _detected_type == "multi_document":
+                            _multi_docs = _airesult.get("documents", [])
+                            _doc_names  = ", ".join(
+                                d.get("doc_type", "?").replace("_", " ").title()
+                                for d in _multi_docs
+                            )
                             _ai_summary = (
-                                f"✅ {_engine_name}: {_type_label} — "
+                                f"✅ {_engine_name}: {len(_multi_docs)} documents — "
+                                f"{_doc_names} · {len(raw_images)} page(s)"
+                                f" in **{_t_elapsed:.2f}s**"
+                            )
+                        elif _txn_count:
+                            _ai_summary = (
+                                f"✅ {_engine_name}: {_detected_type.replace('_',' ').title()} — "
                                 f"{_txn_count} transactions from {len(raw_images)} page(s)"
                                 f" in **{_t_elapsed:.2f}s**"
                             )
                         else:
                             _ai_summary = (
-                                f"✅ {_engine_name}: {_type_label} extracted"
-                                f" from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
+                                f"✅ {_engine_name}: {_detected_type.replace('_',' ').title()}"
+                                f" extracted from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
                             )
                         status_area.success(_ai_summary)
                         st.info(
                             f"⏱ Response time: **{_t_elapsed:.2f}s** · "
                             f"Pages: {len(raw_images)} · "
-                            f"Document: {_type_label} · "
+                            f"Document: {_detected_type.replace('_',' ').title()} · "
                             f"Model: {_model_used}"
                         )
                         if save_to_disk:
@@ -1102,12 +1116,17 @@ if uploaded_file:
                         bank_hint=_bank_hint,
                     )
                     if "error" not in _ai_result:
-                        _ai_extracted = _ai_result.get("extracted", {})
-                        doc_intel.setdefault("extracted", {})
-                        doc_intel["extracted"].update(_ai_extracted)
+                        if _ai_result.get("doc_type") == "multi_document":
+                            doc_intel["doc_type"]   = "multi_document"
+                            doc_intel["documents"]  = _ai_result.get("documents", [])
+                            doc_intel["extracted"]  = {}
+                        else:
+                            _ai_extracted = _ai_result.get("extracted", {})
+                            doc_intel.setdefault("extracted", {})
+                            doc_intel["extracted"].update(_ai_extracted)
+                            if not doc_intel.get("doc_confidence"):
+                                doc_intel["doc_confidence"] = _ai_result.get("doc_confidence", 0.9)
                         doc_intel["extraction_engine"] = _engine_name.lower()
-                        if not doc_intel.get("doc_confidence"):
-                            doc_intel["doc_confidence"] = _ai_result.get("doc_confidence", 0.9)
                     else:
                         st.warning(f"{_engine_name} extraction failed: {_ai_result['error']}")
             except Exception as _ae:
