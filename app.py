@@ -925,22 +925,22 @@ if uploaded_file:
         progress_bar = st.progress(0, text="Starting pipeline…")
         status_area = st.empty()
 
-        # ── AI-only fast path (Gemini or Grok) ───────────────────────────────
+        # ── AI-only fast path (Gemini or Grok — all document types) ─────────────
         if ai_only and ai_api_key:
             _engine_name = _ai_engine.split()[0]   # "Gemini" or "Grok"
-            status_area.info(f"🤖 {_engine_name}: processing all pages…")
+            status_area.info(f"🤖 {_engine_name}: analysing document…")
             try:
                 if _ai_engine == "Gemini":
-                    from ocr.gemini_bank_ocr import GeminiBankOCR
-                    _ocr_engine = GeminiBankOCR(api_key=ai_api_key)
+                    from ocr.gemini_document_ocr import GeminiDocumentOCR
+                    _ocr_engine = GeminiDocumentOCR(api_key=ai_api_key)
                 else:
-                    from ocr.grok_bank_ocr import GrokBankOCR
-                    _ocr_engine = GrokBankOCR(api_key=ai_api_key)
+                    from ocr.grok_bank_ocr import GrokDocumentOCR
+                    _ocr_engine = GrokDocumentOCR(api_key=ai_api_key)
 
                 if not _ocr_engine.available:
                     st.error(f"{_engine_name} engine not available — check API key / dependencies.")
                 else:
-                    _airesult = _ocr_engine.extract(raw_images)
+                    _airesult = _ocr_engine.extract(raw_images, doc_type="auto")
 
                     if "error" in _airesult:
                         st.error(f"{_engine_name} error: {_airesult['error']}")
@@ -954,31 +954,46 @@ if uploaded_file:
                                 "_debug_img": None,
                                 "_extraction": _engine_name.lower(),
                             })
-                        _airesult.pop("doc_type", None)
-                        _t_elapsed  = _airesult.get("response_time_sec", 0)
-                        _txn_count  = _airesult.get("transaction_count", 0)
-                        _model_used = _airesult.get("ai_model") or _airesult.get("gemini_model", "")
+                        _detected_type = _airesult.get("doc_type", "unknown")
+                        _extracted     = _airesult.get("extracted", {})
+                        _t_elapsed     = _airesult.get("response_time_sec", 0)
+                        _model_used    = _airesult.get("gemini_model") or _airesult.get("ai_model", "")
+                        _txn_count     = _extracted.get(
+                            "transaction_count",
+                            len(_extracted.get("transactions", [])),
+                        )
                         doc_intel = {
-                            "doc_type": "bank_statement",
-                            "doc_confidence": 1.0,
-                            "bank_name": _airesult.get("bank_name"),
-                            "bank_code": None,
-                            "languages": {"detected_languages": ["en"],
-                                          "primary_language": "en",
-                                          "multilingual": False,
-                                          "translation_applied": False},
+                            "doc_type":         _detected_type,
+                            "doc_confidence":   _airesult.get("doc_confidence", 1.0),
+                            "bank_name":        _extracted.get("bank_name"),
+                            "bank_code":        None,
+                            "languages": {
+                                "detected_languages": ["en"],
+                                "primary_language":   "en",
+                                "multilingual":       False,
+                                "translation_applied": False,
+                            },
                             "extraction_engine": _engine_name.lower(),
-                            "extracted": _airesult,
+                            "extracted":         _extracted,
                         }
                         progress_bar.progress(1.0, text="Done!")
-                        status_area.success(
-                            f"✅ {_engine_name} extracted {_txn_count} transactions "
-                            f"from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
-                        )
+                        _type_label = _detected_type.replace("_", " ").title()
+                        if _txn_count:
+                            _ai_summary = (
+                                f"✅ {_engine_name}: {_type_label} — "
+                                f"{_txn_count} transactions from {len(raw_images)} page(s)"
+                                f" in **{_t_elapsed:.2f}s**"
+                            )
+                        else:
+                            _ai_summary = (
+                                f"✅ {_engine_name}: {_type_label} extracted"
+                                f" from {len(raw_images)} page(s) in **{_t_elapsed:.2f}s**"
+                            )
+                        status_area.success(_ai_summary)
                         st.info(
                             f"⏱ Response time: **{_t_elapsed:.2f}s** · "
                             f"Pages: {len(raw_images)} · "
-                            f"Transactions: {_txn_count} · "
+                            f"Document: {_type_label} · "
                             f"Model: {_model_used}"
                         )
                         if save_to_disk:
@@ -1062,28 +1077,37 @@ if uploaded_file:
         status_area.info("🧠 Running document classification…")
         doc_intel = run_document_intelligence(pages)
 
-        # AI enrichment after classification (runs when NOT in ai_only mode)
-        if (ai_api_key and not ai_only
-                and doc_intel.get("doc_type") == "bank_statement"):
-            _engine_name = _ai_engine.split()[0]
-            status_area.info(f"🤖 {_engine_name}: enriching bank statement data…")
+        # AI enrichment after classification (all document types)
+        if ai_api_key and not ai_only:
+            _engine_name  = _ai_engine.split()[0]
+            _detected_doc = doc_intel.get("doc_type", "unknown")
+            status_area.info(
+                f"🤖 {_engine_name}: enriching "
+                f"{_detected_doc.replace('_', ' ')} data…"
+            )
             try:
                 if _ai_engine == "Gemini":
-                    from ocr.gemini_bank_ocr import GeminiBankOCR
-                    _enricher = GeminiBankOCR(api_key=ai_api_key)
+                    from ocr.gemini_document_ocr import GeminiDocumentOCR
+                    _enricher = GeminiDocumentOCR(api_key=ai_api_key)
                 elif _ai_engine == "Grok (xAI)":
-                    from ocr.grok_bank_ocr import GrokBankOCR
-                    _enricher = GrokBankOCR(api_key=ai_api_key)
+                    from ocr.grok_bank_ocr import GrokDocumentOCR
+                    _enricher = GrokDocumentOCR(api_key=ai_api_key)
                 else:
                     _enricher = None
                 if _enricher and _enricher.available:
                     _bank_hint = doc_intel.get("bank_name") or doc_intel.get("bank_code") or ""
-                    _ai_result = _enricher.extract(raw_images, bank_hint=_bank_hint)
+                    _ai_result = _enricher.extract(
+                        raw_images,
+                        doc_type=_detected_doc,
+                        bank_hint=_bank_hint,
+                    )
                     if "error" not in _ai_result:
-                        _ai_result.pop("doc_type", None)
+                        _ai_extracted = _ai_result.get("extracted", {})
                         doc_intel.setdefault("extracted", {})
-                        doc_intel["extracted"].update(_ai_result)
+                        doc_intel["extracted"].update(_ai_extracted)
                         doc_intel["extraction_engine"] = _engine_name.lower()
+                        if not doc_intel.get("doc_confidence"):
+                            doc_intel["doc_confidence"] = _ai_result.get("doc_confidence", 0.9)
                     else:
                         st.warning(f"{_engine_name} extraction failed: {_ai_result['error']}")
             except Exception as _ae:
